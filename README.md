@@ -1,7 +1,7 @@
-# Classroom Management System
+# Unicore
 
 ## Overview
-The Classroom Management System is designed to help institutions manage key data such as students, lecturers, subjects, and classrooms. It supports bulk data import via Excel files, efficiently creating up to 100 records in a single request. This system features a relational database (PostgreSQL) for structured data storage, a Spring Boot-based backend for processing, and optional asynchronous processing for handling large imports.
+Unicore is a Classroom Management System, designed to help institutions manage key data such as students, lecturers, subjects, and classrooms. It supports bulk data import via Excel files, efficiently creating up to 100 records in a single request. This system features a relational database (PostgreSQL) for structured data storage, a Spring Boot-based backend for processing, and optional asynchronous processing for handling large imports.
 
 ## Features
 * Student, Lecturer Management: Add, update, delete, and retrieve student, lecturer information.
