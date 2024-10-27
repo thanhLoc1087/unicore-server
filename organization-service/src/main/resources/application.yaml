@@ -6,11 +6,12 @@ server:
 spring:
     application: 
         name: organization-service
-    datasource:
-        url: jdbc:mysql://localhost:3306/${MYSQL_DB:organizationdb}
-        driverClassName: com.mysql.jdbc.Driver
-        username: ${MYSQL_USER:postgres}
-        password: ${MYSQL_PASSWORD:postgres}
+
+    r2dbc:
+        url: r2dbc:pool:mysql://localhost:3306/${MYSQL_DB:organizationdb}
+        username: ${MYSQL_USER:root}
+        password: ${MYSQL_PASSWORD:mysql}
+
     jpa:
         hibernate:
             ddl-auto: update
@@ -26,14 +27,16 @@ spring:
     liquibase:
         url: jdbc:mysql://localhost:3306/${MYSQL_DB:organizationdb}
         enabled: true
-        user: ${MYSQL_USER:postgres}
-        password: ${MYSQL_PASSWORD:postgres}
+        user: ${MYSQL_USER:root}
+        password: ${MYSQL_PASSWORD:mysql}
         change-log: classpath:db/changelog/changelog-master.xml
         
 logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
+    level:
+        org:
+            springframework: 
+                security: DEBUG
+            hibernate:
+                SQL: DEBUG
 
         

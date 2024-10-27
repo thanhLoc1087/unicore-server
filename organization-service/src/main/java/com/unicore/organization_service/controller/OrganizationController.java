@@ -2,6 +2,9 @@ package com.unicore.organization_service.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +19,8 @@ import com.unicore.organization_service.service.OrganizationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/manage")
@@ -25,24 +30,18 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     @PostMapping
-    public ApiResponse<OrganizationResponse> createOrg(@RequestBody OrganizationCreationRequest request) {
-        log.info("HOLAAAAAAAAAAA");
-        return ApiResponse.<OrganizationResponse>builder()
-                .result(organizationService.createOrg(request))
-                .build();
+    public ResponseEntity<Mono<OrganizationResponse>> createOrg(@RequestBody OrganizationCreationRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(organizationService.createOrg(request));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<OrganizationResponse> getMethodName(@PathVariable String id) {
-        return ApiResponse.<OrganizationResponse>builder()
-                .result(organizationService.getOrgById(id))
-                .build();
+    public ResponseEntity<Mono<OrganizationResponse>> getOrgById(@PathVariable String id) {
+        return ResponseEntity.ok(organizationService.getOrgById(id));
     }
 
     @GetMapping
-    public ApiResponse<List<OrganizationResponse>> getMethodName() {
-        return ApiResponse.<List<OrganizationResponse>>builder()
-                .result(organizationService.getOrgs())
-                .build();
+    public ResponseEntity<Flux<OrganizationResponse>> getAllOrgs() {
+        return ResponseEntity.ok(organizationService.getOrgs());
     }
 }
