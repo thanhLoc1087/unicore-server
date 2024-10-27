@@ -1,39 +1,30 @@
-// package com.unicore.organization_service.entity;
+package com.unicore.organization_service.entity;
 
-// import jakarta.persistence.Entity;
-// import jakarta.persistence.JoinColumn;
-// import jakarta.persistence.ManyToOne;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-// import com.unicore.organization_service.enums.ExamFormat;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-// import lombok.AllArgsConstructor;
-// import lombok.Builder;
-// import lombok.Data;
-// import lombok.NoArgsConstructor;
+@Table
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Subject {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+    
+    private Organization organization;
 
-// @Entity
-// @Data
-// @Builder
-// @AllArgsConstructor
-// @NoArgsConstructor
-// public class Subject {
-//     private String id;
+    private String name;
 
-//     @ManyToOne
-//     @JoinColumn(name = "org_id")
-//     private Organization organization;
+    private String code;
 
-//     private String name;
-//     private String code;
-
-//     private ExamFormat midtermFormat;
-//     private ExamFormat practicalFormat;
-//     private ExamFormat finalFormat;
-
-//     private int courseworkWeight;
-//     private int midtermWeight;
-//     private int practicalWeight;
-//     private int finalWeight;
-
-//     private String description;
-// }
+    private String description;
+}

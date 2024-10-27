@@ -24,7 +24,6 @@ public class OrganizationService {
 
     public Mono<OrganizationResponse> createOrg(OrganizationCreationRequest request) {
         Organization org = organizationMapper.toOrganization(request);
-        // org.setId(UUID.randomUUID().toString());
         log.info(org.toString());
         return createNewOrg(org);
     }
