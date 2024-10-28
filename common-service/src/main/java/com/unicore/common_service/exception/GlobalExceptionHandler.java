@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.unicore.common_service.dto.response.ApiResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)

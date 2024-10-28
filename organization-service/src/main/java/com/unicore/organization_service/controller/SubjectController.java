@@ -3,6 +3,7 @@ package com.unicore.organization_service.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unicore.organization_service.dto.request.SubjectBulkCreationRequest;
 import com.unicore.organization_service.dto.request.SubjectCreationRequest;
 import com.unicore.organization_service.dto.response.SubjectResponse;
 import com.unicore.organization_service.service.SubjectService;
@@ -13,6 +14,9 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +34,12 @@ public class SubjectController {
     public ResponseEntity<Mono<SubjectResponse>> createSubject(@RequestBody SubjectCreationRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(subjectService.createSubject(request));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<Mono<List<SubjectResponse>>> createSubject(@RequestBody SubjectBulkCreationRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(subjectService.createSubjects(request));
     }
     
     @GetMapping

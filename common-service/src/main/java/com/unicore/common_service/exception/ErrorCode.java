@@ -9,7 +9,9 @@ import lombok.Getter;
 public enum ErrorCode {
     UNCATEGORIZED("UNK", "Uncategorized error.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_REQUEST("INV01", "Invalid request.", HttpStatus.BAD_REQUEST),
-    USER_NOT_EXISTS("NF1001", "User does not exist.", HttpStatus.NOT_FOUND),
+    NOT_FOUND("NF1001", "Object does not exist.", HttpStatus.NOT_FOUND),
+    USER_NOT_EXISTS("NF1002", "User does not exist.", HttpStatus.NOT_FOUND),
+    DUPLICATE("BR1001", "Object already exists.", HttpStatus.BAD_REQUEST),
     USER_EXISTS("BR1002", "User already exists.", HttpStatus.BAD_REQUEST),
     USERNAME_INVALID("BR1003", "Username must have at least {min} characters.", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID("BR1004", "Password must have at least {min} characters.", HttpStatus.BAD_REQUEST),
