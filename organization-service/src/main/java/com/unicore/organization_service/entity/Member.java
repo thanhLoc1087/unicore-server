@@ -1,25 +1,26 @@
-// package com.unicore.organization_service.entity;
+package com.unicore.organization_service.entity;
 
-// import java.sql.Date;
-// import java.util.Set;
 
-// import jakarta.persistence.GeneratedValue;
-// import jakarta.persistence.GenerationType;
-// import jakarta.persistence.Id;
+import jakarta.persistence.Id;
 
-// import com.unicore.organization_service.enums.MemberGender;
-// import com.unicore.organization_service.enums.MemberRole;
+import java.time.LocalDate;
 
-// import lombok.Data;
+import com.unicore.organization_service.enums.MemberGender;
+import com.unicore.organization_service.enums.MemberRole;
 
-// @Data
-// public abstract class Member {
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.UUID)
-//     protected String id;
+import lombok.Data;
 
-//     protected String name;
-//     protected Date dob;
-//     protected MemberGender gender;
-//     protected Set<MemberRole> roles;
-// }
+@Data
+public abstract class Member {
+    @Id
+    protected String id;
+
+    protected String organizationId;
+
+    protected String code;
+    protected String name;
+    protected String email;
+    protected LocalDate dob;
+    protected MemberGender gender;
+    protected MemberRole role;
+}

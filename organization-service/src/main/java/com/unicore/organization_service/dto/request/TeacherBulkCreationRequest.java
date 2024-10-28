@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class SubjectBulkCreationRequest {
+public class TeacherBulkCreationRequest {
     @JsonProperty("organization_id")
     private String organizationId;
-    private List<SubjectCreationRequest> subjects;
+    private List<TeacherCreationRequest> teachers;
 }

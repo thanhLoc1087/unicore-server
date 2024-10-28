@@ -48,4 +48,8 @@ public class OrganizationService {
                 .map(organizationMapper::toOrganizationResponse)
                 .switchIfEmpty(Mono.error(new Exception("Organization list empty")));
     }
+    
+    public Mono<Void> deleteById(String id) {
+        return organizationRepository.deleteById(id);
+    }
 }

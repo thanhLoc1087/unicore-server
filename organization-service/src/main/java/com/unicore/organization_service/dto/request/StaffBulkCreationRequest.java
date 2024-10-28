@@ -1,14 +1,14 @@
 package com.unicore.organization_service.dto.request;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
 
 import lombok.Data;
 
 @Data
-public class SubjectBulkCreationRequest {
+public class StaffBulkCreationRequest {
     @JsonProperty("organization_id")
     private String organizationId;
-    private List<SubjectCreationRequest> subjects;
+    private List<StaffCreationRequest> staff;
 }

@@ -44,6 +44,13 @@
             </column>
             <column name="description" type="TEXT"/>
         </createTable>
+
+        <addForeignKeyConstraint 
+            baseTableName="subject"
+            baseColumnNames="organization_id"
+            constraintName="fk_subject_organization"
+            referencedTableName="organization"
+            referencedColumnNames="id"/>
     </changeSet>
 
     <!-- ChangeSet for creating the SubjectMetadata table -->
@@ -90,11 +97,128 @@
             constraintName="fk_subject_metadata_subject"
             referencedTableName="subject"
             referencedColumnNames="id"/>
+    </changeSet>
+    
+    <!-- ChangeSet for creating the Teacher table -->
+    <changeSet id="create-table-teacher" author="loc" runAlways="true">
+        <preConditions onFail="MARK_RAN" onFailMessage="table teacher already exists">
+            <not>
+                <tableExists tableName="teacher"/>
+            </not>
+        </preConditions>
+        <createTable tableName="teacher">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="organization_id" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(150)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="dob" type="DATE">
+            </column>
+            <column name="gender" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(50)">
+            </column>
+            <column name="degree" type="VARCHAR(50)">
+            </column>
+            <column name="research_direction" type="VARCHAR(255)">
+            </column>
+        </createTable>
 
         <addForeignKeyConstraint 
-            baseTableName="subject"
+            baseTableName="teacher"
             baseColumnNames="organization_id"
-            constraintName="fk_subject_organization"
+            constraintName="fk_teacher_organization"
+            referencedTableName="organization"
+            referencedColumnNames="id"/>
+    </changeSet>
+    
+    <!-- ChangeSet for creating the Student table -->
+    <changeSet id="create-table-student" author="loc" runAlways="true">
+        <preConditions onFail="MARK_RAN" onFailMessage="table student already exists">
+            <not>
+                <tableExists tableName="student"/>
+            </not>
+        </preConditions>
+        <createTable tableName="student">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="organization_id" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(150)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="dob" type="DATE">
+            </column>
+            <column name="gender" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(50)">
+            </column>
+            <column name="advisory_class" type="VARCHAR(50)">
+            </column>
+            <column name="academic_batch" type="VARCHAR(50)">
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint 
+            baseTableName="student"
+            baseColumnNames="organization_id"
+            constraintName="fk_student_organization"
+            referencedTableName="organization"
+            referencedColumnNames="id"/>
+    </changeSet>
+    
+    <!-- ChangeSet for creating the Staff table -->
+    <changeSet id="create-table-staff" author="loc" runAlways="true">
+        <preConditions onFail="MARK_RAN" onFailMessage="table staff already exists">
+            <not>
+                <tableExists tableName="staff"/>
+            </not>
+        </preConditions>
+        <createTable tableName="staff">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="organization_id" type="BIGINT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(150)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="dob" type="DATE">
+            </column>
+            <column name="gender" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(50)">
+            </column>
+            <column name="position" type="VARCHAR(255)">
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint 
+            baseTableName="staff"
+            baseColumnNames="organization_id"
+            constraintName="fk_staff_organization"
             referencedTableName="organization"
             referencedColumnNames="id"/>
     </changeSet>
