@@ -4,9 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
-
-
-    <include file="db/changelog/profile-changelog-create.xml" />
-    <!--<include file="db/changelog/profile-changelog-init.xml" />
-    <include file="db/changelog/profile-changelog-indexes.xml" /> -->
+    <include file="db/changelog/organization-changelog-create.xml" />
+    <!--<include file="db/changelog/organization-changelog-init.xml" />
+    <include file="db/changelog/organization-changelog-indexes.xml" /> -->
 </databaseChangeLog>

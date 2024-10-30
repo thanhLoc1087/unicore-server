@@ -41,3 +41,25 @@ Unicore is a Classroom Management System, designed to help institutions manage k
 * Database: MySQL and MongoDB.
 * Background Job Queue: Manages long-running operations like large imports using asynchronous processing or message brokers.
 * Notification Service: Sends feedback to users regarding the status of their import operations (success or failure).
+
+## Prerequisites
+* Java SDK 21
+* A MySQL server
+
+## Start application
+`mvn spring-boot:run`
+
+## Build application
+`mvn clean package`
+
+## Docker guideline
+### Build docker image
+`docker build -t <account>/unicore-server:0.1.0 .`
+### Push docker image to Docker Hub
+`docker image push <account>/unicore-server:0.9.0`
+### Create network:
+`docker network create devteria-network`
+### Start MySQL in devteria-network
+`docker run --network devteria-network --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:8.0.36-debian`
+### Run your application in devteria-network
+`docker run --name identity-service --network devteria-network -p 8080:8080 -e DBMS_CONNECTION=jdbc:mysql://mysql:3306/identity_service unicore-server:0.9.0`

@@ -4,20 +4,30 @@ services:
   mysql:
     image: mysql:8.0.39-debian
     hostname: mysql
+    container_name: mysql-unicore
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: init_db
     volumes:
       - ./init-db:/docker-entrypoint-initdb.d
     # Expose the port only if necessary; you may comment this line to limit access.
-    ports:
-      - '3306:3306'
+    # ports:
+    #   - '3306:3306'
+    networks:
+      - spring-boot-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root --password=$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      retries: 5
   
   kafka:
     image: 'bitnami/kafka:3.7.0'
     hostname: kafka
+    container_name: kafka-unicore
     ports:
       - '9094:9094'
+    # networks:
+    #   - spring-boot-network
     environment:
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
@@ -34,3 +44,33 @@ services:
       # - KAFKA_CFG_SSL_KEY_PASSWORD=${KEY_PASSWORD}
       # - KAFKA_CFG_SSL_TRUSTSTORE_LOCATION=/path/to/truststore.jks
       # - KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway-unicore
+    ports:
+      - "8080:8888"
+    networks:
+      - spring-boot-network
+
+  organization-service:
+    restart: always
+    build:
+      context: ./organization-service 
+    container_name: organization-service-unicore
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./organization-service/.env
+    networks:
+      - spring-boot-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+networks:
+  spring-boot-network:
+    driver: bridge

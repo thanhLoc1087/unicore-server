@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import com.unicore.common_service.exception.AppException;
-import com.unicore.common_service.exception.ErrorCode;
+import com.unicore.organization_service.exception.AppException;
+import com.unicore.organization_service.exception.ErrorCode;
 import com.unicore.organization_service.dto.request.TeacherBulkCreationRequest;
 import com.unicore.organization_service.dto.request.TeacherCreationRequest;
 import com.unicore.organization_service.dto.response.TeacherResponse;

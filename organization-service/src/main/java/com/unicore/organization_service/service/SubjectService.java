@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.reactive.TransactionalOperator;
 
-import com.unicore.common_service.exception.AppException;
-import com.unicore.common_service.exception.ErrorCode;
+import com.unicore.organization_service.exception.AppException;
+import com.unicore.organization_service.exception.ErrorCode;
 import com.unicore.organization_service.dto.request.SubjectBulkCreationRequest;
 import com.unicore.organization_service.dto.request.SubjectCreationRequest;
 import com.unicore.organization_service.dto.response.SubjectResponse;

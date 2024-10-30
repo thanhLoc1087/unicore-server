@@ -1,0 +1,54 @@
+server:
+    port: 8081
+    servlet:
+        context-path: /organization
+        
+spring:
+    # profiles: prod
+    webflux:
+        base-path: /organization
+    application: 
+        name: organization-service
+    r2dbc:
+        url: r2dbc:pool:mysql://mysql:3306/${MYSQL_DB:organizationdb}
+        username: ${MYSQL_USER:prod_user}
+        password: ${MYSQL_PASSWORD:prod_password}
+        # Additional pool configuration for resilience
+        pool:
+            max-size: 50        # Max connections for handling high load
+            initial-size: 5     # Initial connections to improve startup time
+
+    jpa:
+        hibernate:
+            ddl-auto: validate  # Validates schema instead of updating to prevent accidental changes
+        properties:
+            hibernate:
+                orderInserts: true
+                jdbc:
+                batchSize: 50   # Keep for efficient batching in production
+
+    liquibase:
+        url: jdbc:mysql://mysql:3306/${MYSQL_DB:organizationdb}
+        enabled: true
+        user: ${MYSQL_USER:prod_user}
+        password: ${MYSQL_PASSWORD:prod_password}
+        change-log: classpath:db/changelog/changelog-master.xml
+
+# Logging: lower verbosity for better performance
+logging:
+    level:
+        org:
+        springframework: INFO
+        hibernate:
+            SQL: WARN        # Reduce SQL logs for production
+
+springdoc:  
+    swagger-ui:
+        path: /swagger-ui.html
+
+unicore:
+  openapi:
+    dev-url: http://localhost:8080
+    prod-url: http://localhost:8080
+
+profiles: LocProd
