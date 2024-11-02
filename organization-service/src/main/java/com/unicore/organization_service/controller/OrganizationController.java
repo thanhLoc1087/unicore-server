@@ -11,15 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.organization_service.dto.request.OrganizationCreationRequest;
 import com.unicore.organization_service.dto.response.OrganizationResponse;
-import com.unicore.organization_service.dto.response.StaffResponse;
-import com.unicore.organization_service.dto.response.StudentResponse;
 import com.unicore.organization_service.dto.response.SubjectResponse;
-import com.unicore.organization_service.dto.response.TeacherResponse;
 import com.unicore.organization_service.service.OrganizationService;
-import com.unicore.organization_service.service.StaffService;
-import com.unicore.organization_service.service.StudentService;
 import com.unicore.organization_service.service.SubjectService;
-import com.unicore.organization_service.service.TeacherService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +27,6 @@ import reactor.core.publisher.Mono;
 public class OrganizationController {
     private final OrganizationService organizationService;
     private final SubjectService subjectService;
-    private final TeacherService teacherService;
-    private final StudentService studentService;
-    private final StaffService staffService;
 
     @PostMapping
     public ResponseEntity<Mono<OrganizationResponse>> createOrg(@RequestBody OrganizationCreationRequest request) {
@@ -56,20 +47,5 @@ public class OrganizationController {
     @GetMapping("/{id}/subjects")
     public ResponseEntity<Flux<SubjectResponse>> getOrgSubjects(@PathVariable String id) {
         return ResponseEntity.ok(subjectService.getSubjectsByOrg(id));
-    }   
-
-    @GetMapping("/{id}/teachers")
-    public ResponseEntity<Flux<TeacherResponse>> getOrgTeachers(@PathVariable String id) {
-        return ResponseEntity.ok(teacherService.getTeachersByOrganizationId(id));
-    }   
-
-    @GetMapping("/{id}/student")
-    public ResponseEntity<Flux<StudentResponse>> getOrgStudeints(@PathVariable String id) {
-        return ResponseEntity.ok(studentService.getStudentsByOrganizationId(id));
-    }   
-
-    @GetMapping("/{id}/staff")
-    public ResponseEntity<Flux<StaffResponse>> getOrgStaff(@PathVariable String id) {
-        return ResponseEntity.ok(staffService.getStaffsByOrganizationId(id));
     }   
 }

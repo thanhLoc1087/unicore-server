@@ -1,4 +1,4 @@
-package com.unicore.organization_service.exception;
+package com.unicore.profile_service.exception;
 
 import java.util.Map;
 
@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.unicore.organization_service.dto.response.ApiResponse;
+import com.unicore.profile_service.dto.response.ApiResponse;
 
 import lombok.extern.slf4j.Slf4j;
 

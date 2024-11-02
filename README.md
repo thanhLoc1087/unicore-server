@@ -58,8 +58,48 @@ Unicore is a Classroom Management System, designed to help institutions manage k
 ### Push docker image to Docker Hub
 `docker image push <account>/unicore-server:0.9.0`
 ### Create network:
-`docker network create devteria-network`
-### Start MySQL in devteria-network
-`docker run --network devteria-network --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -d mysql:8.0.36-debian`
-### Run your application in devteria-network
-`docker run --name identity-service --network devteria-network -p 8080:8080 -e DBMS_CONNECTION=jdbc:mysql://mysql:3306/identity_service unicore-server:0.9.0`
+`docker network create unicore-network`
+
+`docker run -d \
+  --name mysql-unicore \
+  --hostname mysql \
+  -e MYSQL_ROOT_PASSWORD=0843300042 \
+  -e MYSQL_DATABASE=init_db \
+  -v $(pwd)/init-db:/docker-entrypoint-initdb.d \
+  --network unicore-network \
+  --health-cmd="mysqladmin ping -h localhost -u root --password=0843300042 || exit 1" \
+  --health-interval=10s \
+  --health-retries=5 \
+  mysql:8.0.39-debian`
+
+`docker run -d \
+  --name kafka-unicore \
+  --hostname kafka \
+  -p 9094:9094 \
+  -e KAFKA_CFG_NODE_ID=0 \
+  -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
+  -e KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093 \
+  -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094 \
+  -e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094 \
+  -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+  -e KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+  -e KAFKA_CREATE_TOPICS="notificationCreateProfile,paymentCompleted1,paymentCreated1,paymentRequest1,profileOnboarded,profileOnboarding" \
+  --network unicore-network \
+  bitnami/kafka:3.7.0`
+
+`docker run -d \
+  --name api-gateway-unicore \
+  -p 8080:8888 \
+  --network unicore-network \
+  thanhloc1087/api-gateway:0.1.0`
+
+`docker run -d \
+  --name organization-service-unicore \
+  --restart always \
+  -p 8081:8081 \
+  --network unicore-network \
+  --link mysql-unicore:mysql \
+  --link kafka-unicore:kafka \
+  thanhloc1087/organization-service:0.1.0`
+
+

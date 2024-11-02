@@ -1,0 +1,52 @@
+server:
+    port: 8081
+    servlet:
+        contextPath: /profile
+
+spring:
+    webflux:
+        base-path: /profile
+    application: 
+        name: profile-service
+    r2dbc:
+        url: r2dbc:pool:mysql://localhost:3306/${MYSQL_DB:profiledb}
+        username: ${MYSQL_USER:root}
+        password: ${MYSQL_PASSWORD:mysql}
+
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                orderInserts: true
+                jdbc:
+                    batchSize: 50
+        show-sql: true
+        # database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+
+    liquibase:
+        url: jdbc:mysql://localhost:3306/${MYSQL_DB:profiledb}
+        enabled: true
+        user: ${MYSQL_USER:root}
+        password: ${MYSQL_PASSWORD:mysql}
+        change-log: classpath:db/changelog/changelog-master.xml
+
+springdoc:  
+    swagger-ui:
+        path: /swagger-ui.html
+        
+logging:
+  level:
+      org:
+          springframework: 
+              security: DEBUG
+          hibernate:
+              SQL: DEBUG
+
+
+unicore:
+  openapi:
+    dev-url: http://localhost:8080
+    prod-url: http://localhost:8080
+
+profiles: Loc

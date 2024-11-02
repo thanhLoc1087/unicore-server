@@ -1,10 +1,11 @@
 package com.unicore.organization_service.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import com.unicore.organization_service.enums.ExamFormat;
 import com.unicore.organization_service.validator.SubjectWeightConstraint;

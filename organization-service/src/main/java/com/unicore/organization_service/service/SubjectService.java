@@ -156,6 +156,19 @@ public class SubjectService {
             );
     }
 
+    public Mono<SubjectResponse> getSubjectByCode(String code) {
+        return subjectRepository.findByCode(code)
+            .map(subjectMapper::toSubjectResponse)
+            .flatMap(subject ->  
+                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDesc(subject.getId())
+                    .map(metadata -> {
+                        subject.setMetadata(metadata);
+                        return subject;
+                    })
+                    .switchIfEmpty(Mono.just(subject))
+            );
+    }
+
     public Mono<Void> deleteById(String id) {
         return subjectRepository.deleteById(id);
     }
