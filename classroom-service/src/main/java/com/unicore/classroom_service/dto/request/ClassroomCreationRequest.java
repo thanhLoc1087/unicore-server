@@ -1,14 +1,14 @@
-package com.unicore.organization_service.dto.request;
+package com.unicore.classroom_service.dto.request;
 
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.organization_service.enums.ClassType;
+import com.unicore.classroom_service.enums.ClassType;
 
 import lombok.Data;
 
 @Data
-public class ClassCreationRequest {
+public class ClassroomCreationRequest {
     @JsonProperty("organization_id")
     private String organizationId;
     
@@ -23,6 +23,9 @@ public class ClassCreationRequest {
     @JsonProperty("teacher_code")
     private String teacherCode;
 
+    @JsonProperty("teacher_assistant_code")
+    private String teacherAssistantCode;
+
     @JsonProperty("teacher_name")
     private String teacherName;
 
@@ -32,6 +35,7 @@ public class ClassCreationRequest {
     
     @JsonProperty("start_date")
     private LocalDate startDate;
+    
     @JsonProperty("end_date")
     private LocalDate endDate;
     
@@ -40,3 +44,4 @@ public class ClassCreationRequest {
 
     private String note;
 }
+

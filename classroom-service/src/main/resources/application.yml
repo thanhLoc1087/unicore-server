@@ -1,0 +1,25 @@
+server:
+    port: 8082
+    servlet:
+        contextPath: /classroom
+
+spring:
+    webflux:
+        base-path: /classroom
+    application: 
+        name: classroom-service
+    data:
+        mongodb:
+            uri: mongodb://localhost:27017/classroomdb?authSource=admin
+
+springdoc:  
+    swagger-ui:
+        path: /swagger-ui.html
+        
+logging:
+  level:
+      org:
+          springframework: 
+              security: DEBUG
+          hibernate:
+              SQL: DEBUG
