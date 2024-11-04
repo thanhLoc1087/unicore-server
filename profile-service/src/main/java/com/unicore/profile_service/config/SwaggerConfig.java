@@ -1,5 +1,4 @@
-package com.unicore.organization_service.config;
-
+package com.unicore.profile_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +15,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 	ApiInfo apiInfo() {
-		return new ApiInfoBuilder().title("Organization Service for Unicore")
+		return new ApiInfoBuilder().title("Profile Service for Unicore")
 				.description("")
 				.termsOfServiceUrl("").version("0.0.1-SNAPSHOT").contact(new Contact("Thanh Loc", "https://github.com/thanhLoc1087", "thanhlocne246@gmail.com")).build();
 	}
@@ -24,7 +23,7 @@ public class SwaggerConfig {
 	@Bean
 	public Docket configureControllerPackageAndConvertors() {
 		return new Docket(DocumentationType.SWAGGER_2).select()
-				.apis(RequestHandlerSelectors.basePackage("com.unicore.organization_service.controller")).build()
+				.apis(RequestHandlerSelectors.basePackage("com.unicore.profile_service.controller")).build()
 	                .apiInfo(apiInfo());
 	}
 }

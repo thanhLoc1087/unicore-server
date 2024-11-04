@@ -1,5 +1,5 @@
 server:
-    port: 8082
+    port: 8083
     servlet:
         contextPath: /classroom
 
@@ -11,15 +11,25 @@ spring:
     data:
         mongodb:
             uri: mongodb://localhost:27017/classroomdb?authSource=admin
-
-springdoc:  
-    swagger-ui:
-        path: /swagger-ui.html
         
 logging:
-  level:
-      org:
-          springframework: 
-              security: DEBUG
-          hibernate:
-              SQL: DEBUG
+    level:
+        org:
+            springframework: 
+                security: DEBUG
+            hibernate:
+                SQL: DEBUG
+        com:
+            netflix:
+                eureka: OFF
+                discovery: OFF
+  
+eureka:
+    instance:
+        appname: classroom-service
+    client:
+        enabled: true
+        register-with-eureka: true
+        fetch-registry: true
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
