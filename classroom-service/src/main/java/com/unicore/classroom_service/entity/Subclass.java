@@ -25,6 +25,7 @@ public class Subclass {
     @JsonProperty("end_date")
     private LocalDate endDate;
 
+    private int credits;
     private ClassType type;
     private String note;
 }

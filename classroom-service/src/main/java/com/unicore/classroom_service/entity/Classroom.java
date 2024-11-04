@@ -27,7 +27,6 @@ public class Classroom {
 
     private String subjectCode;
 
-    private int credits;
     private boolean orgManaged;
 
     private List<Subclass> subclasses;

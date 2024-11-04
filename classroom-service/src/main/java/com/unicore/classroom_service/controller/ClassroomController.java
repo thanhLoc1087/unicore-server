@@ -23,7 +23,6 @@ import reactor.core.publisher.Mono;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/classrooms")
 public class ClassroomController {
     private final ClassroomService classroomService;
     

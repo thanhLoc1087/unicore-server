@@ -1,10 +1,11 @@
 package com.unicore.classroom_service.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.r2dbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +45,7 @@ public class ClassroomService {
             .flatMap(classroomRepository::save)
             .map(classroomMapper::toClassroomResponse)
             .onErrorResume(throwable -> {
-                if (throwable instanceof BadSqlGrammarException || throwable instanceof DataAccessException) {
+                if (throwable instanceof DataAccessException) {
                     log.error("R2DBC data invalidation error: {}", throwable.getCause());
                     // Return an error response or rethrow as a custom exception
                     return Mono.error(new AppException(ErrorCode.DUPLICATE));
@@ -62,26 +63,30 @@ public class ClassroomService {
         List<Classroom> classes = new ArrayList<>();
         List<ClassroomCreationRequest> classRequests = request.getClasses();
         String currentClassCode = classRequests.get(0).getCode();
-        List<Subclass> subclasses = new ArrayList<>();
+        Set<Subclass> subclasses = new HashSet<>();
         for (var i = 0; i < classRequests.size(); i++) {
-            ClassroomCreationRequest classRequest = classRequests.get(i);
-            subclasses.add(classroomMapper.toSubclass(classRequest));
-            if (!classRequest.getCode().startsWith(currentClassCode) || i + 1 == classRequests.size()) {
-                classes.add(buildClassroom(currentClassCode, subclasses, classRequest, request.getOrganizationId()));
-                currentClassCode = classRequest.getCode();
-                subclasses.clear();
+            ClassroomCreationRequest currentSubclass = classRequests.get(i);
+            subclasses.add(classroomMapper.toSubclass(currentSubclass));
+            if (i + 1 < classRequests.size()) {
+                ClassroomCreationRequest nextSubclass = classRequests.get(i + 1);
+                if (!nextSubclass.getCode().startsWith(currentClassCode)) {
+                    classes.add(buildClassroom(currentClassCode, subclasses, currentSubclass, request.getOrganizationId()));
+                    subclasses = new HashSet<>();
+                    currentClassCode = nextSubclass.getCode();
+                }
+            } else {
+                classes.add(buildClassroom(currentClassCode, subclasses, currentSubclass, request.getOrganizationId()));
             }
         }
         return Flux.fromIterable(classes)
             .flatMap(this::createClassroom);
     }
     
-    private Classroom buildClassroom(String code, List<Subclass> subclasses, ClassroomCreationRequest classRequest, String organizationId) {
+    private Classroom buildClassroom(String code, Set<Subclass> subclasses, ClassroomCreationRequest classRequest, String organizationId) {
         return Classroom.builder()
             .code(code)
-            .subclasses(subclasses)
+            .subclasses(List.copyOf(subclasses))
             .subjectCode(classRequest.getSubjectCode())
-            .credits(classRequest.getCredits())
             .orgManaged(classRequest.isOrgManaged())
             .organizationId(organizationId)
             .year(classRequest.getYear())

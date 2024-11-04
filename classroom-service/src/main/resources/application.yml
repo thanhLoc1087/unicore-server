@@ -1,11 +1,11 @@
 server:
     port: 8083
     servlet:
-        contextPath: /classroom
+        contextPath: /classrooms
 
 spring:
     webflux:
-        base-path: /classroom
+        base-path: /classrooms
     application: 
         name: classroom-service
     data:

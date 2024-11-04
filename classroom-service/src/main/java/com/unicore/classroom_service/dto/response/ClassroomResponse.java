@@ -21,14 +21,12 @@ public class ClassroomResponse {
     
     @JsonProperty("subject_code")
     private String subjectCode;
-    
-    private int credits;
 
     @JsonProperty("org_managed")
     private boolean orgManaged;
     
-    private List<Subclass> subclasses;
-    
     private int semester;
     private int year;
+
+    private List<Subclass> subclasses;
 }
