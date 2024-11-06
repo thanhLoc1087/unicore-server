@@ -25,6 +25,12 @@ public class Subclass {
     @JsonProperty("end_date")
     private LocalDate endDate;
 
+    @JsonProperty("max_size")
+    private int maxSize;
+
+    @JsonProperty("current_size")
+    private int currentSize;
+
     private int credits;
     private ClassType type;
     private String note;

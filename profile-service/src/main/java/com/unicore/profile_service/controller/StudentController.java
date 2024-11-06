@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unicore.profile_service.dto.request.GetClassMemberRequest;
 import com.unicore.profile_service.dto.request.MemberBulkDeletionRequest;
 import com.unicore.profile_service.dto.request.StudentBulkCreationRequest;
 import com.unicore.profile_service.dto.request.StudentCreationRequest;
@@ -47,6 +48,11 @@ public class StudentController {
     @GetMapping("/{id}")
     public Mono<StudentResponse> getStudentById(@PathVariable String id) {
         return studentService.getStudentById(id);
+    }
+
+    @GetMapping("/class")
+    public Flux<StudentResponse> getStudentsByCodes(@RequestBody GetClassMemberRequest request) {
+        return studentService.getStudentsByCodes(request);
     }
 
     @DeleteMapping("/bulk")

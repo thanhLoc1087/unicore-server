@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
+import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.entity.Classroom;
 import com.unicore.classroom_service.entity.Subclass;
@@ -92,6 +93,19 @@ public class ClassroomService {
             .year(classRequest.getYear())
             .semester(classRequest.getSemester())
             .build();
+    }
+
+    public Mono<ClassroomResponse> updateClassSize(StudentListCreationRequest request) {
+        return classroomRepository.findById(request.getClassId())
+            .map(classroom -> {
+                for (Subclass subclass : classroom.getSubclasses()) {
+                    if (subclass.getCode().equals(request.getSubclassCode())) {
+                        subclass.setCurrentSize(request.getStudentCodes().size());
+                        break;
+                    }
+                }
+                return classroomMapper.toClassroomResponse(classroom);
+            });
     }
 
     public Mono<ClassroomResponse> getClassroomById(String id) {

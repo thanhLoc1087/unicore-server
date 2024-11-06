@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.unicore.profile_service.exception.AppException;
 import com.unicore.profile_service.exception.ErrorCode;
+import com.unicore.profile_service.dto.request.GetClassMemberRequest;
 import com.unicore.profile_service.dto.request.StudentBulkCreationRequest;
 import com.unicore.profile_service.dto.request.StudentCreationRequest;
 import com.unicore.profile_service.dto.response.StudentResponse;
@@ -68,6 +69,18 @@ public class StudentService {
     public Flux<StudentResponse> getStudents() {
         return studentRepository.findAll()
             .map(studentMapper::toStudentResponse);
+    }
+    
+    public Flux<StudentResponse> getStudentsByCodes(GetClassMemberRequest request) {
+        String leaderCode = request.getLeaderCode();
+    
+        return studentRepository.findAllByCode(request.getStudentCodes())
+            .map(studentMapper::toStudentResponse)
+            .sort((student1, student2) -> {
+                if (student1.getCode().equals(leaderCode)) return -1;
+                if (student2.getCode().equals(leaderCode)) return 1;
+                return 0;
+            });
     }
 
     public Flux<StudentResponse> getStudentsByOrganizationId(String organizationId) {

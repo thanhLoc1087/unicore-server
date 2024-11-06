@@ -39,6 +39,12 @@ public class ClassroomCreationRequest {
     @JsonProperty("end_date")
     private LocalDate endDate;
     
+    @JsonProperty("max_size")
+    private int maxSize;
+
+    @JsonProperty("current_size")
+    private int currentSize;
+    
     private int semester;
     private int year;
 
