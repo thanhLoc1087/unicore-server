@@ -10,6 +10,7 @@ import com.unicore.classroom_service.entity.Subclass;
 @Mapper(componentModel = "spring")
 public interface ClassroomMapper {
     public Classroom toClassroom(ClassroomCreationRequest request);
+    public Classroom toClassroom(ClassroomResponse response);
     public ClassroomResponse toClassroomResponse(Classroom classroom);
     public Subclass toSubclass(ClassroomCreationRequest request);
 }

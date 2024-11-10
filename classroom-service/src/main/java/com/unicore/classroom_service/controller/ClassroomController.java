@@ -1,16 +1,13 @@
 package com.unicore.classroom_service.controller;
 
-
 import java.util.List;
 
-// import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-// import com.unicore.classroom_service.dto.request.MemberBulkDeletionRequest;
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
@@ -23,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 
 @RestController
 @Slf4j
@@ -48,13 +46,13 @@ public class ClassroomController {
     }
 
     @PostMapping("/students")
-    public Flux<StudentListResponse> postMethodName(@RequestBody List<StudentListCreationRequest> requests) {
+    public Flux<StudentListResponse> addStudentLists(@RequestBody List<StudentListCreationRequest> requests) {
         return studentListService.createStudentListBulk(requests);
     }
-    
 
-    // @DeleteMapping("/bulk")
-    // public Mono<Void> deleteClassroomsBulk(MemberBulkDeletionRequest request) {
-    //     return classroomService.deleteByIds(request.getIds());
-    // }
+    @GetMapping("/students/{studentCode}")
+    public Mono<List<ClassroomResponse>> getStudentClasses(@PathVariable String studentCode) {
+        return studentListService.getStudentClasses(studentCode);
+    }
+    
 }

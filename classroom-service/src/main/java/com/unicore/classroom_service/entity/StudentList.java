@@ -1,10 +1,13 @@
 package com.unicore.classroom_service.entity;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,11 +24,20 @@ public class StudentList {
     private String id;
 
     @Indexed(unique = true)
-    private String classCode;
-
+    @JsonProperty("class_id")
+    private String classId;
+    
+    @JsonProperty("subclass_code")
+    private String subclassCode;
+    
     private int semester;
     private int year;
-
+    
     private String leaderCode;
+    
+    @JsonProperty("student_codes")
     private Set<String> studentCodes;
+    
+    @JsonProperty("foreign_students")
+    private List<StudentInGroup> foreignStudents;
 }

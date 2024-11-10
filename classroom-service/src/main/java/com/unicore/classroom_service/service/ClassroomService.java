@@ -11,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
+import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.entity.Classroom;
+import com.unicore.classroom_service.entity.Group;
 import com.unicore.classroom_service.entity.Subclass;
+import com.unicore.classroom_service.enums.ClassType;
 import com.unicore.classroom_service.exception.AppException;
 import com.unicore.classroom_service.exception.ErrorCode;
 import com.unicore.classroom_service.mapper.ClassroomMapper;
@@ -139,5 +142,46 @@ public class ClassroomService {
     private Mono<Boolean> checkDuplicate(String code, int semester, int year) {
         return classroomRepository.findByCodeAndSemesterAndYear(code, semester, year)
             .hasElement();
+    }
+
+    public Mono<ClassroomResponse> createSubclassFromGrouping(StudentGroupingCreationRequest request) {
+        if (!request.isCreateSubclass()) return Mono.empty();
+        return Mono.just(request)
+            .flatMap(groupRequest -> getClassroomById(groupRequest.getClassId()))
+            .map(classroom -> {
+                Subclass mainSubclass = classroom.getSubclasses().getFirst();
+                String classCode = classroom.getCode();
+                List<Group> groups = request.getGroups();
+                List<Subclass> subclasses = classroom.getSubclasses();
+                for (int i = 0; i < groups.size(); i++) {
+                    Group group = groups.get(i);
+
+                    String subclassCode = group.getName().isEmpty() ? 
+                        classCode + ".HD" + (i + 1) :
+                        classCode + "." + group.getName().replace(" ", "_");
+
+                    Subclass subclass = Subclass.builder()
+                        .code(subclassCode)
+                        .teacherCode(group.getTeacherCode())
+                        .startDate(mainSubclass.getStartDate())
+                        .endDate(mainSubclass.getEndDate())
+                        .maxSize(mainSubclass.getCurrentSize())
+                        .currentSize(group.getMembers().size())
+                        .type(ClassType.NHOM_HUONG_DAN)
+                        .note("Nhóm hướng dẫn " + subclassCode)
+                        .build();
+
+                    subclasses.add(subclass);
+                }
+                classroom.setSubclasses(subclasses);
+                return classroom;
+            })
+            .map(classroomMapper::toClassroom)
+            .flatMap(classroomRepository::save)
+            .map(classroomMapper::toClassroomResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+
+
+            //// Xét trường hợp sv ở lớp khác, lưu sv vào foreign_students
     }
 }
