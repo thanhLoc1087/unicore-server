@@ -1,8 +1,7 @@
 package com.unicore.classroom_service.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,10 +25,10 @@ public class StudentGrouping {
     private String subclassCode;
 
     @JsonProperty("start_register_date")
-    private LocalDate startRegisterDate;
+    private LocalDateTime startRegisterDate;
 
     @JsonProperty("end_register_date")
-    private LocalDate endRegisterDate;
+    private LocalDateTime endRegisterDate;
 
     @JsonProperty("has_leader")
     private boolean hasLeader;

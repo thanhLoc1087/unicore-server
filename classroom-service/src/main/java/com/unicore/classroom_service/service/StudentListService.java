@@ -1,5 +1,6 @@
 package com.unicore.classroom_service.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +21,13 @@ import com.unicore.classroom_service.repository.ClassroomRepository;
 import com.unicore.classroom_service.repository.StudentListRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StudentListService {
     private final StudentListRepository studentListRepository;
     private final StudentListMapper studentListMapper;
@@ -39,7 +42,7 @@ public class StudentListService {
 
     public Mono<StudentListResponse> createStudentList(StudentListCreationRequest request) {
         return checkDuplicate(request)
-            .flatMap(result -> result.equals(Boolean.TRUE) ?
+            .flatMap(result -> result.equals(Boolean.FALSE) ?
                 Mono.just(request)
                     .map(studentListMapper::toStudentList)
                     .flatMap(studentListRepository::save)
@@ -89,16 +92,17 @@ public class StudentListService {
             .collectList()
             .flatMap(studentLists -> {
                 Map<String, List<String>> classMap = new HashMap<>();
-                studentLists.forEach(studentList -> {
-                    classMap.putIfAbsent(studentList.getClassId(), List.of());
-                    classMap.get(studentList.getClassId()).add(studentList.getSubclassCode());
-                });
+                if (studentLists != null)
+                    studentLists.forEach(studentList -> {
+                        classMap.putIfAbsent(studentList.getClassId(), new ArrayList<>());
+                        classMap.get(studentList.getClassId()).add(studentList.getSubclassCode());
+                    });
                 return classroomRepository.findAllById(classMap.keySet())
                     .collectList()
                     .map(classrooms -> {
                         for (Classroom classroom : classrooms) {
                             List<Subclass> subclasses = classroom.getSubclasses().stream()
-                                .filter(subclass -> !classMap.get(classroom.getId()).contains(subclass.getCode()))
+                                .filter(subclass -> classMap.get(classroom.getId()).contains(subclass.getCode()))
                                 .toList();
                             classroom.setSubclasses(subclasses);
                         }
@@ -106,6 +110,9 @@ public class StudentListService {
                         .map(classroomMapper::toClassroomResponse)
                         .toList();
                     });
+            })
+            .doOnError(e -> {
+                log.error("BUGUGU", e);
             });
     }
 }

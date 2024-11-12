@@ -17,9 +17,6 @@ public class StudentListCreationRequest {
 
     @JsonProperty("subclass_code")
     private String subclassCode;
-    
-    private int semester;
-    private int year;
 
     @JsonProperty("leader_code")
     private String leaderCode;

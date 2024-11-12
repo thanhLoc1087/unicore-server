@@ -13,8 +13,10 @@ import lombok.Data;
 @Builder
 public class StudentListResponse {
     private String id;
-    @JsonProperty("class_code")
-    private String classCode;
+    @JsonProperty("class_id")
+    private String classId;
+    @JsonProperty("subclass_code")
+    private String subclassCode;
     @JsonProperty("leader_code")
     private String leaderCode;
     @JsonProperty("student_codes")

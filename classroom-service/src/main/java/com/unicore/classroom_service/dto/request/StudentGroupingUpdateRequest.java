@@ -1,6 +1,6 @@
 package com.unicore.classroom_service.dto.request;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +20,10 @@ public class StudentGroupingUpdateRequest {
     private String id;
 
     @JsonProperty("start_register_date")
-    private LocalDate startRegisterDate;
+    private LocalDateTime startRegisterDate;
 
     @JsonProperty("end_register_date")
-    private LocalDate endRegisterDate;
+    private LocalDateTime endRegisterDate;
 
     @JsonProperty("has_leader")
     private Optional<Boolean> hasLeader;

@@ -11,6 +11,6 @@ import reactor.core.publisher.Mono;
 
 public interface StudentRepository extends ReactiveCrudRepository<Student, String>{
         Flux<Student> findByOrganizationId(String organizationId);   
-        Flux<Student> findAllByCode(List<String> codes);   
+        Flux<Student> findAllByCodeIn(List<String> codes);   
         Mono<Student> findByCode(String code);
 }

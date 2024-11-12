@@ -1,8 +1,9 @@
 package com.unicore.classroom_service.dto.request;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.entity.Group;
 
@@ -19,10 +20,12 @@ public class StudentGroupingCreationRequest {
     private String subclassCode;
 
     @JsonProperty("start_register_date")
-    private LocalDate startRegisterDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime startRegisterDate;
 
     @JsonProperty("end_register_date")
-    private LocalDate endRegisterDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime endRegisterDate;
 
     @JsonProperty("has_leader")
     private boolean hasLeader;

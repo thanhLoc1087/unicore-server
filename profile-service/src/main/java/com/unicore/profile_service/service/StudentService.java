@@ -74,7 +74,7 @@ public class StudentService {
     public Flux<StudentResponse> getStudentsByCodes(GetClassMemberRequest request) {
         String leaderCode = request.getLeaderCode();
     
-        return studentRepository.findAllByCode(request.getStudentCodes())
+        return studentRepository.findAllByCodeIn(request.getStudentCodes())
             .map(studentMapper::toStudentResponse)
             .sort((student1, student2) -> {
                 if (student1.getCode().equals(leaderCode)) return -1;

@@ -5,11 +5,15 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.enums.ClassType;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Subclass {
     private String code;
 

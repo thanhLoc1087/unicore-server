@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class StudentInGroup {
-    private String id;
     @JsonProperty("class_id")
     private String classId;
     @JsonProperty("subclass_code")
     private String subclassCode;
-    private String code;
+    @JsonProperty("student_code")
+    private String studentCode;
     private String name;
     private String phone;
     @JsonProperty("group_name")

@@ -20,10 +20,12 @@ import com.unicore.classroom_service.mapper.StudentGroupingMapper;
 import com.unicore.classroom_service.repository.StudentGroupingRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StudentGroupingService {
     private final StudentGroupingRepository studentGroupingRepository;
     private StudentGroupingMapper studentGroupingMapper = new StudentGroupingMapper();
@@ -31,11 +33,13 @@ public class StudentGroupingService {
     private final StudentListService studentListService;
 
     public Mono<StudentGroupingResponse> getGrouping(StudentGroupingGetRequest request) {
+        log.info(request.toString());
         return studentGroupingRepository.findByClassIdAndSubclassCode(
                 request.getClassId(), 
                 request.getSubclassCode()
             )
-            .map(studentGroupingMapper::toGroupingResponse);
+            .map(studentGroupingMapper::toGroupingResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     @Transactional
@@ -73,12 +77,12 @@ public class StudentGroupingService {
                 // Collect existing student codes from the grouping
                 Set<String> oldStudentCodes = grouping.getGroups().stream()
                     .flatMap(group -> group.getMembers().stream())
-                    .map(StudentInGroup::getId)
+                    .map(StudentInGroup::getStudentCode)
                     .collect(Collectors.toSet());
     
                 // Filter members that are not in oldStudentCodes (foreign students)
                 List<StudentInGroup> foreignStudents = request.getGroup().getMembers().stream()
-                    .filter(student -> !oldStudentCodes.contains(student.getId()))
+                    .filter(student -> !oldStudentCodes.contains(student.getStudentCode()))
                     .collect(Collectors.toList());
     
                 // If there are foreign students, add them to the external list
