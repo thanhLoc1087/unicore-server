@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.unicore.classroom_service.dto.request.AddForeignStudentsRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingAddGroupRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
-import com.unicore.classroom_service.dto.request.StudentGroupingGetRequest;
+import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingUpdateRequest;
 import com.unicore.classroom_service.dto.response.StudentGroupingResponse;
 import com.unicore.classroom_service.entity.StudentInGroup;
@@ -32,7 +32,7 @@ public class StudentGroupingService {
     private final ClassroomService classroomService;
     private final StudentListService studentListService;
 
-    public Mono<StudentGroupingResponse> getGrouping(StudentGroupingGetRequest request) {
+    public Mono<StudentGroupingResponse> getGrouping(GetByClassRequest request) {
         log.info(request.toString());
         return studentGroupingRepository.findByClassIdAndSubclassCode(
                 request.getClassId(), 

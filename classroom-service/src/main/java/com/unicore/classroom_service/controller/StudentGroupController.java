@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.classroom_service.dto.request.StudentGroupingAddGroupRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
-import com.unicore.classroom_service.dto.request.StudentGroupingGetRequest;
+import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingUpdateRequest;
 import com.unicore.classroom_service.dto.response.StudentGroupingResponse;
 import com.unicore.classroom_service.service.StudentGroupingService;
@@ -25,7 +25,7 @@ public class StudentGroupController {
     private final StudentGroupingService studentGroupingService;
 
     @GetMapping
-    public Mono<StudentGroupingResponse> getClassGroup(@RequestBody StudentGroupingGetRequest request) {
+    public Mono<StudentGroupingResponse> getClassGroup(@RequestBody GetByClassRequest request) {
         return studentGroupingService.getGrouping(request);
     }
     
