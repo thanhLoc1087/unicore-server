@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.HomeworkCreationRequest;
+import com.unicore.classevent_service.dto.request.HomeworkUpdateRequest;
 import com.unicore.classevent_service.dto.response.HomeworkResponse;
 import com.unicore.classevent_service.entity.Homework;
 import com.unicore.classevent_service.exception.DataNotFoundException;
@@ -75,5 +76,13 @@ public class HomeworkService {
                     endDateTime)
                 .map(homeworkMapper::toHomeworkResponse)
                 .switchIfEmpty(Mono.error(new DataNotFoundException()));
+    }
+    
+    public Mono<HomeworkResponse> updateHomework(String id, HomeworkUpdateRequest request) {
+        return homeworkRepository.findById(id)
+            .map(homework -> homeworkMapper.toHomework(homework, request))
+            .flatMap(homeworkRepository::save)
+            .map(homeworkMapper::toHomeworkResponse)
+            .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 }

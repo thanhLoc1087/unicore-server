@@ -55,8 +55,8 @@ public class HomeworkResponse {
     @JsonProperty("end_date")
     private LocalDateTime endDate;
     
-    @JsonProperty("late_turn_in")
-    private LocalDateTime lateTurnIn;
+    @JsonProperty("remind_grading_date")
+    private LocalDateTime remindGradingDate;
     @JsonProperty("close_submission_date")
     private LocalDateTime closeSubmissionDate;
     

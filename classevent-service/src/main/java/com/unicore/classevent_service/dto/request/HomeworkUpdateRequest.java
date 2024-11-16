@@ -16,10 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class HomeworkUpdateRequest {
-    @JsonProperty("modified_by")
-    private String modifiedBy;
-    @JsonProperty("homework_id")
-    private String homeworkId;
     private String name;
     private String description;
     @JsonProperty("allow_grade_review")

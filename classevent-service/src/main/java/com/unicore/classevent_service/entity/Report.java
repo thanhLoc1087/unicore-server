@@ -13,10 +13,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Homework {
+public class Report {
     @Id
     private String id;
     private Date createdDate;
@@ -28,6 +28,7 @@ public class Homework {
     private String subclassCode;
     private String name;
     private String description;
+    private String place;
     private boolean allowGradeReview;
     private int reviewTimes;
     // người chấm
@@ -47,4 +48,5 @@ public class Homework {
     private LocalDateTime closeSubmissionDate;
 
     private String attachmentUrl;
+    
 }

@@ -8,12 +8,14 @@ import com.unicore.classevent_service.entity.CourseworkWeight;
 import com.unicore.classevent_service.enums.SubmissionOption;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class HomeworkCreationRequest {
     @JsonProperty("class_id")
     private String classId;
@@ -43,8 +45,8 @@ public class HomeworkCreationRequest {
     @JsonProperty("end_date")
     private LocalDateTime endDate;
     
-    @JsonProperty("late_turn_in")
-    private LocalDateTime lateTurnIn;
+    @JsonProperty("remind_grading_date")
+    private LocalDateTime remindGradingDate;
     @JsonProperty("close_submission_date")
     private LocalDateTime closeSubmissionDate;
     

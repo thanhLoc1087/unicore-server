@@ -7,37 +7,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
-import com.unicore.classevent_service.dto.request.HomeworkCreationRequest;
-import com.unicore.classevent_service.dto.request.HomeworkUpdateRequest;
+import com.unicore.classevent_service.dto.request.ReportCreationRequest;
+import com.unicore.classevent_service.dto.request.ReportUpdateRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
-import com.unicore.classevent_service.dto.response.HomeworkResponse;
+import com.unicore.classevent_service.dto.response.ReportResponse;
 import com.unicore.classevent_service.enums.ApiMessage;
-import com.unicore.classevent_service.service.HomeworkService;
+import com.unicore.classevent_service.service.ReportService;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import org.springframework.web.bind.annotation.PutMapping;
-
-
 
 @RestController
-@RequestMapping("/homework")
+@RequestMapping("/reports")
 @RequiredArgsConstructor
-public class HomeworkController {
-    private final HomeworkService homeworkService;
-
+public class ReportController {
+    private final ReportService reportService;
     @GetMapping
-    public Flux<ApiResponse<HomeworkResponse>> findActiveHomework(@RequestBody GetByDateRequest request) {
-        return homeworkService.findActiveHomework(request)
-            .map(homework -> new ApiResponse<>(
-                homework, 
+    public Flux<ApiResponse<ReportResponse>> findActiveReports(@RequestBody GetByDateRequest request) {
+        return reportService.findActiveReports(request)
+            .map(report -> new ApiResponse<>(
+                report, 
                 ApiMessage.SUCCESS.getMessage(), 
                 HttpStatus.OK.value(),
                 LocalDateTime.now()
@@ -45,11 +42,11 @@ public class HomeworkController {
     }
     
     @PostMapping
-    public Mono<ApiResponse<List<HomeworkResponse>>> createHomework(@RequestBody HomeworkCreationRequest request) {
-        return homeworkService.createHomework(request)
+    public Mono<ApiResponse<List<ReportResponse>>> createReport(@RequestBody ReportCreationRequest request) {
+        return reportService.createReport(request)
             .collectList()
-            .map(homework -> new ApiResponse<>(
-                homework, 
+            .map(report -> new ApiResponse<>(
+                report, 
                 ApiMessage.SUCCESS.getMessage(), 
                 HttpStatus.OK.value(),
                 LocalDateTime.now()
@@ -57,10 +54,10 @@ public class HomeworkController {
     }
     
     @GetMapping("/{id}")
-    public Mono<ApiResponse<HomeworkResponse>> getHomeworkById(@PathVariable String id) {
-        return homeworkService.getHomework(id)
-            .map(homework -> new ApiResponse<>(
-                homework, 
+    public Mono<ApiResponse<ReportResponse>> getReportById(@PathVariable String id) {
+        return reportService.getReport(id)
+            .map(report -> new ApiResponse<>(
+                report, 
                 ApiMessage.SUCCESS.getMessage(), 
                 HttpStatus.OK.value(),
                 LocalDateTime.now()
@@ -68,11 +65,11 @@ public class HomeworkController {
     }
     
     @GetMapping("/class")
-    public Mono<ApiResponse<List<HomeworkResponse>>> getClassHomework(@RequestBody GetByClassRequest request) {
-        return homeworkService.getClassHomework(request)
+    public Mono<ApiResponse<List<ReportResponse>>> getClassReports(@RequestBody GetByClassRequest request) {
+        return reportService.getClassReports(request)
             .collectList()
-            .map(homework -> new ApiResponse<>(
-                homework, 
+            .map(report -> new ApiResponse<>(
+                report, 
                 ApiMessage.SUCCESS.getMessage(), 
                 HttpStatus.OK.value(),
                 LocalDateTime.now()
@@ -80,14 +77,13 @@ public class HomeworkController {
     }
     
     @PutMapping("/{id}")
-    public Mono<ApiResponse<HomeworkResponse>> updateHomework(@PathVariable String id, @RequestBody HomeworkUpdateRequest request) {
-        return homeworkService.updateHomework(id, request)
-            .map(homework -> new ApiResponse<>(
-                homework, 
+    public Mono<ApiResponse<ReportResponse>> updateReport(@PathVariable String id, @RequestBody ReportUpdateRequest request) {
+        return reportService.updateReport(id, request)
+            .map(report -> new ApiResponse<>(
+                report, 
                 ApiMessage.SUCCESS.getMessage(), 
                 HttpStatus.OK.value(),
                 LocalDateTime.now()
             ));
     }
-    
 }
