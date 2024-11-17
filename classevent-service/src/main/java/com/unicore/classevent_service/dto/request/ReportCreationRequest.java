@@ -25,9 +25,9 @@ public class ReportCreationRequest {
     private String description;
     private String place;
     @JsonProperty("allow_grade_review")
-    private boolean allowGradeReview;
+    private Boolean allowGradeReview;
     @JsonProperty("review_times")
-    private int reviewTimes;
+    private Integer reviewTimes;
     // người chấm
     @JsonProperty("grader_code")
     private String graderCode;
@@ -35,7 +35,7 @@ public class ReportCreationRequest {
     @JsonProperty("publish_date")
     private LocalDateTime publishDate;
     @JsonProperty("in_group")
-    private boolean inGroup;
+    private Boolean inGroup;
     @JsonProperty("submission_option")
     private SubmissionOption submissionOption;
     

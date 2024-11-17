@@ -17,14 +17,14 @@ public class ReportMapper {
 
         Report.ReportBuilder report = Report.builder();
 
-        report.allowGradeReview( request.isAllowGradeReview() );
+        report.allowGradeReview( request.getAllowGradeReview() );
         report.attachmentUrl( request.getAttachmentUrl() );
         report.classId( request.getClassId() );
         report.closeSubmissionDate( request.getCloseSubmissionDate() );
         report.description( request.getDescription() );
         report.endDate( request.getEndDate() );
         report.graderCode( request.getGraderCode() );
-        report.inGroup( request.isInGroup() );
+        report.inGroup( request.getInGroup() );
         report.name( request.getName() );
         report.place( request.getPlace() );
         report.publishDate( request.getPublishDate() );

@@ -49,4 +49,5 @@ public class Report {
 
     private String attachmentUrl;
     
+    private Query query;
 }

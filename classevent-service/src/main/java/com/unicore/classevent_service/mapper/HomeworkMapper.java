@@ -17,14 +17,14 @@ public class HomeworkMapper {
 
         Homework.HomeworkBuilder homework = Homework.builder();
 
-        homework.allowGradeReview( request.isAllowGradeReview() );
+        homework.allowGradeReview( request.getAllowGradeReview() );
         homework.attachmentUrl( request.getAttachmentUrl() );
         homework.classId( request.getClassId() );
         homework.closeSubmissionDate( request.getCloseSubmissionDate() );
         homework.description( request.getDescription() );
         homework.endDate( request.getEndDate() );
         homework.graderCode( request.getGraderCode() );
-        homework.inGroup( request.isInGroup() );
+        homework.inGroup( request.getInGroup() );
         homework.name( request.getName() );
         homework.publishDate( request.getPublishDate() );
         homework.remindGradingDate( request.getRemindGradingDate() );
