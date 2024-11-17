@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.entity.CourseworkWeight;
+import com.unicore.classevent_service.entity.Query;
 import com.unicore.classevent_service.enums.SubmissionOption;
 
 import lombok.AllArgsConstructor;
@@ -48,4 +49,6 @@ public class ReportUpdateRequest {
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;
+
+    private Query query;
 }

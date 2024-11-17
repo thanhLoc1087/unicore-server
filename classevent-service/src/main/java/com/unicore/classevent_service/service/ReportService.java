@@ -4,16 +4,20 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
+import com.unicore.classevent_service.dto.request.QueryChooseOptionRequest;
 import com.unicore.classevent_service.dto.request.ReportCreationRequest;
 import com.unicore.classevent_service.dto.request.ReportUpdateRequest;
 import com.unicore.classevent_service.dto.response.ReportResponse;
+import com.unicore.classevent_service.entity.QueryOption;
 import com.unicore.classevent_service.entity.Report;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.mapper.ReportMapper;
@@ -44,6 +48,13 @@ public class ReportService {
 
     private Mono<ReportResponse> saveReport(Report report) {
         return Mono.just(report)
+            .map(entity -> {
+                List<QueryOption> options = entity.getQuery().getOptions();
+                for (int i = 0; i < options.size(); i++) {
+                    options.get(i).setId("" + (1 + i));
+                }
+                return entity;
+            })
             .flatMap(reportRepository::save)
             .map(reportMapper::toReportResponse);
     }
@@ -81,8 +92,33 @@ public class ReportService {
     public Mono<ReportResponse> updateReport(String id, ReportUpdateRequest request) {
         return reportRepository.findById(id)
             .map(report -> reportMapper.toReport(report, request))
-            .flatMap(reportRepository::save)
-            .map(reportMapper::toReportResponse)
+            .flatMap(this::saveReport)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
+    }
+    
+    public Mono<ReportResponse> chooseOption(QueryChooseOptionRequest request) {
+        return reportRepository.findById(request.getReportId())
+            .flatMap(report -> {
+                QueryOption matchedOption = report.getQuery().getOptions().stream()
+                    .filter(option -> option.getId().equals(request.getOptionId()))
+                    .findFirst()
+                    .orElse(null);
+
+                if (matchedOption != null) {
+                    if (matchedOption.getSelectors() == null) {
+                        matchedOption.setSelectors(new ArrayList<>());
+                    }
+                    if (Boolean.TRUE.equals(request.getAdding())) {
+                        matchedOption.getSelectors().add(request.getSelector());
+                    } else {
+                        matchedOption.getSelectors().stream()
+                            .filter(selector -> !selector.equals(request.getSelector()));
+                    }
+                    return reportRepository.save(report);
+                } else {
+                    return Mono.error(new DataNotFoundException());
+                }
+            })
+            .map(reportMapper::toReportResponse);
     }
 }

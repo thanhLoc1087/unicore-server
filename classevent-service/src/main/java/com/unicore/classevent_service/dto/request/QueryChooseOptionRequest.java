@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QueryChooseOptionRequest {
-    @JsonProperty("query_id")
-    private String queryId;
+    @JsonProperty("report_id")
+    private String reportId;
     @JsonProperty("option_id")
     private String optionId;
     private String selector;
