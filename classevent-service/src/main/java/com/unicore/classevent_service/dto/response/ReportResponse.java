@@ -18,10 +18,21 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ReportResponse {
     private String id;
+    
+    @JsonProperty("created_date")
+    private LocalDateTime createdDate;
+    @JsonProperty("modified_date")
+    private LocalDateTime modifiedDate;
+    @JsonProperty("created_by")
+    private String createdBy;
+    @JsonProperty("modified_by")
+    private String modifiedBy;
+
     @JsonProperty("class_id")
     private String classId;
     @JsonProperty("subclass_codes")
     private List<String> subclassCodes;
+
     private String name;
     private String description;
     private String place;

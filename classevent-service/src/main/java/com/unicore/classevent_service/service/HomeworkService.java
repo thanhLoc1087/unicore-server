@@ -80,7 +80,14 @@ public class HomeworkService {
     
     public Mono<HomeworkResponse> updateHomework(String id, HomeworkUpdateRequest request) {
         return homeworkRepository.findById(id)
-            .map(homework -> homeworkMapper.toHomework(homework, request))
+            .map(homework -> {
+                Homework entity = homeworkMapper.toHomework(homework, request);
+                
+                entity.setCreatedBy("Loc Update");
+                entity.setCreatedDate(Date.from(Instant.now()));
+
+                return entity;
+            })
             .flatMap(homeworkRepository::save)
             .map(homeworkMapper::toHomeworkResponse)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));

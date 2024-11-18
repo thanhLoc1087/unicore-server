@@ -22,7 +22,6 @@ import com.unicore.classevent_service.enums.ApiMessage;
 import com.unicore.classevent_service.service.ReportService;
 
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -30,9 +29,11 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ReportController {
     private final ReportService reportService;
+    
     @GetMapping
-    public Flux<ApiResponse<ReportResponse>> findActiveReports(@RequestBody GetByDateRequest request) {
+    public Mono<ApiResponse<List<ReportResponse>>> findActiveReports(@RequestBody GetByDateRequest request) {
         return reportService.findActiveReports(request)
+            .collectList()
             .map(report -> new ApiResponse<>(
                 report, 
                 ApiMessage.SUCCESS.getMessage(), 

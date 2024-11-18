@@ -36,9 +36,9 @@ public class ReportService {
     
     public Flux<ReportResponse> createReport(ReportCreationRequest request) {
         return Flux.fromIterable(request.getSubclassCodes())
-            .map(subclassCodes -> {
+            .map(subclassCode -> {
                 Report report = reportMapper.toReport(request);
-                report.setSubclassCode(subclassCodes);
+                report.setSubclassCode(subclassCode);
                 report.setCreatedBy("Loc");
                 report.setCreatedDate(Date.from(Instant.now()));
                 return report;
@@ -49,6 +49,9 @@ public class ReportService {
     private Mono<ReportResponse> saveReport(Report report) {
         return Mono.just(report)
             .map(entity -> {
+                entity.setCreatedBy("Loc Update");
+                entity.setCreatedDate(Date.from(Instant.now()));
+                
                 List<QueryOption> options = entity.getQuery().getOptions();
                 for (int i = 0; i < options.size(); i++) {
                     options.get(i).setId("" + (1 + i));
