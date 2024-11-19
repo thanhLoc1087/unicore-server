@@ -16,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import org.springframework.web.bind.annotation.PostMapping;
 
-
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/grouping")

@@ -21,7 +21,6 @@ import com.unicore.classevent_service.enums.ApiMessage;
 import com.unicore.classevent_service.service.HomeworkService;
 
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -34,8 +33,9 @@ public class HomeworkController {
     private final HomeworkService homeworkService;
 
     @GetMapping
-    public Flux<ApiResponse<HomeworkResponse>> findActiveHomework(@RequestBody GetByDateRequest request) {
+    public Mono<ApiResponse<List<HomeworkResponse>>> findActiveHomework(@RequestBody GetByDateRequest request) {
         return homeworkService.findActiveHomework(request)
+            .collectList()
             .map(homework -> new ApiResponse<>(
                 homework, 
                 ApiMessage.SUCCESS.getMessage(), 

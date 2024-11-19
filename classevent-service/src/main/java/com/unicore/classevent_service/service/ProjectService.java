@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.unicore.classevent_service.dto.request.EventGroupingAddGroupRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.ProjectAddTopicRequest;
@@ -20,6 +21,7 @@ import com.unicore.classevent_service.dto.request.TopicSuggestionRequest;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.Topic;
+import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.exception.InvalidRequestException;
 import com.unicore.classevent_service.mapper.ProjectMapper;
@@ -35,6 +37,8 @@ import reactor.core.publisher.Mono;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
+
+    private final EventGroupingService eventGroupingService;
 
     public Flux<ProjectResponse> createProject(ProjectCreationRequest request) {
         return Flux.fromIterable(request.getSubclassCodes())
@@ -149,6 +153,19 @@ public class ProjectService {
                 } else {
                     return Mono.error(new DataNotFoundException());
                 }
+            })
+            .flatMap(response -> {
+                // Xét trường hợp đăng ký nhóm mới
+                if (request.getGroup() != null) {
+                    eventGroupingService.addGroupToEventGrouping(
+                        EventGroupingAddGroupRequest.builder()
+                            .eventId(projectId)
+                            .eventType(EventType.PROJECT)
+                            .group(request.getGroup())
+                            .build()
+                    ).subscribe();
+                }
+                return Mono.just(response);
             })
             .map(projectMapper::toProjectResponse)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
