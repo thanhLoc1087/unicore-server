@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
 import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
 import com.unicore.classevent_service.dto.request.TopicSuggestionRequest;
+import com.unicore.classevent_service.dto.response.BaseEventResponse;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.Topic;
@@ -103,7 +104,7 @@ public class ProjectMapper {
         projectResponse.subclassCode( project.getSubclassCode() );
         List<Topic> list = project.getTopics();
         if ( list != null ) {
-            projectResponse.topics( new ArrayList<>( list ) );
+            projectResponse.topics( new ArrayList<Topic>( list ) );
         }
 
         return projectResponse.build();

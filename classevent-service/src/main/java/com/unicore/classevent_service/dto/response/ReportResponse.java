@@ -1,53 +1,29 @@
 package com.unicore.classevent_service.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.entity.CourseworkWeight;
+import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.SubmissionOption;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ReportResponse {
-    private String id;
-    
-    @JsonProperty("created_date")
-    private LocalDateTime createdDate;
-    @JsonProperty("modified_date")
-    private LocalDateTime modifiedDate;
-    @JsonProperty("created_by")
-    private String createdBy;
-    @JsonProperty("modified_by")
-    private String modifiedBy;
-
-    @JsonProperty("class_id")
-    private String classId;
-    @JsonProperty("subclass_codes")
-    private List<String> subclassCodes;
-
-    private String name;
-    private String description;
+@SuperBuilder
+public class ReportResponse extends BaseEventResponse{
     private String place;
-    @JsonProperty("allow_grade_review")
-    private boolean allowGradeReview;
-    @JsonProperty("review_times")
-    private int reviewTimes;
     // người chấm
     @JsonProperty("grader_code")
     private String graderCode;
     
     @JsonProperty("publish_date")
     private LocalDateTime publishDate;
-    @JsonProperty("in_group")
-    private boolean inGroup;
     @JsonProperty("submission_option")
     private SubmissionOption submissionOption;
     
@@ -65,4 +41,9 @@ public class ReportResponse {
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;
+
+    @Override
+    public EventType getEventType() {
+        return EventType.REPORT;
+    }
 }

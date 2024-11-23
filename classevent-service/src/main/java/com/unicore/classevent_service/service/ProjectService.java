@@ -70,7 +70,7 @@ public class ProjectService {
 
     /// Các hàm get bên dưới cần gọi qua bên submission xem hoàn thành chưa
 
-    public Mono<ProjectResponse> getReport(String id) {
+    public Mono<ProjectResponse> getProject(String id) {
         return projectRepository.findById(id)
             .map(projectMapper::toProjectResponse)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));

@@ -1,8 +1,5 @@
 package com.unicore.classevent_service.mapper;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-
 import com.unicore.classevent_service.dto.request.HomeworkCreationRequest;
 import com.unicore.classevent_service.dto.request.HomeworkUpdateRequest;
 import com.unicore.classevent_service.dto.response.HomeworkResponse;
@@ -97,7 +94,7 @@ public class HomeworkMapper {
         homeworkResponse.closeSubmissionDate( homework.getCloseSubmissionDate() );
         homeworkResponse.createdBy( homework.getCreatedBy() );
         if ( homework.getCreatedDate() != null ) {
-            homeworkResponse.createdDate( LocalDateTime.ofInstant( homework.getCreatedDate().toInstant(), ZoneId.of( "UTC" ) ) );
+            homeworkResponse.createdDate( homework.getCreatedDate() );
         }
         homeworkResponse.description( homework.getDescription() );
         homeworkResponse.endDate( homework.getEndDate() );
@@ -106,7 +103,7 @@ public class HomeworkMapper {
         homeworkResponse.inGroup( homework.isInGroup() );
         homeworkResponse.modifiedBy( homework.getModifiedBy() );
         if ( homework.getModifiedDate() != null ) {
-            homeworkResponse.modifiedDate( LocalDateTime.ofInstant( homework.getModifiedDate().toInstant(), ZoneId.of( "UTC" ) ) );
+            homeworkResponse.modifiedDate( homework.getModifiedDate() );
         }
         homeworkResponse.name( homework.getName() );
         homeworkResponse.publishDate( homework.getPublishDate() );

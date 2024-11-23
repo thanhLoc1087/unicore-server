@@ -62,7 +62,7 @@ public class ProjectController {
     
     @GetMapping("/{id}")
     public Mono<ApiResponse<ProjectResponse>> getProjectById(@PathVariable String id) {
-        return projectService.getReport(id)
+        return projectService.getProject(id)
             .map(report -> new ApiResponse<>(
                 report, 
                 ApiMessage.SUCCESS.getMessage(), 
