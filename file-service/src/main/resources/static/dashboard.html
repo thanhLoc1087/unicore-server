@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="webjars/jquery/3.7.1/jquery.min.js"></script>
+    <script src="webjars/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.3/css/bootstrap.min.css">
+    <title>Unicore Test Google API Dashboard</title>
+</head>
+<body>
+    <div class="text-center">YOU'RE SIGNED IN!</div>
+
+    <div id="pages">
+        <div class="btn-group" role="group">
+            <button data-bs-toggle="collapse" data-bs-target="#uploadFile" class="btn btn-secondary">
+                Upload File
+            </button>
+            <button data-bs-toggle="collapse" data-bs-target="#fileList" class="btn btn-secondary">
+                File list
+            </button>
+            <button data-bs-toggle="collapse" data-bs-target="#folder" class="btn btn-secondary">
+                Create Folder
+            </button>
+        </div>
+
+        <!-- File list -->
+        <div class="collapse" id="uploadFile">
+            <div class="card card-body" id="simpleUpload">
+                Click following button to upload server side file.
+                <button class="btn btn-secondary">Click to upload File</button>
+            </div>
+        </div>
+
+        <!-- File list -->
+        <div class="collapse" id="fileList">
+            <div class="card card-body">
+                To list files press refresh button
+                <button class="btn btn-primary" id="refreshFileButton">Refresh</button>
+                <ul class="list-group" id="fileListContainer">
+
+                </ul>
+            </div>
+        </div>
+
+        <!-- Create folder -->
+        <div class="collapse" id="folder">
+            <div class="card card-body">
+                Click to create a folder
+                <button class="btn btn-secondary" id="createFolder">Create Folder</button>
+            </div>
+
+            <div class="card card-body">
+                Click to upload file to folder
+                <button class="btn btn-secondary" id="uploadFileInFolder">Create Folder</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#simpleUpload').click(function () {
+                $.ajax({
+                    url: '/create',
+                    type: 'GET',
+                    success: function (response) {
+                        alert('File uploaded successfully: ' + response);
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + xhr.responseText);
+                    }
+                });
+            });
+
+            $("#refreshFileButton").click(function() {
+                $.ajax({
+                    url: '/listfiles',
+                    type: 'GET'
+                }).done(function(data) {
+                    console.dir(data);
+                    var fileHTML = "";
+                    for (file of data) {
+                        fileHTML += 
+                            '<li class="list-group-item"><img src="' + file.thumbnailLink + '">' 
+                            + file.name 
+                            + ' (FiledID: ' + file.id + ')'
+                            + '<button onclick="makePublic(\'' + file.id + '\')">Make public</button></li>';
+                            + '<button onclick="deleteFile(\'' + file.id + '\')">Delete</button></li>';
+                    }
+
+                    console.log(fileHTML);
+                    $("#fileListContainer").html(fileHTML);
+                }).fail(function (xhr, status, error) {
+                    console.error("Error fetching files:", error);
+                    alert("Failed to fetch files. Please try again.");
+                });
+            });
+
+            $("#createFolder").click(function() {
+                var folderName = prompt("Please enter folder name.")
+                $.ajax({
+                    url: '/createfolder/' + folderName,
+                    type: 'GET'
+                }).done(function(data) {
+                    console.dir(data);
+                }).fail(function (xhr, status, error) {
+                    console.error("Error creating folder:", error);
+                    alert("Failed to create folder. Please try again.");
+                });
+            });
+
+            $("#uploadFileInFolder").click(function() {
+                $.ajax({
+                    url: '/uploadinfolder',
+                    type: 'GET'
+                }).done(function(data) {
+                    console.dir(data);
+                }).fail(function (xhr, status, error) {
+                    console.error("Error creating folder:", error);
+                    alert("Failed to create folder. Please try again.");
+                });
+            });
+        });
+
+        function deleteFile(fileId) {
+            $.ajax({
+                url: '/deletefile/' + id,
+                method: 'DELETE'
+            }).done(function() {
+                alert('File has been deleted. Please refresh the list.')
+            })
+        }
+
+        function deleteFile(fileId) {
+            $.ajax({
+                url: '/makepublic/' + id,
+                method: 'POST'
+            }).done(function() {
+                alert('File can now be viewed by anyone on the Internet.')
+            })
+        }
+    </script>
+</body>
+</html>
