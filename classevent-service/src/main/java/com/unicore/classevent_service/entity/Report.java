@@ -41,7 +41,7 @@ public class Report {
     private boolean inGroup;
     private SubmissionOption submissionOption;
 
-    private CourseworkWeight weight;
+    private Float weight;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;

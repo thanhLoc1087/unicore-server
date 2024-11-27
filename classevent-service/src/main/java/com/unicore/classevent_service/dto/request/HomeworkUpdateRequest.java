@@ -3,7 +3,6 @@ package com.unicore.classevent_service.dto.request;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classevent_service.entity.CourseworkWeight;
 import com.unicore.classevent_service.enums.SubmissionOption;
 
 import lombok.AllArgsConstructor;
@@ -33,7 +32,7 @@ public class HomeworkUpdateRequest {
     @JsonProperty("submission_option")
     private SubmissionOption submissionOption;
     
-    private CourseworkWeight weight;
+    private Float weight;
     
     @JsonProperty("start_date")
     private LocalDateTime startDate;

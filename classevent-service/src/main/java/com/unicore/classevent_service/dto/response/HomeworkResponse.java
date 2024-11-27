@@ -3,7 +3,6 @@ package com.unicore.classevent_service.dto.response;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classevent_service.entity.CourseworkWeight;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.SubmissionOption;
 
@@ -28,7 +27,7 @@ public class HomeworkResponse extends BaseEventResponse{
     @JsonProperty("submission_option")
     private SubmissionOption submissionOption;
     
-    private CourseworkWeight weight;
+    private Float weight;
     
     @JsonProperty("remind_grading_date")
     private LocalDateTime remindGradingDate;

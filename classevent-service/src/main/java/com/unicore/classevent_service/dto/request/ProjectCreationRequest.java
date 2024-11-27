@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classevent_service.entity.CourseworkWeight;
 import com.unicore.classevent_service.entity.Topic;
 
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ public class ProjectCreationRequest {
 
     private String name;
     private String description;
-    private CourseworkWeight weight;
+    private Float weight;
 
     @JsonProperty("allow_grade_review")
     private boolean allowGradeReview;

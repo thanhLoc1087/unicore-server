@@ -32,7 +32,8 @@ public class Project {
     private String description;
     private LocalDateTime startDate;
 
-    private CourseworkWeight weight;
+    private Float weight;
+    private WeightType weightType;
     
     private boolean allowGradeReview;
     private int reviewTimes;

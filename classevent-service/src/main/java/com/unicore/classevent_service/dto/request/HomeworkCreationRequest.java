@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classevent_service.entity.CourseworkWeight;
 import com.unicore.classevent_service.enums.SubmissionOption;
 
 import lombok.AllArgsConstructor;
@@ -38,7 +37,7 @@ public class HomeworkCreationRequest {
     @JsonProperty("submission_option")
     private SubmissionOption submissionOption;
     
-    private CourseworkWeight weight;
+    private Float weight;
     
     @JsonProperty("start_date")
     private LocalDateTime startDate;

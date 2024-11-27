@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classevent_service.entity.CourseworkWeight;
 import com.unicore.classevent_service.entity.Topic;
 import com.unicore.classevent_service.enums.EventType;
 
@@ -18,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 public class ProjectResponse extends BaseEventResponse {
-    private CourseworkWeight weight;
+    private Float weight;
     
     @JsonProperty("start_date")
     private LocalDateTime startDate;
