@@ -1,6 +1,7 @@
 package com.unicore.classroom_service.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,6 +20,11 @@ public enum ClassType {
 
     private String code;
     private boolean mainClass;
+
+    @JsonValue
+    public String getCode() {
+        return code;
+    }
     
     @JsonCreator
     public static ClassType fromCode(String code) {

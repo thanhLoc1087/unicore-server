@@ -15,7 +15,6 @@ import com.unicore.classroom_service.dto.response.StudentListResponse;
 import com.unicore.classroom_service.service.ClassroomService;
 import com.unicore.classroom_service.service.StudentListService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -30,7 +29,7 @@ public class ClassroomController {
     private final StudentListService studentListService;
     
     @PostMapping("/bulk")
-    public Flux<ClassroomResponse> createClassrooms(@RequestBody @Valid ClassroomBulkCreationRequest request) {
+    public Flux<ClassroomResponse> createClassrooms(@RequestBody ClassroomBulkCreationRequest request) {
         log.info(request.toString());
         return classroomService.createClassrooms(request);
     }

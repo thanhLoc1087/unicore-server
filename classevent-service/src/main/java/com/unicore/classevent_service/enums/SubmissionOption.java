@@ -14,7 +14,6 @@ public enum SubmissionOption {
                 return DRIVE;
             case "NONE":
                 return NONE;
-        
             default:
                 return NONE;
         }

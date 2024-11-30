@@ -38,3 +38,15 @@ unicore:
     openapi:
         dev-url: "http://localhost:8083/classroom"
         prod-url: "http://localhost:8083/classroom"
+
+openapi:
+  service:
+    title: classroom-service doc
+    version: 1.0.0
+    url: http://localhost:8888 #api gateway url
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

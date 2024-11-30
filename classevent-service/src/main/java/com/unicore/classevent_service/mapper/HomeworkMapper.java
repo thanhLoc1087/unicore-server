@@ -1,10 +1,13 @@
 package com.unicore.classevent_service.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.unicore.classevent_service.dto.request.HomeworkCreationRequest;
 import com.unicore.classevent_service.dto.request.HomeworkUpdateRequest;
 import com.unicore.classevent_service.dto.response.HomeworkResponse;
 import com.unicore.classevent_service.entity.Homework;
 
+@Component
 public class HomeworkMapper {
 
     public Homework toHomework(HomeworkCreationRequest request) {
