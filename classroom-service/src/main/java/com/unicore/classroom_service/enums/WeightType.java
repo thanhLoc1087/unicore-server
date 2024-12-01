@@ -1,15 +1,13 @@
-package com.unicore.classevent_service.enums;
+package com.unicore.classroom_service.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum WeightType {
-    COURSEWORK, PRACTICAL, MIDTERM, FINAL_TERM;
+    PRACTICAL, MIDTERM, FINAL_TERM;
 
     @JsonCreator
     public static WeightType fromCode(String code) {
         switch (code) {
-            case "COURSEWORK":
-                return COURSEWORK;
             case "PRACTICAL":
                 return PRACTICAL;
             case "MIDTERM":
@@ -20,4 +18,5 @@ public enum WeightType {
                 return MIDTERM;
         }
     }
+    
 }

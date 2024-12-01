@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 public class ProjectCreationRequest {
     @JsonProperty("class_id")
     private String classId;
-    @JsonProperty("subclass_codes")
-    private List<String> subclassCodes;
+    @JsonProperty("subclass_code")
+    private String subclassCode;
 
     private String name;
     private String description;

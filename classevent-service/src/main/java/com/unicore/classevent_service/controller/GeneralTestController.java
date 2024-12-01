@@ -14,6 +14,7 @@ import com.unicore.classevent_service.dto.request.GeneralTestBulkCreationRequest
 import com.unicore.classevent_service.dto.request.GeneralTestUpdateRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
+import com.unicore.classevent_service.dto.response.BaseEventResponse;
 import com.unicore.classevent_service.dto.response.GeneralTestResponse;
 import com.unicore.classevent_service.enums.ApiMessage;
 import com.unicore.classevent_service.service.GeneralTestService;
@@ -51,8 +52,8 @@ public class GeneralTestController {
             ));
     }
     
-    @PostMapping
-    public Mono<ApiResponse<List<GeneralTestResponse>>> createBulk(@RequestBody GeneralTestBulkCreationRequest request) {
+    @PostMapping("/internal")
+    public Mono<ApiResponse<List<BaseEventResponse>>> createBulk(@RequestBody GeneralTestBulkCreationRequest request) {
         return service.createBulk(request)
             .collectList()
             .map(report -> new ApiResponse<>(

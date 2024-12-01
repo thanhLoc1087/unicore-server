@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.entity.Subclass;
+import com.unicore.classroom_service.entity.SubjectMetadata;
 
 import lombok.Data;
 
@@ -29,4 +30,7 @@ public class ClassroomResponse {
     private int year;
 
     private List<Subclass> subclasses;
+
+    @JsonProperty("subject_metadata")
+    private SubjectMetadata subjectMetadata;
 }

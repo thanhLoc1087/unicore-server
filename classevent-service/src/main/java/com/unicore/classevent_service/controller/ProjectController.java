@@ -72,9 +72,8 @@ public class ProjectController {
     }
     
     @PostMapping
-    public Mono<ApiResponse<List<ProjectResponse>>> createProject(@RequestBody ProjectCreationRequest request) {
+    public Mono<ApiResponse<ProjectResponse>> createProject(@RequestBody ProjectCreationRequest request) {
         return projectService.createProject(request)
-            .collectList()
             .map(project -> new ApiResponse<>(
                 project, 
                 ApiMessage.SUCCESS.getMessage(), 

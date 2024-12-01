@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
+import com.unicore.classroom_service.dto.request.GeneralTestBulkCreationRequest;
+import com.unicore.classroom_service.dto.request.GeneralTestCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
@@ -18,10 +20,13 @@ import com.unicore.classroom_service.entity.Classroom;
 import com.unicore.classroom_service.entity.Group;
 import com.unicore.classroom_service.entity.Subclass;
 import com.unicore.classroom_service.enums.ClassType;
+import com.unicore.classroom_service.enums.WeightType;
 import com.unicore.classroom_service.exception.AppException;
 import com.unicore.classroom_service.exception.ErrorCode;
 import com.unicore.classroom_service.mapper.ClassroomMapper;
 import com.unicore.classroom_service.repository.ClassroomRepository;
+import com.unicore.classroom_service.repository.httpclient.ClassEventClient;
+import com.unicore.classroom_service.repository.httpclient.OrganizationClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +39,15 @@ import reactor.core.publisher.Mono;
 public class ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final ClassroomMapper classroomMapper;
+    private final ClassEventClient classEventClient;
+    private final OrganizationClient organizationClient;
 
     public Mono<ClassroomResponse> createClassroom(Classroom classroom) {
-        return Mono.just(classroom)
+        return organizationClient.getSubject(classroom.getCode())
+            .map(subject -> {
+                classroom.setSubjectMetadata(subject.getMetadata());
+                return classroom;
+            })
             .flatMap(newClass -> checkDuplicate(newClass.getCode(), newClass.getSemester(), newClass.getYear()))
             .flatMap(result -> Boolean.TRUE.equals(result) ? 
                 Mono.error(new AppException(ErrorCode.DUPLICATE)) :
@@ -83,7 +94,41 @@ public class ClassroomService {
             }
         }
         return Flux.fromIterable(classes)
-            .flatMap(this::createClassroom);
+            .flatMap(this::createClassroom)
+            .collectList() // Collect all ClassroomResponse objects
+            .flatMap(classroomResponses -> {
+                List<GeneralTestCreationRequest> requests = new ArrayList<>();
+                for (ClassroomResponse response : classroomResponses) {
+                    for (Subclass subclass : response.getSubclasses()) {
+                        if (subclass.getType().isMainClass()) {
+                            if (response.getSubjectMetadata().getMidtermWeight() > 0) {
+                                requests.add(new GeneralTestCreationRequest(
+                                    response.getId(), 
+                                    subclass.getCode(), 
+                                    WeightType.MIDTERM, 
+                                    response.getSubjectMetadata().getMidtermFormat()
+                                ));
+                            }
+                            requests.add(new GeneralTestCreationRequest(
+                                response.getId(), 
+                                subclass.getCode(), 
+                                WeightType.FINAL_TERM, 
+                                response.getSubjectMetadata().getFinalFormat()
+                            ));
+                        } else {
+                            requests.add(new GeneralTestCreationRequest(
+                                response.getId(), 
+                                subclass.getCode(), 
+                                WeightType.PRACTICAL, 
+                                response.getSubjectMetadata().getPracticalFormat()
+                            ));
+                        }
+                    }
+                }
+                classEventClient.createBulk(new GeneralTestBulkCreationRequest(requests)).subscribe();
+                return Mono.just(classroomResponses); // Return the list of ClassroomResponse
+            })
+            .flatMapMany(Flux::fromIterable);
     }
     
     private Classroom buildClassroom(String code, Set<Subclass> subclasses, ClassroomCreationRequest classRequest, String organizationId) {

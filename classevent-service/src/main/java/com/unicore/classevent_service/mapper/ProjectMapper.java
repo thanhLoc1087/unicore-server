@@ -28,6 +28,7 @@ public class ProjectMapper {
         project.startDate( request.getStartDate() );
         project.allowTopicSuggestion( request.isAllowTopicSuggestion() );
         project.classId( request.getClassId() );
+        project.subclassCode( request.getSubclassCode() );
         project.description( request.getDescription() );
         project.name( request.getName() );
         project.reviewTimes( request.getReviewTimes() );
@@ -93,6 +94,7 @@ public class ProjectMapper {
         projectResponse.allowGradeReview( project.isAllowGradeReview() );
         projectResponse.allowTopicSuggestion( project.isAllowTopicSuggestion() );
         projectResponse.classId( project.getClassId() );
+        projectResponse.subclassCode( project.getSubclassCode() );
         projectResponse.createdBy( project.getCreatedBy() );
         projectResponse.createdDate( project.getCreatedDate() );
         projectResponse.description( project.getDescription() );

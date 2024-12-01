@@ -2,6 +2,7 @@ package com.unicore.classevent_service.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.WeightType;
 
@@ -18,6 +19,8 @@ import lombok.experimental.SuperBuilder;
 public class GeneralTestResponse extends BaseEventResponse {
     private String place;
     private LocalDateTime time;
+
+    @JsonProperty("weight_type")
     private WeightType weightType;
 
     @Override

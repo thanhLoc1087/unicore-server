@@ -33,4 +33,6 @@ public class Classroom {
     
     private int semester;
     private int year;
+
+    private SubjectMetadata subjectMetadata;
 }

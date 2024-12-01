@@ -51,6 +51,11 @@ public class SubjectController {
     public ResponseEntity<Mono<SubjectResponse>> getSubject(@PathVariable String id) {
         return ResponseEntity.ok(subjectService.getSubjectById(id));
     }
+    
+    @GetMapping("/code/{code}")
+    public ResponseEntity<Mono<SubjectResponse>> getSubjectByCode(@PathVariable String code) {
+        return ResponseEntity.ok(subjectService.getSubjectByCode(code));
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Mono<Void>> deleteById(@PathVariable String id) {

@@ -22,6 +22,7 @@ import com.unicore.classevent_service.dto.response.ProjectResponse;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.Topic;
 import com.unicore.classevent_service.enums.EventType;
+import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.exception.InvalidRequestException;
 import com.unicore.classevent_service.mapper.ProjectMapper;
@@ -40,20 +41,20 @@ public class ProjectService {
 
     private final EventGroupingService eventGroupingService;
 
-    public Flux<ProjectResponse> createProject(ProjectCreationRequest request) {
-        return Flux.fromIterable(request.getSubclassCodes())
+    public Mono<ProjectResponse> createProject(ProjectCreationRequest request) {
+        return Mono.just(request)
             .map(subclassCode -> {
-                Project report = projectMapper.toProject(request);
-                report.setSubclassCode(subclassCode);
-                report.setCreatedBy("Loc");
-                report.setCreatedDate(Date.from(Instant.now()));
-                return report;
+                Project project = projectMapper.toProject(request);
+                project.setWeightType(WeightType.COURSEWORK);
+                project.setCreatedBy("Loc");
+                project.setCreatedDate(Date.from(Instant.now()));
+                return project;
             })
             .flatMap(this::saveProject);
     }
 
-    private Mono<ProjectResponse> saveProject(Project report) {
-        return Mono.just(report)
+    public Mono<ProjectResponse> saveProject(Project project) {
+        return Mono.just(project)
             .map(entity -> {
                 entity.setCreatedBy("Loc Update");
                 entity.setCreatedDate(Date.from(Instant.now()));

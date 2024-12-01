@@ -1,15 +1,18 @@
 package com.unicore.classevent_service.service;
 
-import java.util.Date;
 import java.time.Instant;
+import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
 import com.unicore.classevent_service.dto.request.GeneralTestBulkCreationRequest;
 import com.unicore.classevent_service.dto.request.GeneralTestUpdateRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
+import com.unicore.classevent_service.dto.response.BaseEventResponse;
 import com.unicore.classevent_service.dto.response.GeneralTestResponse;
 import com.unicore.classevent_service.entity.GeneralTest;
+import com.unicore.classevent_service.entity.Project;
+import com.unicore.classevent_service.enums.ExamFormat;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.mapper.GeneralTestMapper;
 import com.unicore.classevent_service.repository.GeneralTestRepository;
@@ -24,22 +27,46 @@ public class GeneralTestService {
     private final GeneralTestRepository repository;
     private final GeneralTestMapper mapper;
 
+    private final ProjectService projectService;
+
     /// Tạo bulk
-    public Flux<GeneralTestResponse> createBulk(GeneralTestBulkCreationRequest request) {
+    public Flux<BaseEventResponse> createBulk(GeneralTestBulkCreationRequest request) {
         return Flux.fromIterable(request.getRequests())
-            .map(item ->  GeneralTest.builder()
-                .classId(item.getClassId())
-                .subclassCode(item.getSubclassCode())
-                .weightType(item.getWeightType())
-                .createdBy("LOC")
-                .createdDate(Date.from(Instant.now()))
-                .allowGradeReview(true)
-                .inGroup(false)
-                .reviewTimes(3)
-                .build()
-            )
-            .flatMap(repository::save)
-            .map(mapper::toResponse);
+            .flatMap(item -> {
+                if (item.getFormat().isProject()) {
+                    Project project = Project.builder()    
+                        .classId(item.getClassId())
+                        .subclassCode(item.getSubclassCode())
+                        .name("Đồ án")
+                        .description("Đồ án")
+                        .weightType(item.getWeightType())
+                        .weight(100.0f)
+                        .allowGradeReview(true)
+                        .reviewTimes(3)
+                        .allowTopicSuggestion(ExamFormat.DO_AN_TOT_NGHIEP.equals(item.getFormat()))
+                        .build();
+                    return projectService.saveProject(project);
+                } else {
+                    GeneralTest test = GeneralTest.builder()
+                        .classId(item.getClassId())
+                        .subclassCode(item.getSubclassCode())
+                        .weightType(item.getWeightType())
+                        .createdBy("LOC")
+                        .createdDate(Date.from(Instant.now()))
+                        .allowGradeReview(true)
+                        .inGroup(false)
+                        .reviewTimes(3)
+                        .build();
+                    
+                    return repository.save(test);
+                }
+            })
+            .map(response -> {
+                if (response instanceof GeneralTest)
+                    return mapper.toResponse((GeneralTest) response);
+                else 
+                    return (BaseEventResponse) response;
+            });
     }
 
     /// Edit
