@@ -1,27 +1,26 @@
 package com.unicore.organization_service.controller;
 
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.organization_service.dto.request.SubjectBulkCreationRequest;
 import com.unicore.organization_service.dto.request.SubjectCreationRequest;
+import com.unicore.organization_service.dto.response.ApiResponse;
 import com.unicore.organization_service.dto.response.SubjectResponse;
 import com.unicore.organization_service.service.SubjectService;
 
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -31,34 +30,69 @@ public class SubjectController {
     private final SubjectService subjectService;
 
     @PostMapping
-    public ResponseEntity<Mono<SubjectResponse>> createSubject(@RequestBody SubjectCreationRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(subjectService.createSubject(request));
+    public Mono<ApiResponse<SubjectResponse>> createSubject(@RequestBody SubjectCreationRequest request) {
+        return subjectService.createSubject(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<Mono<List<SubjectResponse>>> createSubject(@RequestBody SubjectBulkCreationRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(subjectService.createSubjects(request));
+    public Mono<ApiResponse<List<SubjectResponse>>> createSubject(@RequestBody SubjectBulkCreationRequest request) {
+        return subjectService.createSubjects(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
     
     @GetMapping
-    public ResponseEntity<Flux<SubjectResponse>> getAllSubjects() {
-        return ResponseEntity.ok(subjectService.getSubjects());
+    public Mono<ApiResponse<List<SubjectResponse>>> getAllSubjects() {
+        return subjectService.getSubjects()
+            .collectList()
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Mono<SubjectResponse>> getSubject(@PathVariable String id) {
-        return ResponseEntity.ok(subjectService.getSubjectById(id));
+    public Mono<ApiResponse<SubjectResponse>> getSubject(@PathVariable String id) {
+        return subjectService.getSubjectById(id)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
     
     @GetMapping("/code/{code}")
-    public ResponseEntity<Mono<SubjectResponse>> getSubjectByCode(@PathVariable String code) {
-        return ResponseEntity.ok(subjectService.getSubjectByCode(code));
+    public Mono<ApiResponse<SubjectResponse>> getSubjectByCode(@PathVariable String code) {
+        return subjectService.getSubjectByCode(code)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Mono<Void>> deleteById(@PathVariable String id) {
-        return ResponseEntity.ok(subjectService.deleteById(id));
+    public Mono<ApiResponse<Void>> deleteById(@PathVariable String id) {
+        return subjectService.deleteById(id)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
 }

@@ -1,7 +1,10 @@
 package com.unicore.classroom_service.controller;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
+import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.dto.response.StudentListResponse;
 import com.unicore.classroom_service.service.ClassroomService;
@@ -17,7 +21,6 @@ import com.unicore.classroom_service.service.StudentListService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
@@ -29,29 +32,61 @@ public class ClassroomController {
     private final StudentListService studentListService;
     
     @PostMapping("/bulk")
-    public Flux<ClassroomResponse> createClassrooms(@RequestBody ClassroomBulkCreationRequest request) {
-        log.info(request.toString());
-        return classroomService.createClassrooms(request);
+    public Mono<ApiResponse<List<ClassroomResponse>>> createClassrooms(@RequestBody ClassroomBulkCreationRequest request) {
+        return classroomService.createClassrooms(request)
+            .collectList()
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
     
     @GetMapping
-    public Flux<ClassroomResponse> getClassrooms() {
-        return classroomService.getClassrooms();
+    public Mono<ApiResponse<List<ClassroomResponse>>> getClassrooms() {
+        return classroomService.getClassrooms()
+            .collectList()
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
 
     @GetMapping("/{id}")
-    public Mono<ClassroomResponse> getClassroomById(@PathVariable String id) {
-        return classroomService.getClassroomById(id);
+    public Mono<ApiResponse<ClassroomResponse>> getClassroomById(@PathVariable String id) {
+        return classroomService.getClassroomById(id)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
 
     @PostMapping("/students")
-    public Flux<StudentListResponse> addStudentLists(@RequestBody List<StudentListCreationRequest> requests) {
-        return studentListService.createStudentListBulk(requests);
+    public Mono<ApiResponse<List<StudentListResponse>>> addStudentLists(@RequestBody List<StudentListCreationRequest> requests) {
+        return studentListService.createStudentListBulk(requests)
+            .collectList()
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
 
     @GetMapping("/students/{studentCode}")
-    public Mono<List<ClassroomResponse>> getStudentClasses(@PathVariable String studentCode) {
-        return studentListService.getStudentClasses(studentCode);
+    public Mono<ApiResponse<List<ClassroomResponse>>> getStudentClasses(@PathVariable String studentCode) {
+        return studentListService.getStudentClasses(studentCode)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
     
 }

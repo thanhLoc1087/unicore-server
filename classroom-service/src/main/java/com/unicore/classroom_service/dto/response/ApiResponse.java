@@ -1,5 +1,7 @@
 package com.unicore.classroom_service.dto.response;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AccessLevel;
@@ -21,4 +23,5 @@ public class ApiResponse<T> {
 
     String message;
     T result;
+    Date time;
 }

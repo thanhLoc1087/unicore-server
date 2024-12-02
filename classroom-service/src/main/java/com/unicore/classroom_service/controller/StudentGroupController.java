@@ -1,5 +1,9 @@
 package com.unicore.classroom_service.controller;
 
+import java.time.Instant;
+import java.util.Date;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +13,7 @@ import com.unicore.classroom_service.dto.request.StudentGroupingAddGroupRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
 import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingUpdateRequest;
+import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.StudentGroupingResponse;
 import com.unicore.classroom_service.service.StudentGroupingService;
 
@@ -23,23 +28,47 @@ public class StudentGroupController {
     private final StudentGroupingService studentGroupingService;
 
     @GetMapping
-    public Mono<StudentGroupingResponse> getClassGroup(@RequestBody GetByClassRequest request) {
-        return studentGroupingService.getGrouping(request);
+    public Mono<ApiResponse<StudentGroupingResponse>> getClassGroup(@RequestBody GetByClassRequest request) {
+        return studentGroupingService.getGrouping(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
     
     @PostMapping()
-    public Mono<StudentGroupingResponse> createGrouping(@RequestBody StudentGroupingCreationRequest request) {
-        return studentGroupingService.createStudentGrouping(request);
+    public Mono<ApiResponse<StudentGroupingResponse>> createGrouping(@RequestBody StudentGroupingCreationRequest request) {
+        return studentGroupingService.createStudentGrouping(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
 
     @PostMapping("/add-group")
-    public Mono<StudentGroupingResponse> addGroup(@RequestBody StudentGroupingAddGroupRequest request) {        
-        return studentGroupingService.addGroupToStudentGrouping(request);
+    public Mono<ApiResponse<StudentGroupingResponse>> addGroup(@RequestBody StudentGroupingAddGroupRequest request) {        
+        return studentGroupingService.addGroupToStudentGrouping(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
     
     @PostMapping("/edit")
-    public Mono<StudentGroupingResponse> updateStudentGrouping(@RequestBody StudentGroupingUpdateRequest request) {
-        return studentGroupingService.updateStudentGrouping(request);
+    public Mono<ApiResponse<StudentGroupingResponse>> updateStudentGrouping(@RequestBody StudentGroupingUpdateRequest request) {
+        return studentGroupingService.updateStudentGrouping(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                Date.from(Instant.now()))
+            );
     }
     
 }
