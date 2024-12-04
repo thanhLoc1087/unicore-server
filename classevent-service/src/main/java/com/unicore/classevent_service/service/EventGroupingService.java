@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import com.unicore.classevent_service.dto.request.EventGroupingAddGroupRequest;
 import com.unicore.classevent_service.dto.request.EventGroupingCreationRequest;
 import com.unicore.classevent_service.dto.request.EventGroupingUpdateRequest;
+import com.unicore.classevent_service.dto.request.GetByClassRequest;
+import com.unicore.classevent_service.dto.request.GetGroupingRequest;
 import com.unicore.classevent_service.dto.response.EventGroupingResponse;
 import com.unicore.classevent_service.entity.EventGrouping;
 import com.unicore.classevent_service.entity.StudentInGroup;
@@ -15,6 +17,7 @@ import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.exception.InvalidRequestException;
 import com.unicore.classevent_service.mapper.EventGroupingMapper;
 import com.unicore.classevent_service.repository.EventGroupingRepository;
+import com.unicore.classevent_service.repository.httpclient.ClassroomClient;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -25,9 +28,21 @@ public class EventGroupingService {
 
     private final EventGroupingRepository repository;
     private final EventGroupingMapper mapper;
+
+    private final ClassroomClient classroomClient;
     
-    public Mono<EventGroupingResponse> getGrouping(String eventId) {
-        return repository.findByEventId(eventId)
+    public Mono<EventGroupingResponse> getGrouping(GetGroupingRequest request) {
+        return repository.findByEventId(request.getEventId())
+            .flatMap(response -> {
+                if (response.isUseDefaultGroups()) {
+                    return classroomClient.getClassGroup(new GetByClassRequest(request.getClassId(), request.getSubclassCode()))
+                        .map(classGroup -> {
+                            response.setGroups(classGroup.getData().getGroups());
+                            return response;
+                        });
+                }
+                return Mono.just(response);
+            })
             .map(mapper::toEventGroupingResponse)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }

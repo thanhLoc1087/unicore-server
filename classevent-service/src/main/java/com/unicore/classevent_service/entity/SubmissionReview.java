@@ -20,7 +20,7 @@ public class SubmissionReview {
     private String submissionId;
     private String eventId;
     private String submitterId;
-    private String nameId;
+    private String submitterName;
 
     private int attempt;
 

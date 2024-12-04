@@ -1,16 +1,13 @@
 package com.unicore.classevent_service.service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.ReviewCreationRequest;
 import com.unicore.classevent_service.dto.request.ReviewFeedbackRequest;
-import com.unicore.classevent_service.dto.response.BaseEventResponse;
 import com.unicore.classevent_service.dto.response.SubmissionReviewResponse;
 import com.unicore.classevent_service.entity.SubmissionReview;
 import com.unicore.classevent_service.mapper.SubmissionReviewMapper;
@@ -30,7 +27,8 @@ public class SubmissionReviewService {
         SubmissionReview review = SubmissionReview.builder()
             .submissionId(request.getSubmissionId())
             .submitterId(request.getSubmitterId())
-            .nameId(request.getNameId())
+            .submitterName(request.getSubmitterName())
+            .reviewerId(request.getReviewerId())
             .classId(request.getClassId())
             .subclassCode(request.getSubclassCode())
             .createdDate(Date.from(Instant.now()))
@@ -40,19 +38,25 @@ public class SubmissionReviewService {
             .map(mapper::toResponse);
     }
 
-    public Mono<SubmissionReviewResponse> feedbackSubmissionReview(ReviewFeedbackRequest request) {
-        SubmissionReview review = SubmissionReview.builder()
-            .grade(request.getGrade())
-            .feedback(request.getFeedback())
-            .feedbackDate(Date.from(Instant.now()))
-            .reviewerId("LOC")
-            .build();
-        return repository.save(review)
+    public Mono<SubmissionReviewResponse> feedbackSubmissionReview(String reviewId, ReviewFeedbackRequest request) {
+        return repository.findById(reviewId)
+            .map(response -> {
+                response.setGrade(request.getGrade());
+                response.setFeedback(request.getFeedback());
+                response.setFeedbackDate(Date.from(Instant.now()));
+                return response;
+            })
+            .flatMap(repository::save)
             .map(mapper::toResponse);
     }
 
     public Flux<SubmissionReviewResponse> getSubmissionReviewByClass(GetByClassRequest request) {
         return repository.findAllByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
+            .map(mapper::toResponse);
+    }
+
+    public Flux<SubmissionReviewResponse> getSubmissionReviewByReviewer(String reviewerId) {
+        return repository.findAllByReviewerId(reviewerId)
             .map(mapper::toResponse);
     }
 }

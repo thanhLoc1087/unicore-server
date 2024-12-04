@@ -1,8 +1,10 @@
 package com.unicore.classroom_service.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
@@ -18,6 +20,7 @@ import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.entity.Classroom;
 import com.unicore.classroom_service.entity.Group;
+import com.unicore.classroom_service.entity.StudentInGroup;
 import com.unicore.classroom_service.entity.Subclass;
 import com.unicore.classroom_service.enums.ClassType;
 import com.unicore.classroom_service.enums.WeightType;
@@ -39,6 +42,9 @@ import reactor.core.publisher.Mono;
 public class ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final ClassroomMapper classroomMapper;
+
+    private final StudentListService studentListService;
+
     private final ClassEventClient classEventClient;
     private final OrganizationClient organizationClient;
 
@@ -197,28 +203,49 @@ public class ClassroomService {
                 Subclass mainSubclass = classroom.getSubclasses().getFirst();
                 String classCode = classroom.getCode();
                 List<Group> groups = request.getGroups();
-                List<Subclass> subclasses = classroom.getSubclasses();
+                Map<String, Subclass> mapTeacherSubclasses = new HashMap<>();
+                Map<String, StudentListCreationRequest> mapTeacherList = new HashMap<>();
                 for (int i = 0; i < groups.size(); i++) {
                     Group group = groups.get(i);
-
-                    String subclassCode = group.getName().isEmpty() ? 
-                        classCode + ".HD" + (i + 1) :
-                        classCode + "." + group.getName().replace(" ", "_");
-
-                    Subclass subclass = Subclass.builder()
-                        .code(subclassCode)
-                        .teacherCode(group.getTeacherCode())
-                        .startDate(mainSubclass.getStartDate())
-                        .endDate(mainSubclass.getEndDate())
-                        .maxSize(mainSubclass.getCurrentSize())
-                        .currentSize(group.getMembers().size())
-                        .type(ClassType.NHOM_HUONG_DAN)
-                        .note("Nhóm hướng dẫn " + subclassCode)
-                        .build();
-
-                    subclasses.add(subclass);
+                    if (mapTeacherSubclasses.containsKey(group.getTeacherCode())) {
+                        Set<String> studentCodes = Set.copyOf(mapTeacherList.get(group.getTeacherCode()).getStudentCodes());
+                        studentCodes.addAll(group.getMembers().stream()
+                            .map(StudentInGroup::getStudentCode).toList());
+                        mapTeacherList.get(group.getTeacherCode()).setStudentCodes(studentCodes);
+                        mapTeacherSubclasses.get(group.getTeacherCode()).setCurrentSize(studentCodes.size());
+                    } else {
+                        String subclassCode = group.getName().isEmpty() ? 
+                            classCode + ".HD" + (i + 1) :
+                            classCode + "." + group.getName().replace(" ", "_");
+                        Subclass subclass = Subclass.builder()
+                            .code(subclassCode)
+                            .teacherCode(group.getTeacherCode())
+                            .startDate(mainSubclass.getStartDate())
+                            .endDate(mainSubclass.getEndDate())
+                            .maxSize(mainSubclass.getCurrentSize())
+                            .currentSize(group.getMembers().size())
+                            .type(ClassType.NHOM_HUONG_DAN)
+                            .note("Nhóm hướng dẫn " + subclassCode)
+                            .build();
+                        mapTeacherSubclasses.put(group.getTeacherCode(), subclass);
+                        mapTeacherList.put(
+                            group.getTeacherCode(), 
+                            new StudentListCreationRequest(
+                                classroom.getId(),
+                                subclassCode,
+                                null,
+                                Set.copyOf(
+                                    group.getMembers().stream()
+                                    .map(StudentInGroup::getStudentCode).toList()
+                                ),
+                                List.of()
+                            )
+                        );
+                    }
                 }
-                classroom.setSubclasses(subclasses);
+                studentListService.createStudentListBulk(List.copyOf(mapTeacherList.values()));
+                
+                classroom.setSubclasses(List.copyOf(mapTeacherSubclasses.values()));
                 return classroom;
             })
             .map(classroomMapper::toClassroom)

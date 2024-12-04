@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -51,15 +52,26 @@ public class StudentListService {
             );
     }
     
-    public Mono<StudentListResponse> addForeignStudents(AddForeignStudentsRequest request) {
-        return studentListRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
+    public Mono<StudentListResponse> addStudents(String classId, String subclassCode, Set<String> studentCodes) {
+        return studentListRepository.findByClassIdAndSubclassCode(classId, subclassCode)
             .map(studentList -> {
-                studentList.setForeignStudents(request.getForeignStudents());
+                studentList.getStudentCodes().addAll(studentCodes);
                 return studentList;
             })
             .flatMap(studentListRepository::save)
             .map(studentListMapper::toStudentListResponse);
     }
+    
+    public Mono<StudentListResponse> addForeignStudents(AddForeignStudentsRequest request) {
+        return studentListRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
+            .map(studentList -> {
+                studentList.getForeignStudents().addAll(request.getForeignStudents());
+                return studentList;
+            })
+            .flatMap(studentListRepository::save)
+            .map(studentListMapper::toStudentListResponse);
+    }
+
 
     private Mono<Boolean> checkDuplicate(StudentListCreationRequest request) {
         return studentListRepository.findByClassIdAndSubclassCode(

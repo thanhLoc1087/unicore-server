@@ -6,11 +6,13 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.entity.StudentInGroup;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Builder
 @Data
+@AllArgsConstructor
 public class StudentListCreationRequest {
     @JsonProperty("class_id")
     private String classId;

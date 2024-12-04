@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class StudentGroupController {
     private final StudentGroupingService studentGroupingService;
 
-    @GetMapping
+    @PostMapping("/get")
     public Mono<ApiResponse<StudentGroupingResponse>> getClassGroup(@RequestBody GetByClassRequest request) {
         return studentGroupingService.getGrouping(request)
             .map(response -> new ApiResponse<>(

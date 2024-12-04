@@ -22,8 +22,8 @@ public class SubmissionReviewResponse {
     private String submissionId;
     @JsonProperty("submitter_id")
     private String submitterId;
-    @JsonProperty("name_id")
-    private String nameId;
+    @JsonProperty("submitter_name")
+    private String submitterName;
 
     private int attempt;
 

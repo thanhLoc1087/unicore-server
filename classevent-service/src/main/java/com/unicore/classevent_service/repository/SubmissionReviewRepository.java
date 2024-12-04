@@ -11,4 +11,5 @@ public interface SubmissionReviewRepository extends ReactiveCrudRepository<Submi
     Flux<SubmissionReview> findAllBySubmissionId(String submissionId);
     Flux<SubmissionReview> findAllByEventId(String eventId);
     Flux<SubmissionReview> findAllByClassIdAndSubclassCode(String classId, String subclassCode);
+    Flux<SubmissionReview> findAllByReviewerId(String reviewerId);
 }

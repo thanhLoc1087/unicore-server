@@ -16,8 +16,11 @@ public class ReviewCreationRequest {
     private String submissionId;
     @JsonProperty("submitter_id")
     private String submitterId;
-    @JsonProperty("name_id")
-    private String nameId;
+    @JsonProperty("submitter_name")
+    private String submitterName;
+    
+    @JsonProperty("reviewer_id")
+    private String reviewerId;
 
     @JsonProperty("class_id")
     private String classId;
