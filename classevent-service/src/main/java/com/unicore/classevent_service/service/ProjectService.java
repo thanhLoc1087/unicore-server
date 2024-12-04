@@ -17,11 +17,13 @@ import com.unicore.classevent_service.dto.request.ProjectAddTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectChooseTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
 import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
+import com.unicore.classevent_service.dto.request.TopicApprovalRequest;
 import com.unicore.classevent_service.dto.request.TopicSuggestionRequest;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.Topic;
 import com.unicore.classevent_service.enums.EventType;
+import com.unicore.classevent_service.enums.TopicStatus;
 import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.exception.InvalidRequestException;
@@ -119,7 +121,31 @@ public class ProjectService {
     public Mono<ProjectResponse> suggestTopic(String projectId, TopicSuggestionRequest request) {
         return projectRepository.findById(projectId)    
             .map(project -> {
-                project.getTopics().add(projectMapper.toTopic(request));
+                Topic newTopic = projectMapper.toTopic(request);
+                newTopic.setStatus(TopicStatus.PENDING);
+                project.getTopics().add(newTopic);
+                return project;
+            })
+            .flatMap(projectRepository::save)
+            .map(projectMapper::toProjectResponse)
+            .switchIfEmpty(Mono.error(new DataNotFoundException()));
+    }
+
+    /// DUYỆT ĐỀ TÀI
+    public Mono<ProjectResponse> approveTopic(String projectId, TopicApprovalRequest request) {
+        return projectRepository.findById(projectId)    
+            .map(project -> {
+                for (Topic topic : project.getTopics()) {
+                    if (request.getTopicId().equals(topic.getId())) {
+                        topic.setFeedback(request.getFeedback());
+                        if (request.isApproved()) {
+                            topic.setStatus(TopicStatus.APPROVED);
+                        } else {
+                            topic.setStatus(TopicStatus.PROCESSING);
+                        }
+                        break;
+                    }
+                }
                 return project;
             })
             .flatMap(projectRepository::save)
@@ -136,24 +162,25 @@ public class ProjectService {
                     .findFirst()
                     .orElse(null);
 
-                if (matchedOption != null) {
-                    if (matchedOption.getSelectors() == null) {
-                        matchedOption.setSelectors(new ArrayList<>());
-                    }
-                    if (Boolean.TRUE.equals(request.getAdding())) {
-                        if (matchedOption.getSelectors().size() < matchedOption.getLimit()) {
-                            matchedOption.getSelectors().add(request.getSelector());
-                        } else {
-                            return Mono.error(new InvalidRequestException());
-                        }
-                    } else {
-                        matchedOption.getSelectors().stream()
-                            .filter(selector -> !selector.equals(request.getSelector()));
-                    }
-                    return projectRepository.save(project);
-                } else {
+                if (matchedOption == null) {
                     return Mono.error(new DataNotFoundException());
                 }
+
+                if (matchedOption.getSelectors() == null) {
+                    matchedOption.setSelectors(new ArrayList<>());
+                }
+                
+                if (Boolean.TRUE.equals(request.getAdding())) {
+                    if (matchedOption.getSelectors().size() < matchedOption.getLimit()) {
+                        matchedOption.getSelectors().add(request.getSelector());
+                    } else {
+                        return Mono.error(new InvalidRequestException());
+                    }
+                } else {
+                    matchedOption.getSelectors().stream()
+                        .filter(selector -> !selector.equals(request.getSelector()));
+                }
+                return projectRepository.save(project);
             })
             .flatMap(response -> {
                 // Xét trường hợp đăng ký nhóm mới

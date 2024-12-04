@@ -1,6 +1,9 @@
 package com.unicore.classevent_service.entity;
 
 import java.util.List;
+import java.util.UUID;
+
+import com.unicore.classevent_service.enums.TopicStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Topic {
-    private String id;
+    @Builder.Default
+    private String id = UUID.randomUUID().toString();
     private String name;
     private String description;
     private String teacherCode;
@@ -21,6 +25,11 @@ public class Topic {
 
     @Builder.Default
     private boolean official = true;
+
+    @Builder.Default
+    private TopicStatus status = TopicStatus.APPROVED;
+
+    private String feedback;
 
     // group indices or student codes
     private List<String> selectors;
