@@ -19,11 +19,11 @@ public class HomeworkMapper {
 
         homework.allowGradeReview( request.getAllowGradeReview() );
         homework.attachmentUrl( request.getAttachmentUrl() );
+        homework.projectId( request.getProjectId() );
         homework.classId( request.getClassId() );
         homework.closeSubmissionDate( request.getCloseSubmissionDate() );
         homework.description( request.getDescription() );
         homework.endDate( request.getEndDate() );
-        homework.graderCode( request.getGraderCode() );
         homework.inGroup( request.getInGroup() );
         homework.name( request.getName() );
         homework.publishDate( request.getPublishDate() );
@@ -56,8 +56,11 @@ public class HomeworkMapper {
         if (request.getEndDate() != null) {
             homework.setEndDate(request.getEndDate());
         }
-        if (request.getGraderCode() != null) {
-            homework.setGraderCode(request.getGraderCode());
+        if (request.getWeight() != null) {
+            homework.setWeight(request.getWeight());
+        }
+        if (request.getWeightType() != null) {
+            homework.setWeightType(request.getWeightType());
         }
         if (((Boolean) request.isInGroup()) != null) {
             homework.setInGroup(request.isInGroup());
@@ -91,6 +94,7 @@ public class HomeworkMapper {
 
         HomeworkResponse.HomeworkResponseBuilder homeworkResponse = HomeworkResponse.builder();
 
+        homeworkResponse.projectId( homework.getProjectId() );
         homeworkResponse.allowGradeReview( homework.isAllowGradeReview() );
         homeworkResponse.attachmentUrl( homework.getAttachmentUrl() );
         homeworkResponse.classId( homework.getClassId() );
@@ -101,7 +105,8 @@ public class HomeworkMapper {
         }
         homeworkResponse.description( homework.getDescription() );
         homeworkResponse.endDate( homework.getEndDate() );
-        homeworkResponse.graderCode( homework.getGraderCode() );
+        homeworkResponse.weight( homework.getWeight() );
+        homeworkResponse.weightType( homework.getWeightType() );
         homeworkResponse.id( homework.getId() );
         homeworkResponse.inGroup( homework.isInGroup() );
         homeworkResponse.modifiedBy( homework.getModifiedBy() );

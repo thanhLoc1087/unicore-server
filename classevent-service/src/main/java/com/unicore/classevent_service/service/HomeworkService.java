@@ -57,7 +57,13 @@ public class HomeworkService {
     }
 
     public Flux<HomeworkResponse> getClassHomework(GetByClassRequest request) {
-        return homeworkRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
+        return homeworkRepository.findAllByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
+            .map(homeworkMapper::toHomeworkResponse)
+            .switchIfEmpty(Mono.error(new DataNotFoundException()));
+    }
+
+    public Flux<HomeworkResponse> getProjectHomework(String projectId) {
+        return homeworkRepository.findAllByProjectId(projectId)
             .map(homeworkMapper::toHomeworkResponse)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }

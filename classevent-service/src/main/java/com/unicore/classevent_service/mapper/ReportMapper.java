@@ -19,11 +19,13 @@ public class ReportMapper {
 
         report.allowGradeReview( request.getAllowGradeReview() );
         report.attachmentUrl( request.getAttachmentUrl() );
+        report.projectId( request.getProjectId() );
         report.classId( request.getClassId() );
         report.closeSubmissionDate( request.getCloseSubmissionDate() );
         report.description( request.getDescription() );
         report.endDate( request.getEndDate() );
-        report.graderCode( request.getGraderCode() );
+        report.weight( request.getWeight() );
+        report.weightType( request.getWeightType() );
         report.inGroup( request.getInGroup() );
         report.name( request.getName() );
         report.place( request.getPlace() );
@@ -56,8 +58,11 @@ public class ReportMapper {
         if (request.getEndDate() != null) {
             report.setEndDate(request.getEndDate());
         }
-        if (request.getGraderCode() != null) {
-            report.setGraderCode(request.getGraderCode());
+        if (request.getWeight() != null) {
+            report.setWeight(request.getWeight());
+        }
+        if (request.getWeightType() != null) {
+            report.setWeightType(request.getWeightType());
         }
         if (((Boolean) request.isInGroup()) != null) {
             report.setInGroup(request.isInGroup());
@@ -95,13 +100,15 @@ public class ReportMapper {
 
         ReportResponse.ReportResponseBuilder reportResponse = ReportResponse.builder();
 
+        reportResponse.projectId( report.getProjectId() );
         reportResponse.allowGradeReview( report.isAllowGradeReview() );
         reportResponse.attachmentUrl( report.getAttachmentUrl() );
         reportResponse.classId( report.getClassId() );
         reportResponse.closeSubmissionDate( report.getCloseSubmissionDate() );
         reportResponse.description( report.getDescription() );
         reportResponse.endDate( report.getEndDate() );
-        reportResponse.graderCode( report.getGraderCode() );
+        reportResponse.weight( report.getWeight() );
+        reportResponse.weightType( report.getWeightType() );
         reportResponse.id( report.getId() );
         reportResponse.inGroup( report.isInGroup() );
         reportResponse.name( report.getName() );

@@ -9,8 +9,11 @@ import com.unicore.classevent_service.entity.Homework;
 
 import reactor.core.publisher.Flux;
 
+
 public interface HomeworkRepository extends ReactiveCrudRepository<Homework, String> {
-    Flux<Homework> findByClassIdAndSubclassCode(String classId, String subclassCode);
+    Flux<Homework> findAllByClassIdAndSubclassCode(String classId, String subclassCode);
+
+    Flux<Homework> findAllByProjectId(String projectId);
 
 
     @Query("{ 'class_id' : { $lte : ?0 }, 'subclass_code' : { $lte : ?1 }, 'publish_date' : { $lte : ?2 }, 'end_date' : { $gte : ?3 } }")

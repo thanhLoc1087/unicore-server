@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.enums.EventType;
+import com.unicore.classevent_service.enums.WeightType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,10 @@ public abstract class BaseEventResponse {
 
     @JsonProperty("in_group")
     private boolean inGroup;
+
+    private Float weight;
+    @JsonProperty("weight_type")
+    private WeightType weightType;
 
     @JsonProperty("class_id")
     private String classId;

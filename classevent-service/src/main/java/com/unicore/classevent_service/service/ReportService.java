@@ -71,7 +71,13 @@ public class ReportService {
     }
 
     public Flux<ReportResponse> getClassReports(GetByClassRequest request) {
-        return reportRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
+        return reportRepository.findAllByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
+            .map(reportMapper::toReportResponse)
+            .switchIfEmpty(Mono.error(new DataNotFoundException()));
+    }
+
+    public Flux<ReportResponse> getProjectReports(String projectId) {
+        return reportRepository.findAllByProjectId(projectId)
             .map(reportMapper::toReportResponse)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }

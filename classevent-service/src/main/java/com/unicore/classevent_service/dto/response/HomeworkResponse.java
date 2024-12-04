@@ -16,18 +16,13 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 public class HomeworkResponse extends BaseEventResponse{
-    // người chấm
-    @JsonProperty("grader_code")
-    private String graderCode;
-    
+    @JsonProperty("project_id")
+    private String projectId;
+
     @JsonProperty("publish_date")
     private LocalDateTime publishDate;
-    @JsonProperty("in_group")
-    private boolean inGroup;
     @JsonProperty("submission_option")
     private SubmissionOption submissionOption;
-    
-    private Float weight;
     
     @JsonProperty("remind_grading_date")
     private LocalDateTime remindGradingDate;
@@ -36,13 +31,10 @@ public class HomeworkResponse extends BaseEventResponse{
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;
-
-    private boolean completed;
     
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 
-    
     @Override
     public EventType getEventType() {
         return EventType.HOMEWORK;

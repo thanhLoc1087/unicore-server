@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.enums.SubmissionOption;
+import com.unicore.classevent_service.enums.WeightType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class HomeworkCreationRequest {
+    @JsonProperty("project_id")
+    private String projectId;
     @JsonProperty("class_id")
     private String classId;
     @JsonProperty("subclass_codes")
@@ -26,9 +29,10 @@ public class HomeworkCreationRequest {
     private Boolean allowGradeReview;
     @JsonProperty("review_times")
     private Integer reviewTimes;
-    // người chấm
-    @JsonProperty("grader_code")
-    private String graderCode;
+
+    private Float weight;
+    @JsonProperty("weight_type")
+    private WeightType weightType;
     
     @JsonProperty("publish_date")
     private LocalDateTime publishDate;
@@ -36,8 +40,6 @@ public class HomeworkCreationRequest {
     private Boolean inGroup;
     @JsonProperty("submission_option")
     private SubmissionOption submissionOption;
-    
-    private Float weight;
     
     @JsonProperty("start_date")
     private LocalDateTime startDate;

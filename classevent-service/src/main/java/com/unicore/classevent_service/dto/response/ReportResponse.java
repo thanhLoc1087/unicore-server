@@ -17,16 +17,14 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class ReportResponse extends BaseEventResponse{
     private String place;
-    // người chấm
-    @JsonProperty("grader_code")
-    private String graderCode;
+
+    @JsonProperty("project_id")
+    private String projectId;
     
     @JsonProperty("publish_date")
     private LocalDateTime publishDate;
     @JsonProperty("submission_option")
     private SubmissionOption submissionOption;
-    
-    private Float weight;
     
     @JsonProperty("start_date")
     private LocalDateTime startDate;

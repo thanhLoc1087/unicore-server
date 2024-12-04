@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.entity.Query;
 import com.unicore.classevent_service.enums.SubmissionOption;
+import com.unicore.classevent_service.enums.WeightType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,8 @@ public class ReportUpdateRequest {
     private SubmissionOption submissionOption;
     
     private Float weight;
+    @JsonProperty("weight_type")
+    private WeightType weightType;
     
     @JsonProperty("start_date")
     private LocalDateTime startDate;

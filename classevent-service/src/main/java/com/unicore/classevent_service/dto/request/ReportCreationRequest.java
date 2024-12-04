@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.entity.Query;
 import com.unicore.classevent_service.enums.SubmissionOption;
+import com.unicore.classevent_service.enums.WeightType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ReportCreationRequest {
+    @JsonProperty("project_id")
+    private String projectId;
     @JsonProperty("class_id")
     private String classId;
     @JsonProperty("subclass_codes")
@@ -40,6 +43,8 @@ public class ReportCreationRequest {
     private SubmissionOption submissionOption;
     
     private Float weight;
+    @JsonProperty("weight_type")
+    private WeightType weightType;
     
     @JsonProperty("start_date")
     private LocalDateTime startDate;

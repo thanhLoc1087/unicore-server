@@ -17,8 +17,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 public class ProjectResponse extends BaseEventResponse {
-    private Float weight;
-    
     @JsonProperty("start_date")
     private LocalDateTime startDate;
 

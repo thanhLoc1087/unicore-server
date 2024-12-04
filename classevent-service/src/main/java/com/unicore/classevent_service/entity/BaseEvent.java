@@ -1,10 +1,13 @@
 package com.unicore.classevent_service.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unicore.classevent_service.enums.SubmissionOption;
+import com.unicore.classevent_service.enums.WeightType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,6 +39,10 @@ public class BaseEvent {
     private String classId;
     @JsonProperty("subclass_code")
     private String subclassCode;
+
+    private Float weight;
+    @JsonProperty("weight_type")
+    private WeightType weightType;
 
     private String name;
     private String description;

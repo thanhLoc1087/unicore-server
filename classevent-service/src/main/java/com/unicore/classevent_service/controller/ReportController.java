@@ -77,6 +77,18 @@ public class ReportController {
             ));
     }
     
+    @GetMapping("/project/{projectId}")
+    public Mono<ApiResponse<List<ReportResponse>>> getProjectReports(@PathVariable String projectId) {
+        return reportService.getProjectReports(projectId)
+            .collectList()
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
     @PutMapping("/{id}")
     public Mono<ApiResponse<ReportResponse>> updateReport(@PathVariable String id, @RequestBody ReportUpdateRequest request) {
         return reportService.updateReport(id, request)

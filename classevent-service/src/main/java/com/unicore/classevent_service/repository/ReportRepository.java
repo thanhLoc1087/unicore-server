@@ -10,7 +10,9 @@ import com.unicore.classevent_service.entity.Report;
 import reactor.core.publisher.Flux;
 
 public interface ReportRepository extends ReactiveCrudRepository<Report, String>{
-    Flux<Report> findByClassIdAndSubclassCode(String classId, String subclassCode);
+    Flux<Report> findAllByClassIdAndSubclassCode(String classId, String subclassCode);
+
+    Flux<Report> findAllByProjectId(String id);
 
 
     @Query("{ 'class_id' : { $lte : ?0 }, 'subclass_code' : { $lte : ?1 }, 'publish_date' : { $lte : ?2 }, 'end_date' : { $gte : ?3 } }")

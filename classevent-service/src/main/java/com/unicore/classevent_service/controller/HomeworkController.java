@@ -79,6 +79,18 @@ public class HomeworkController {
             ));
     }
     
+    @GetMapping("/project/{projectId}")
+    public Mono<ApiResponse<List<HomeworkResponse>>> getClassHomework(@PathVariable String projectId) {
+        return homeworkService.getProjectHomework(projectId)
+            .collectList()
+            .map(homework -> new ApiResponse<>(
+                homework, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
     @PutMapping("/{id}")
     public Mono<ApiResponse<HomeworkResponse>> updateHomework(@PathVariable String id, @RequestBody HomeworkUpdateRequest request) {
         return homeworkService.updateHomework(id, request)
