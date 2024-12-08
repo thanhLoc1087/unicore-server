@@ -19,7 +19,6 @@ public class Homework extends BaseEvent {
 
     private LocalDateTime publishDate;
 
-    private boolean inGroup;
     private SubmissionOption submissionOption;
 
     private LocalDateTime startDate;

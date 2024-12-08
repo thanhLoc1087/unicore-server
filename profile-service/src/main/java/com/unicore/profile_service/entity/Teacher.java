@@ -9,4 +9,5 @@ import lombok.Data;
 public class Teacher extends Member {
     private String degree;
     private String researchDirection;
+    private String researchConcern;
 }

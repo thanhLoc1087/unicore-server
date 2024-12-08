@@ -18,10 +18,14 @@ public class TeacherResponse {
     private String code;
     private String name;
     private String email;
+    private String phone;
+    private String address;
     private LocalDate dob;
     private MemberGender gender;
     private MemberRole role;
     private String degree;
     @JsonProperty("research_direction")
     private String researchDirection;
+    @JsonProperty("research_concern")
+    private String researchConcern;
 }

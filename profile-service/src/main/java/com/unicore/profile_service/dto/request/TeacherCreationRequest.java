@@ -17,9 +17,12 @@ public class TeacherCreationRequest {
     @Email(message = "Invalid email format")
     private String email;
     private String phone;
+    private String address;
     private LocalDate dob;
     private MemberGender gender;
     private String degree;
     @JsonProperty("research_direction")
     private String researchDirection;
+    @JsonProperty("research_concern")
+    private String researchConcern;
 }

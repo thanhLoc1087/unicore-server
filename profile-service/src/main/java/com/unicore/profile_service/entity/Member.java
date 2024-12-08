@@ -21,6 +21,7 @@ public abstract class Member {
     protected String name;
     protected String email;
     protected String phone;
+    protected String address;
     protected LocalDate dob;
     protected MemberGender gender;
     protected MemberRole role;

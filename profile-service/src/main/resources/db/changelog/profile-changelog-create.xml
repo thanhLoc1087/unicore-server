@@ -107,4 +107,48 @@
             </column>
         </createTable>
     </changeSet>
+    
+    <changeSet id="table-teacher-add-column-address" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column address already exists in table teacher">
+            <not>
+                <columnExists  tableName="teacher" columnName="address" />
+            </not>
+        </preConditions>
+        <addColumn tableName="teacher">
+            <column name="address" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="table-teacher-add-column-research_concern" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column research_concern already exists in table teacher">
+            <not>
+                <columnExists  tableName="teacher" columnName="research_concern" />
+            </not>
+        </preConditions>
+        <addColumn tableName="teacher">
+            <column name="research_concern" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="table-student-add-column-address" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column address already exists in table student">
+            <not>
+                <columnExists  tableName="student" columnName="address" />
+            </not>
+        </preConditions>
+        <addColumn tableName="student">
+            <column name="address" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="table-staff-add-column-address" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column address already exists in table staff">
+            <not>
+                <columnExists  tableName="staff" columnName="address" />
+            </not>
+        </preConditions>
+        <addColumn tableName="staff">
+            <column name="address" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

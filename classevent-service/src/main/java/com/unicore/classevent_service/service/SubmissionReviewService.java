@@ -23,6 +23,7 @@ public class SubmissionReviewService {
     private final SubmissionReviewRepository repository;
     private final SubmissionReviewMapper mapper;
 
+    // Xin phúc khảo
     public Mono<SubmissionReviewResponse> createSubmissionReview(ReviewCreationRequest request) {
         SubmissionReview review = SubmissionReview.builder()
             .submissionId(request.getSubmissionId())
@@ -38,6 +39,7 @@ public class SubmissionReviewService {
             .map(mapper::toResponse);
     }
 
+    // Chấm điểm hoặc từ chối
     public Mono<SubmissionReviewResponse> feedbackSubmissionReview(String reviewId, ReviewFeedbackRequest request) {
         return repository.findById(reviewId)
             .map(response -> {

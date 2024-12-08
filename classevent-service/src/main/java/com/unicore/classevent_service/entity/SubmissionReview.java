@@ -19,6 +19,7 @@ public class SubmissionReview {
 
     private String submissionId;
     private String eventId;
+    private String eventName;
     private String submitterId;
     private String submitterName;
 

@@ -18,6 +18,8 @@ public class SubmissionReviewResponse {
 
     @JsonProperty("event_id")
     private String eventId;
+    @JsonProperty("event_name")
+    private String eventName;
     @JsonProperty("submission_id")
     private String submissionId;
     @JsonProperty("submitter_id")
