@@ -78,16 +78,12 @@ public class SubjectController {
     
     @GetMapping("/code/{code}")
     public Mono<ApiResponse<SubjectResponse>> getSubjectByCode(@PathVariable String code) {
-        log.info("AHHHHHHH" + code);
         return subjectService.getSubjectByCode(code)
-        .map(response -> {
-            log.info("AHHHHHHH" + response.getMetadata().toString());
-            return new ApiResponse<>(
+            .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
                 response, 
-                Date.from(Instant.now()));
-            }
+                Date.from(Instant.now()))
             );
     }
 

@@ -53,6 +53,18 @@ eureka:
         service-url:
             defaultZone: http://localhost:8761/eureka/
 
+openapi:
+  service:
+    title: organization-service doc
+    version: 1.0.0
+    url: http://localhost:8888 #api gateway url
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
 unicore:
   openapi:
     dev-url: http://localhost:8080

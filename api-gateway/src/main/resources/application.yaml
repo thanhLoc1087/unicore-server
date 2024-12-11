@@ -38,9 +38,14 @@ spring:
               - StripPrefix=2
 
 eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+    instance:
+        appname: api-gateway
+    client:
+        enabled: true
+        register-with-eureka: true
+        fetch-registry: true
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
 
 springdoc:
   api-docs:
@@ -52,5 +57,11 @@ springdoc:
     urls:
       - url: /v3/api-docs
         name: API Gateway Service
-      - url: /classroom/v3/api-docs
-        name: classroom Service
+      - url: /api/v1/classroom/v3/api-docs
+        name: Classroom Service
+      - url: /api/v1/classevent/v3/api-docs
+        name: ClassEvent Service
+      - url: /api/v1/organization/v3/api-docs
+        name: Organization Service
+      - url: /api/v1/profile/v3/api-docs
+        name: Profile Service

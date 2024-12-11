@@ -57,7 +57,18 @@ logging:
                         proxy:
                             HttpProxyHandler: DEBUG
                             ProxyHandler: DEBUG
-  
+
+openapi:
+  service:
+    title: classevent-service doc
+    version: 1.0.0
+    url: http://localhost:8888 #api gateway url
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
 
 eureka:
     instance:
