@@ -1,17 +1,22 @@
 server:
-    port: 8081
+    port: 8082
     servlet:
-        contextPath: /organization
+        contextPath: /profile
 
 spring:
     webflux:
-        base-path: /organization
+        base-path: /profile
     application: 
-        name: organization-service
+        name: profile-service
     r2dbc:
-        url: r2dbc:pool:mysql://localhost:3306/${MYSQL_DB:organizationdb}
+        url: r2dbc:mysql://mysql:3306/${MYSQL_DB:profiledb}
         username: ${MYSQL_USER:root}
         password: ${MYSQL_PASSWORD:mysql}
+        pool:
+            enabled: true
+            max-size: 10
+            initial-size: 5
+            validation-query: SELECT 1
 
     jpa:
         hibernate:
@@ -25,7 +30,7 @@ spring:
         # database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
 
     liquibase:
-        url: jdbc:mysql://localhost:3306/${ORG_DB:organizationdb}
+        url: jdbc:mysql://mysql:3306/${MYSQL_DB:profiledb}
         enabled: true
         user: ${MYSQL_USER:root}
         password: ${MYSQL_PASSWORD:mysql}
@@ -43,15 +48,15 @@ logging:
                 eureka: OFF
                 discovery: OFF
   
-eureka:
-    instance:
-        appname: organization-service
-    client:
-        enabled: true
-        register-with-eureka: true
-        fetch-registry: true
-        service-url:
-            defaultZone: http://localhost:8761/eureka/
+# eureka:
+#     instance:
+#         appname: profile-service
+#     client:
+#         enabled: true
+#         register-with-eureka: true
+#         fetch-registry: true
+#         service-url:
+#             defaultZone: http://localhost:8761/eureka/
 
 
 unicore:

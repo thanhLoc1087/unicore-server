@@ -18,11 +18,13 @@ import com.unicore.classevent_service.mapper.GeneralTestMapper;
 import com.unicore.classevent_service.repository.GeneralTestRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GeneralTestService {
     private final GeneralTestRepository repository;
     private final GeneralTestMapper mapper;
@@ -62,8 +64,8 @@ public class GeneralTestService {
                 }
             })
             .map(response -> {
-                if (response instanceof GeneralTest)
-                    return mapper.toResponse((GeneralTest) response);
+                if (response instanceof GeneralTest test)
+                    return mapper.toResponse(test);
                 else 
                     return (BaseEventResponse) response;
             });
@@ -96,6 +98,7 @@ public class GeneralTestService {
     }
 
     public Mono<GeneralTestResponse> getById(String id) {
+        log.info("Get test with id: " + id);
         return repository.findById(id)
             .map(mapper::toResponse)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,19 +21,22 @@ import com.unicore.classevent_service.dto.response.GeneralTestResponse;
 import com.unicore.classevent_service.enums.ApiMessage;
 import com.unicore.classevent_service.service.GeneralTestService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/tests")
+@Slf4j
 public class GeneralTestController {
+    @PostConstruct public void init() { log.info("GeneralEventController initialized"); }
     private final GeneralTestService service;
-
-    @GetMapping
+    
+    @PostMapping("/class")
     public Mono<ApiResponse<List<GeneralTestResponse>>> getClassTests(@RequestBody GetByClassRequest request) {
+        log.info("AYOOOOOOOOOOOOOOOOOOOOOOOOOOOOO {}", request);
         return service.getByClass(request)
             .collectList()
             .map(report -> new ApiResponse<>(
@@ -56,6 +60,7 @@ public class GeneralTestController {
     
     @PostMapping("/internal")
     public Mono<ApiResponse<List<BaseEventResponse>>> createBulk(@RequestBody GeneralTestBulkCreationRequest request) {
+        log.info("ALOOOOOOOOOOOO {}", request);
         return service.createBulk(request)
             .collectList()
             .map(report -> new ApiResponse<>(
@@ -76,5 +81,4 @@ public class GeneralTestController {
                 LocalDateTime.now()
             ));
     }
-    
 }

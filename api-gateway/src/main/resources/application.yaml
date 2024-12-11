@@ -7,6 +7,8 @@ app:
 spring:
     application:
         name: api-gateway
+    main:
+      web-application-type: reactive
     cloud:
         gateway:
             routes:
@@ -28,8 +30,12 @@ spring:
               - Path=/${app.api-prefix}/classroom/**
               filters:
               - StripPrefix=2
-    main:
-      web-application-type: reactive
+            - id: classevent_service
+              uri: http://localhost:8084
+              predicates:
+              - Path=/${app.api-prefix}/classevent/**
+              filters:
+              - StripPrefix=2
 
 eureka:
   client:

@@ -20,12 +20,14 @@ import com.unicore.organization_service.dto.response.SubjectResponse;
 import com.unicore.organization_service.service.SubjectService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 
 @RestController
 @RequestMapping("/subjects")
 @RequiredArgsConstructor
+@Slf4j
 public class SubjectController {
     private final SubjectService subjectService;
 
@@ -76,12 +78,16 @@ public class SubjectController {
     
     @GetMapping("/code/{code}")
     public Mono<ApiResponse<SubjectResponse>> getSubjectByCode(@PathVariable String code) {
+        log.info("AHHHHHHH" + code);
         return subjectService.getSubjectByCode(code)
-            .map(response -> new ApiResponse<>(
+        .map(response -> {
+            log.info("AHHHHHHH" + response.getMetadata().toString());
+            return new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
                 response, 
-                Date.from(Instant.now()))
+                Date.from(Instant.now()));
+            }
             );
     }
 

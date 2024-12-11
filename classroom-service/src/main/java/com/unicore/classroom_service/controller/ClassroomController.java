@@ -33,6 +33,7 @@ public class ClassroomController {
     
     @PostMapping("/bulk")
     public Mono<ApiResponse<List<ClassroomResponse>>> createClassrooms(@RequestBody ClassroomBulkCreationRequest request) {
+        log.info("HELOOOOOOOOO?");
         return classroomService.createClassrooms(request)
             .collectList()
             .map(response -> new ApiResponse<>(

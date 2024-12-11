@@ -1,22 +1,26 @@
 package com.unicore.classroom_service.repository.httpclient;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.SubjectResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
+@Slf4j
 public class OrganizationClient {
     @Value("${application.service.organization}")
     private String url;
 
     private final WebClient webClient = WebClient.builder()
-        .baseUrl(url)
+        .baseUrl("http://localhost:8888/api/v1/organization")
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
         .build();
 
@@ -24,6 +28,9 @@ public class OrganizationClient {
         return webClient.get()
                         .uri("/subjects/code/{code}", code)
                         .retrieve()
-                        .bodyToMono(SubjectResponse.class);
+                        .toEntity(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
+                        // .bodyToMono(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
+                        .map(responseEntity -> responseEntity.getBody().getResult());
     }
+
 }

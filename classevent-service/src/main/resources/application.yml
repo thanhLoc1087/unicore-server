@@ -1,32 +1,67 @@
 server:
     port: 8084
     servlet:
-        contextPath: /classevents
+        contextPath: /classevent
 
 spring:
     application: 
         name: classevent-service
     webflux:
-        base-path: /classevents
+        base-path: /classevent
     data:
         mongodb:
+            # uri: mongodb://root:0843300042@localhost:27018/classeventdb?authSource=admin
             uri: mongodb://localhost:27017/classeventdb?authSource=admin
         
 logging:
     level:
         org:
             springframework: 
+                web:
+                    filter:
+                        reactive:
+                            function:
+                                client: DEBUG
+                        CommonsRequestLoggingFilter: DEBUG
                 security: DEBUG
+                data:
+                    mongodb: DEBUG
+                boot:
+                    autoconfigure:
+                        mongo: DEBUG
+
             hibernate:
                 SQL: DEBUG
         com:
             netflix:
                 eureka: OFF
                 discovery: OFF
+        
+        reactor:
+            ipc:
+                netty:
+                    channel:
+                        ChannelOperationsHandler: DEBUG
+                http:
+                    server:
+                        HttpServer: DEBUG
+                    client: DEBUG
+
+        io:
+            reactivex:
+                netty:
+                    protocol:
+                        http:
+                            client: DEBUG
+                    handler:
+                        proxy:
+                            HttpProxyHandler: DEBUG
+                            ProxyHandler: DEBUG
   
+
 eureka:
     instance:
-        appname: classroom-service
+        appname: classevent-service
     client:
         enabled: true
         register-with-eureka: true
