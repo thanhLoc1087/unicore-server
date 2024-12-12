@@ -42,7 +42,8 @@ public class StaffService {
             })
             .doOnSuccess(response -> {
                 // goi kafka tao Account
-            });
+            })
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     @Transactional
@@ -57,12 +58,14 @@ public class StaffService {
 
     public Mono<StaffResponse> getStaffById(String id) {
         return staffRepository.findById(id)
-            .map(staffMapper::toStaffResponse);
+            .map(staffMapper::toStaffResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     public Mono<StaffResponse> getStaffByCode(String code) {
         return staffRepository.findByCode(code)
-            .map(staffMapper::toStaffResponse);
+            .map(staffMapper::toStaffResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     public Flux<StaffResponse> getStaffs() {
@@ -76,10 +79,12 @@ public class StaffService {
     }
 
     public Mono<Void> deleteById(String id) {
-        return staffRepository.deleteById(id);
+        return staffRepository.deleteById(id)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     public Mono<Void> deleteByIds(List<String> ids) {
-        return staffRepository.deleteAllById(ids);
+        return staffRepository.deleteAllById(ids)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 }

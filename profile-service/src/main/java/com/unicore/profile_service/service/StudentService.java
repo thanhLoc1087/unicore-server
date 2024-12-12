@@ -43,7 +43,8 @@ public class StudentService {
             })
             .doOnSuccess(response -> {
                 // goi kafka tao Account
-            });
+            })
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     @Transactional
@@ -58,12 +59,14 @@ public class StudentService {
 
     public Mono<StudentResponse> getStudentById(String id) {
         return studentRepository.findById(id)
-            .map(studentMapper::toStudentResponse);
+            .map(studentMapper::toStudentResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     public Mono<StudentResponse> getStudentByCode(String code) {
         return studentRepository.findByCode(code)
-            .map(studentMapper::toStudentResponse);
+            .map(studentMapper::toStudentResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     public Flux<StudentResponse> getStudents() {
