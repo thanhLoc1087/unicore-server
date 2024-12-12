@@ -20,6 +20,21 @@ services:
       interval: 10s
       retries: 5
   
+  mongodb:
+    image: 'bitnami/mongodb:latest'
+    hostname: mongodb
+    networks:
+      - unicore-network
+    environment:
+      - MONGODB_ROOT_PASSWORD=0843300042
+      - GLIBC_TUNABLES=glibc.pthread.rseq=0
+    healthcheck:
+      test: ["CMD-SHELL", "mongo --eval 'db.stats()' -u root -p 0843300042 --authenticationDatabase admin || exit 1"]
+      interval: 10s
+      retries: 5
+    ports:
+      - '27018:27017'
+  
   kafka:
     image: 'bitnami/kafka:3.7.0'
     hostname: kafka
@@ -44,34 +59,6 @@ services:
       # - KAFKA_CFG_SSL_KEY_PASSWORD=${KEY_PASSWORD}
       # - KAFKA_CFG_SSL_TRUSTSTORE_LOCATION=/path/to/truststore.jks
       # - KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
-
-  # api-gateway:
-  #   image: thanhloc1087/api-gateway:0.1.0
-  #   build:
-  #     context: ./api-gateway
-  #   container_name: api-gateway-unicore
-  #   ports:
-  #     - "8080:8888"
-  #   networks:
-  #     - unicore-network
-
-  # organization-service:
-  #   restart: always
-  #   image: thanhloc1087/organization-service:0.1.0
-  #   build:
-  #     context: ./organization-service 
-  #   container_name: organization-service-unicore
-  #   ports:
-  #     - "8081:8081"
-  #   env_file:
-  #     - ./organization-service/.env
-  #   networks:
-  #     - unicore-network
-  #   depends_on:
-  #     mysql:
-  #       condition: service_healthy
-  #     kafka:
-  #       condition: service_started
 
 networks:
   unicore-network:

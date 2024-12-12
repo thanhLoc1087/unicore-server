@@ -1,0 +1,137 @@
+name: unicore-server
+
+services:
+  mysql:
+    image: mysql:8.0.39-debian
+    hostname: mysql
+    container_name: mysql-unicore
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: init_db
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d
+    # Expose the port only if necessary; you may comment this line to limit access.
+    networks:
+      - unicore-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root --password=$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      retries: 5
+  
+  mongodb:
+    image: 'bitnami/mongodb:latest'
+    hostname: mongodb
+    networks:
+      - unicore-network
+    environment:
+      - MONGODB_ROOT_PASSWORD=0843300042
+      - GLIBC_TUNABLES=glibc.pthread.rseq=0
+    # healthcheck:
+    #   test: ["CMD-SHELL", "mongo --eval 'db.stats()' -u root -p 0843300042 --authenticationDatabase admin || exit 1"]
+    #   interval: 10s
+    #   retries: 5
+    # ports:
+    #   - '27017:27017'
+  
+  kafka:
+    image: 'bitnami/kafka:3.7.0'
+    hostname: kafka
+    container_name: kafka-unicore
+    # networks:
+    #   - unicore-network
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CREATE_TOPICS="notificationCreateProfile,paymentCompleted1,paymentCreated1,paymentRequest1,profileOnboarded,profileOnboarding"
+      # Uncomment and configure these settings for secure connections
+      # - KAFKA_CFG_SSL_ENABLED=true
+      # - KAFKA_CFG_SSL_KEYSTORE_LOCATION=/path/to/keystore.jks
+      # - KAFKA_CFG_SSL_KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
+      # - KAFKA_CFG_SSL_KEY_PASSWORD=${KEY_PASSWORD}
+      # - KAFKA_CFG_SSL_TRUSTSTORE_LOCATION=/path/to/truststore.jks
+      # - KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
+
+  eureka-server:
+    image: thanhloc1087/unicore-eureka-server:0.1.0
+    container_name: eureka-server-unicore
+    ports:
+      - "8761:8761"
+    networks:
+      - unicore-network
+
+  api-gateway:
+    image: thanhloc1087/unicore-api-gateway:0.3.0
+    container_name: api-gateway-unicore
+    ports:
+      - "8080:8888"
+    networks:
+      - unicore-network
+
+  organization-service:
+    restart: always
+    image: thanhloc1087/unicore-organization-service:0.9.0
+    container_name: organization-service-unicore
+    ports:
+      - "8081:8081"
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=0843300042
+      - MYSQL_DB=organizationdb
+    networks:
+      - unicore-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+  profile-service:
+    restart: always
+    image: thanhloc1087/unicore-profile-service:0.8.0
+    container_name: profile-service-unicore
+    ports:
+      - "8082:8082"
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=0843300042
+      - MYSQL_DB=profiledb
+    networks:
+      - unicore-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+  classroom-service:
+    restart: always
+    image: thanhloc1087/unicore-classroom-service:0.1.0
+    container_name: classroom-service-unicore
+    ports:
+      - "8083:8083"
+    networks:
+      - unicore-network
+    # depends_on:
+    #   mongodb:
+    #     condition: service_healthy
+
+  classevent-service:
+    restart: always
+    image: thanhloc1087/unicore-classevent-service:0.1.0
+    container_name: classevent-service-unicore
+    ports:
+      - "8084:8084"
+    networks:
+      - unicore-network
+    # depends_on:
+    #   mongodb:
+    #     condition: service_healthy
+
+networks:
+  unicore-network:
+    driver: bridge

@@ -20,7 +20,7 @@ ARG SPRING_PROFILES_ACTIVE=prod
 ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
 
 # Optional: Expose application port for documentation
-EXPOSE 8888
+EXPOSE 8084
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
