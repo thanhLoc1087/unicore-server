@@ -12,7 +12,7 @@ public enum ExamFormat {
     TU_LUAN("TL", true, false),
     TRAC_NGHIEM("TN", true, false),
     THUC_HANH("TH", false, false),
-    VAN_DAP("VD", false, false),
+    VAN_DAP("VD", false, true),
     DO_AN("DA", false, true),
     DO_AN_TOT_NGHIEP("DATN", true, true);
 

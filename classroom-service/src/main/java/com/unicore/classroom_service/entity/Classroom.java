@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.unicore.classroom_service.enums.ClassType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +28,9 @@ public class Classroom {
     private String code;
 
     private String subjectCode;
+
+    @Builder.Default
+    private ClassType type = ClassType.LOP_THUONG;
 
     private boolean orgManaged;
 

@@ -36,11 +36,13 @@ public class GeneralTestService {
         return Flux.fromIterable(request.getRequests())
             .flatMap(item -> {
                 if (item.getFormat().isProject()) {
+                    log.info("Project create");
                     Project project = Project.builder()    
                         .classId(item.getClassId())
                         .subclassCode(item.getSubclassCode())
                         .name("Đồ án")
                         .description("Đồ án")
+                        .inGroup(true)
                         .weightType(item.getWeightType())
                         .weight(100.0f)
                         .allowGradeReview(true)
@@ -49,6 +51,7 @@ public class GeneralTestService {
                         .build();
                     return projectService.saveProject(project);
                 } else {
+                    log.info("TEst create");
                     GeneralTest test = GeneralTest.builder()
                         .classId(item.getClassId())
                         .subclassCode(item.getSubclassCode())

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -32,11 +33,13 @@ import com.unicore.classevent_service.repository.ProjectRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
@@ -58,17 +61,20 @@ public class ProjectService {
     public Mono<ProjectResponse> saveProject(Project project) {
         return Mono.just(project)
             .map(entity -> {
-                entity.setCreatedBy("Loc Update");
+                entity.setCreatedBy("Loc Create");
                 entity.setCreatedDate(Date.from(Instant.now()));
                 
-                List<Topic> topics = entity.getTopics();
+                List<Topic> topics = Objects.requireNonNullElse(entity.getTopics(), new ArrayList<>());
                 for (int i = 0; i < topics.size(); i++) {
                     topics.get(i).setId("" + (1 + i));
                 }
                 return entity;
             })
             .flatMap(projectRepository::save)
-            .map(projectMapper::toProjectResponse);
+            .map(projectMapper::toProjectResponse)
+            .doOnError(e -> 
+                log.error("Save Project error", e)
+            );
     }
 
     /// Các hàm get bên dưới cần gọi qua bên submission xem hoàn thành chưa

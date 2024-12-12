@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
 import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
 import com.unicore.classevent_service.dto.request.TopicSuggestionRequest;
-import com.unicore.classevent_service.dto.response.BaseEventResponse;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.Topic;
@@ -25,6 +24,8 @@ public class ProjectMapper {
 
         project.allowGradeReview( request.isAllowGradeReview() );
         project.weight( request.getWeight() );
+        project.weightType( request.getWeightType() );
+        project.inGroup( request.getInGroup() );
         project.startDate( request.getStartDate() );
         project.allowTopicSuggestion( request.isAllowTopicSuggestion() );
         project.classId( request.getClassId() );
@@ -51,6 +52,9 @@ public class ProjectMapper {
         if (request.getWeight() != null) {
             project.setWeight(request.getWeight());
         }
+        if (request.getWeightType() != null) {
+            project.setWeightType(request.getWeightType());
+        }
         if (request.getStartDate() != null) {
             project.setStartDate(request.getStartDate());
         }
@@ -59,6 +63,9 @@ public class ProjectMapper {
         }
         if (request.getDescription() != null) {
             project.setDescription(request.getDescription());
+        }
+        if (request.getInGroup() != null) {
+            project.setInGroup(request.getInGroup());
         }
         if (request.getName() != null) {
             project.setName(request.getName());
@@ -90,6 +97,8 @@ public class ProjectMapper {
         ProjectResponse.ProjectResponseBuilder projectResponse = ProjectResponse.builder();
 
         projectResponse.weight( project.getWeight() );
+        projectResponse.weightType( project.getWeightType() );
+        projectResponse.inGroup( project.isInGroup() );
         projectResponse.startDate( project.getStartDate() );
         projectResponse.allowGradeReview( project.isAllowGradeReview() );
         projectResponse.allowTopicSuggestion( project.isAllowTopicSuggestion() );

@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ClassType {
+    LOP_THUONG("NOR", true), 
     LY_THUYET("LT", true), 
     HINH_THUC_1("HT1", false),
     HINH_THUC_2("HT2", false),

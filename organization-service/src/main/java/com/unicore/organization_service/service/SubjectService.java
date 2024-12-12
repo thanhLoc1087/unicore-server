@@ -42,7 +42,7 @@ public class SubjectService {
                 : updateExistingSubject(subjectId, request)
             )
             .onErrorResume(e -> Mono.error(new RuntimeException("Failed to create subject", e)))
-            .doOnError(throwable -> log.error("Error creating subject: {}", throwable.getMessage(), throwable))
+            .doOnError(throwable -> log.error("Error creating subject: " + throwable.getMessage(), throwable))
             .as(transactionalOperator::transactional);
     }
 
@@ -94,10 +94,11 @@ public class SubjectService {
 
     private Mono<SubjectMetadata> createSubjectMetadata(SubjectMetadata subjectMetadata) {
         return checkDuplicateMetadata(subjectMetadata.getSubjectId(), subjectMetadata.getSemester(), subjectMetadata.getYear())
-            .flatMap(isDuplicate -> isDuplicate 
+            .flatMap(isDuplicate -> Boolean.TRUE.equals(isDuplicate) 
                 ? Mono.error(new AppException(ErrorCode.DUPLICATE)) 
                 : subjectMetadataRepository.save(subjectMetadata)
-            );
+            )
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     private Mono<String> checkDuplicateSubject(String subjectCode) {
@@ -153,7 +154,8 @@ public class SubjectService {
                         return subject;
                     })
                     .switchIfEmpty(Mono.just(subject))
-            );
+            )
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     public Mono<SubjectResponse> getSubjectByCode(String code) {
@@ -166,7 +168,8 @@ public class SubjectService {
                         return subject;
                     })
                     .switchIfEmpty(Mono.just(subject))
-            );
+            )
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     public Mono<Void> deleteById(String id) {

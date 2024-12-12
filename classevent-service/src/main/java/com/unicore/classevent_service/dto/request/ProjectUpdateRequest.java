@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.entity.Topic;
+import com.unicore.classevent_service.enums.WeightType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +26,12 @@ public class ProjectUpdateRequest {
     private Integer reviewTimes;
     
     private Float weight;
+
+    @JsonProperty("weight_type")
+    private WeightType weightType;
+
+    @JsonProperty("in_group")
+    private Boolean inGroup;
     
     @JsonProperty("allow_topic_suggestion")
     private Boolean allowTopicSuggestion;

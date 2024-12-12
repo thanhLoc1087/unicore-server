@@ -27,6 +27,7 @@ public class HomeworkCreationRequest {
     private String description;
     @JsonProperty("allow_grade_review")
     private Boolean allowGradeReview;
+    
     @JsonProperty("review_times")
     private Integer reviewTimes;
 

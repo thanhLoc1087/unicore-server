@@ -88,9 +88,11 @@ public class ClassroomService {
     public Flux<ClassroomResponse> createClassrooms(ClassroomBulkCreationRequest request) {
         if (request.getClasses().isEmpty()) return Flux.empty();
         List<Classroom> classes = new ArrayList<>();
+
         List<ClassroomCreationRequest> classRequests = request.getClasses();
         String currentClassCode = classRequests.get(0).getCode();
         Set<Subclass> subclasses = new HashSet<>();
+
         for (var i = 0; i < classRequests.size(); i++) {
             ClassroomCreationRequest currentSubclass = classRequests.get(i);
             subclasses.add(classroomMapper.toSubclass(currentSubclass));
@@ -150,8 +152,26 @@ public class ClassroomService {
     }
     
     private Classroom buildClassroom(String code, Set<Subclass> subclasses, ClassroomCreationRequest classRequest, String organizationId) {
+        ClassType classType = ClassType.LOP_THUONG;
+        if (!subclasses.isEmpty()) {
+            Subclass mainClass = subclasses.iterator().next();
+            switch (mainClass.getType()) {
+                case ClassType.DO_AN:
+                    classType = ClassType.DO_AN;
+                    break;
+                case ClassType.KHOA_LUAN:
+                    classType = ClassType.KHOA_LUAN;
+                    break;
+                case ClassType.THUC_TAP:
+                    classType = ClassType.THUC_TAP;
+                    break;
+                default:
+                    break;
+            }
+        }
         return Classroom.builder()
             .code(code)
+            .type(classType)
             .subclasses(List.copyOf(subclasses))
             .subjectCode(classRequest.getSubjectCode())
             .orgManaged(classRequest.isOrgManaged())
