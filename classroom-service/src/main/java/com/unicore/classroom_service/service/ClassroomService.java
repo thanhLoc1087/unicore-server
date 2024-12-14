@@ -15,7 +15,7 @@ import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
 import com.unicore.classroom_service.dto.request.GeneralTestBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.GeneralTestCreationRequest;
-import com.unicore.classroom_service.dto.request.GetByClassRequest;
+import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
@@ -24,7 +24,6 @@ import com.unicore.classroom_service.entity.Group;
 import com.unicore.classroom_service.entity.StudentInGroup;
 import com.unicore.classroom_service.entity.Subclass;
 import com.unicore.classroom_service.enums.ClassType;
-import com.unicore.classroom_service.enums.ExamFormat;
 import com.unicore.classroom_service.enums.WeightType;
 import com.unicore.classroom_service.exception.AppException;
 import com.unicore.classroom_service.exception.ErrorCode;
@@ -121,6 +120,7 @@ public class ClassroomService {
                                     response.getId(),
                                     subclass.getCode(),
                                     WeightType.MIDTERM,
+                                    (float) response.getSubjectMetadata().getMidtermWeight(), 
                                     response.getSubjectMetadata().getMidtermFormat()
                                 ));
                             }
@@ -128,6 +128,7 @@ public class ClassroomService {
                                 response.getId(),
                                 subclass.getCode(),
                                 WeightType.FINAL_TERM,
+                                (float) response.getSubjectMetadata().getFinalWeight(), 
                                 response.getSubjectMetadata().getFinalFormat()
                             ));
                         } else {
@@ -135,6 +136,7 @@ public class ClassroomService {
                                 response.getId(),
                                 subclass.getCode(),
                                 WeightType.PRACTICAL,
+                                (float) response.getSubjectMetadata().getPracticalWeight(), 
                                 response.getSubjectMetadata().getPracticalFormat()
                             ));
                         }
@@ -199,9 +201,14 @@ public class ClassroomService {
             .map(classroomMapper::toClassroomResponse);
     }
 
-    public Mono<ClassroomResponse> getClassroomByCode(String code) {
-        return classroomRepository.findByCode(code)
-            .map(classroomMapper::toClassroomResponse);
+    public Mono<ClassroomResponse> getClassroomByCodeSemesterYear(GetClassBySemesterAndYearRequest request) {
+        return classroomRepository.findByCodeAndSemesterAndYear(
+                request.getClassCode(),
+                request.getSemester(),
+                request.getYear()
+            )
+            .map(classroomMapper::toClassroomResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
     public Flux<ClassroomResponse> getClassrooms() {

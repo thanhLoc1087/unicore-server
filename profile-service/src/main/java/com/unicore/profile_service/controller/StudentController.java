@@ -35,7 +35,7 @@ public class StudentController {
     public Mono<ApiResponse<StudentResponse>> createStudent(@RequestBody @Valid StudentCreationRequest request) {
         return studentService.createStudent(request)
             .map(response -> ApiResponse.<StudentResponse>builder()
-                .result(response)
+                .data(response)
                 .message("Success")
                 .build()
             );
@@ -47,7 +47,7 @@ public class StudentController {
         return studentService.createStudents(request)
             .collectList()
             .map(response -> ApiResponse.<List<StudentResponse>>builder()
-                .result(response)
+                .data(response)
                 .message(response.isEmpty() ? "Empty list" : "Success")
                 .build()
             );
@@ -58,7 +58,7 @@ public class StudentController {
         return studentService.getStudents()
             .collectList()
             .map(response -> ApiResponse.<List<StudentResponse>>builder()
-                .result(response)
+                .data(response)
                 .message(response.isEmpty() ? "Empty list" : "Success")
                 .build()
             );
@@ -68,7 +68,7 @@ public class StudentController {
     public Mono<ApiResponse<StudentResponse>> getStudentById(@PathVariable String id) {
         return studentService.getStudentById(id)
             .map(response -> ApiResponse.<StudentResponse>builder()
-                .result(response)
+                .data(response)
                 .message("Success")
                 .build()
             );
@@ -79,7 +79,7 @@ public class StudentController {
         return studentService.getStudentsByCodes(request)
             .collectList()
             .map(response -> ApiResponse.<List<StudentResponse>>builder()
-                .result(response)
+                .data(response)
                 .message(response.isEmpty() ? "Empty list" : "Success")
                 .build()
             );

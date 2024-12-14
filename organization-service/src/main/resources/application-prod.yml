@@ -62,7 +62,7 @@ openapi:
   service:
     title: organization-service doc
     version: 1.0.0
-    url: http://localhost:8888 #api gateway url
+    url: http://${API_GATEWAY_URL} #api gateway url
 
 springdoc:
   api-docs:

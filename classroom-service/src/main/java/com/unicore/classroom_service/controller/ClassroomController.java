@@ -1,7 +1,6 @@
 package com.unicore.classroom_service.controller;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
+import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
@@ -40,8 +40,8 @@ public class ClassroomController {
                 HttpStatus.OK.toString(), 
                 "Success", 
                 response, 
-                Date.from(Instant.now()))
-            );
+                LocalDateTime.now()
+            ));
     }
     
     @GetMapping
@@ -52,8 +52,8 @@ public class ClassroomController {
                 HttpStatus.OK.toString(), 
                 "Success", 
                 response, 
-                Date.from(Instant.now()))
-            );
+                LocalDateTime.now()
+            ));
     }
 
     @GetMapping("/{id}")
@@ -63,8 +63,20 @@ public class ClassroomController {
                 HttpStatus.OK.toString(), 
                 "Success", 
                 response, 
-                Date.from(Instant.now()))
-            );
+                LocalDateTime.now()
+            ));
+    }
+
+    @PostMapping("/code")
+    public Mono<ApiResponse<ClassroomResponse>> getClassroomByCode(@RequestBody GetClassBySemesterAndYearRequest request) {
+        log.info(request.toString());
+        return classroomService.getClassroomByCodeSemesterYear(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                LocalDateTime.now()
+            ));
     }
 
     @PostMapping("/students")
@@ -74,9 +86,9 @@ public class ClassroomController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
 
     @GetMapping("/students/{studentCode}")
@@ -85,9 +97,9 @@ public class ClassroomController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
     
 }

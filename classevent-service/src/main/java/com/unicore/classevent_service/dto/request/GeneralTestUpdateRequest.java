@@ -1,6 +1,6 @@
 package com.unicore.classevent_service.dto.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GeneralTestUpdateRequest {
     private String place;
-    private LocalDateTime time;
+    private LocalDate time;
     private String name;
     private String description;
     @JsonProperty("allow_grade_review")

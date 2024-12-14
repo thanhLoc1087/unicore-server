@@ -18,6 +18,8 @@ public class GeneralTestCreationRequest {
     private String subclassCode;
     @JsonProperty("weight_type")
     WeightType weightType;
+    
+    private Float weight;
 
     ExamFormat format;
 }

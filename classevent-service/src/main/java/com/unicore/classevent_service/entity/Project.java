@@ -24,4 +24,6 @@ public class Project extends BaseEvent {
     private boolean allowTopicSuggestion;
 
     private List<Topic> topics;
+
+    private boolean autocreated;
 }

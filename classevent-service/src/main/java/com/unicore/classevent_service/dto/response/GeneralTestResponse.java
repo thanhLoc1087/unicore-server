@@ -1,6 +1,6 @@
 package com.unicore.classevent_service.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import com.unicore.classevent_service.enums.EventType;
 
@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class GeneralTestResponse extends BaseEventResponse {
     private String place;
-    private LocalDateTime time;
+    private LocalDate date;
 
     @Override
     public EventType getEventType() {

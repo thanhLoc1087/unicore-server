@@ -15,7 +15,6 @@ public interface HomeworkRepository extends ReactiveCrudRepository<Homework, Str
 
     Flux<Homework> findAllByProjectId(String projectId);
 
-
     @Query("{ 'class_id' : { $lte : ?0 }, 'subclass_code' : { $lte : ?1 }, 'publish_date' : { $lte : ?2 }, 'end_date' : { $gte : ?3 } }")
     Flux<Homework> findActiveHomework(String classId, String subclassCode, LocalDateTime todayStartDate, LocalDateTime todayEndDate);
 }

@@ -9,7 +9,7 @@ spring:
     application: 
         name: profile-service
     r2dbc:
-        url: r2dbc:mysql://mysql:3306/${MYSQL_DB:profiledb}
+        url: r2dbc:mysql://mysql:3306/${PROFILE_DB:profiledb}
         username: ${MYSQL_USER:root}
         password: ${MYSQL_PASSWORD:mysql}
         pool:
@@ -30,7 +30,7 @@ spring:
         # database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
 
     liquibase:
-        url: jdbc:mysql://mysql:3306/${MYSQL_DB:profiledb}
+        url: jdbc:mysql://mysql:3306/${PROFILE_DB:profiledb}
         enabled: true
         user: ${MYSQL_USER:root}
         password: ${MYSQL_PASSWORD:mysql}
@@ -62,7 +62,7 @@ openapi:
   service:
     title: profile-service doc
     version: 1.0.0
-    url: http://localhost:8888 #api gateway url
+    url: http://${API_GATEWAY_URL} #api gateway url
 
 springdoc:
   api-docs:
@@ -72,7 +72,7 @@ springdoc:
 
 unicore:
   openapi:
-    dev-url: http://localhost:8080
-    prod-url: http://localhost:8080
+    dev-url: http://localhost:8082
+    prod-url: http://localhost:8082
 
 profiles: Loc

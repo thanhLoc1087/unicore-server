@@ -1,6 +1,6 @@
 package com.unicore.classroom_service.dto.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -22,6 +22,6 @@ public class ApiResponse<T> {
     String code = "S001";
 
     String message;
-    T result;
-    Date time;
+    T data;
+    LocalDateTime time;
 }

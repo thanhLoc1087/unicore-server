@@ -1,6 +1,6 @@
 package com.unicore.classevent_service.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,5 +16,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class GeneralTest extends BaseEvent {
     private String place;
-    private LocalDateTime time;
+    private LocalDate date;
+    private boolean autocreated;
 }

@@ -83,4 +83,4 @@ eureka:
 
 application:
     service:
-        classroom: http://localhost:8083/classroom
+        classroom: http://localhost:8888/api/v1/classroom

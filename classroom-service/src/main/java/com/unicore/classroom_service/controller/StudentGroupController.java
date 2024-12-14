@@ -1,17 +1,16 @@
 package com.unicore.classroom_service.controller;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingAddGroupRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
-import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingUpdateRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.StudentGroupingResponse;
@@ -19,7 +18,6 @@ import com.unicore.classroom_service.service.StudentGroupingService;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,8 +32,8 @@ public class StudentGroupController {
                 HttpStatus.OK.toString(), 
                 "Success", 
                 response, 
-                Date.from(Instant.now()))
-            );
+                LocalDateTime.now()
+            ));
     }
     
     @PostMapping()
@@ -44,9 +42,9 @@ public class StudentGroupController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
 
     @PostMapping("/add-group")
@@ -55,9 +53,9 @@ public class StudentGroupController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
     
     @PostMapping("/edit")
@@ -66,9 +64,9 @@ public class StudentGroupController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
     
 }

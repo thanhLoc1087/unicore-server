@@ -10,7 +10,7 @@ spring:
         base-path: /classevent
     data:
         mongodb:
-            uri: mongodb://root:0843300042@mongodb:27017/classeventdb?authSource=admin
+            uri: mongodb://root:${MONGODB_PASSWORD:0843300042}@mongodb:27017/classeventdb?authSource=admin
         
 logging:
     level:
@@ -37,4 +37,4 @@ eureka:
 
 application:
     service:
-        classroom: http://localhost:8083/classroom
+        classroom: http://${API_GATEWAY_URL}:/classroom

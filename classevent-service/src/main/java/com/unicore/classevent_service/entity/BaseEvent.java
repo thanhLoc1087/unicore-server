@@ -10,6 +10,7 @@ import com.unicore.classevent_service.enums.SubmissionOption;
 import com.unicore.classevent_service.enums.WeightType;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -41,6 +42,11 @@ public class BaseEvent {
     private String subclassCode;
 
     private Float weight;
+
+    @Builder.Default
+    @JsonProperty("fixed_weight")
+    private boolean fixedWeight = true;
+
     @JsonProperty("weight_type")
     private WeightType weightType;
 

@@ -20,5 +20,5 @@ public class ApiResponse<T> {
     String code = "S001";
 
     String message;
-    T result;
+    T data;
 }

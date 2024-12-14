@@ -32,7 +32,7 @@ public class StaffController {
     public Mono<ApiResponse<StaffResponse>> createStaff(@RequestBody @Valid StaffCreationRequest request) {
         return staffService.createStaff(request)
             .map(response -> ApiResponse.<StaffResponse>builder()
-                .result(response)
+                .data(response)
                 .message("Success")
                 .build()
             );
@@ -43,7 +43,7 @@ public class StaffController {
         return staffService.createStaffs(request)
             .collectList()
             .map(response -> ApiResponse.<List<StaffResponse>>builder()
-                .result(response)
+                .data(response)
                 .message(response.isEmpty() ? "Empty list" : "Success")
                 .build()
             );
@@ -54,7 +54,7 @@ public class StaffController {
         return staffService.getStaffs()
             .collectList()
             .map(response -> ApiResponse.<List<StaffResponse>>builder()
-                .result(response)
+                .data(response)
                 .message(response.isEmpty() ? "Empty list" : "Success")
                 .build()
             );
@@ -64,7 +64,7 @@ public class StaffController {
     public Mono<ApiResponse<StaffResponse>> getStaffById(@PathVariable String id) {
         return staffService.getStaffById(id)
             .map(response -> ApiResponse.<StaffResponse>builder()
-                .result(response)
+                .data(response)
                 .message("Success")
                 .build()
             );

@@ -20,13 +20,14 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 public class ClassEventClient {
-    @Value("${application.service.classevent}")
-    private String url;
+    private WebClient webClient;
 
-    private final WebClient webClient = WebClient.builder()
-        .baseUrl("http://localhost:8888/api/v1/classevent")
-        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .build();
+    public ClassEventClient(@Value("${application.service.classevent}") String url) {
+        this.webClient = WebClient.builder()
+            .baseUrl(url)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .build();
+    }
 
     public Mono<ApiResponse<List<GeneralTestResponse>>> createBulk(GeneralTestBulkCreationRequest request) {
         log.info("YOLOOOOOOOO create bulk" + request.toString());

@@ -31,7 +31,7 @@ public class TeacherController {
     public Mono<ApiResponse<TeacherResponse>> createTeacher(@RequestBody @Valid TeacherCreationRequest request) {
         return teacherService.createTeacher(request)
             .map(response -> ApiResponse.<TeacherResponse>builder()
-                .result(response)
+                .data(response)
                 .message("Success")
                 .build()
             );
@@ -42,7 +42,7 @@ public class TeacherController {
         return teacherService.createTeachers(request)
             .collectList()
             .map(response -> ApiResponse.<List<TeacherResponse>>builder()
-                .result(response)
+                .data(response)
                 .message(response.isEmpty() ? "Empty list" : "Success")
                 .build()
             );
@@ -53,7 +53,7 @@ public class TeacherController {
         return teacherService.getTeachers()
             .collectList()
             .map(response -> ApiResponse.<List<TeacherResponse>>builder()
-                .result(response)
+                .data(response)
                 .message(response.isEmpty() ? "Empty list" : "Success")
                 .build()
             );
@@ -63,7 +63,7 @@ public class TeacherController {
     public Mono<ApiResponse<TeacherResponse>> getTeacherById(@PathVariable String id) {
         return teacherService.getTeacherById(id)
             .map(response -> ApiResponse.<TeacherResponse>builder()
-                .result(response)
+                .data(response)
                 .message("Success")
                 .build()
             );

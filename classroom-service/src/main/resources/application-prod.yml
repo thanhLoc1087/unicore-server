@@ -10,7 +10,7 @@ spring:
         name: classroom-service
     data:
         mongodb:
-            uri: mongodb://root:0843300042@mongodb:27017/classroomdb?authSource=admin
+            uri: mongodb://root:${MONGODB_PASSWORD:0843300042}@mongodb:27017/classroomdb?authSource=admin
         
 logging:
     level:
@@ -43,7 +43,7 @@ openapi:
   service:
     title: classroom-service doc
     version: 1.0.0
-    url: http://localhost:8888 #api gateway url
+    url: http://${API_GATEWAY_URL} #api gateway url
 
 springdoc:
   api-docs:
@@ -53,5 +53,5 @@ springdoc:
 
 application:
     service:
-        classevent: http://localhost:8084/classevents
-        organization: http://localhost:8081/organization
+        classevent: http://${API_GATEWAY_URL}/classevents
+        organization: http://${API_GATEWAY_URL}/organization

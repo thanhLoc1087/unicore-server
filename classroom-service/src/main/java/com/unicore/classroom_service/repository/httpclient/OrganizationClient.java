@@ -16,13 +16,14 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 public class OrganizationClient {
-    @Value("${application.service.organization}")
-    private String url;
+    private WebClient webClient;
 
-    private final WebClient webClient = WebClient.builder()
-        .baseUrl("http://localhost:8888/api/v1/organization")
-        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .build();
+    public OrganizationClient(@Value("${application.service.organization}") String url) {
+        this.webClient = WebClient.builder()
+            .baseUrl(url)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .build();
+    }
 
     public Mono<SubjectResponse> getSubject(String code) {
         return webClient.get()
@@ -30,7 +31,7 @@ public class OrganizationClient {
                         .retrieve()
                         .toEntity(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
                         // .bodyToMono(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
-                        .map(responseEntity -> responseEntity.getBody().getResult());
+                        .map(responseEntity -> responseEntity.getBody().getData());
     }
 
 }
