@@ -75,4 +75,6 @@ unicore:
     dev-url: http://localhost:8082
     prod-url: http://localhost:8082
 
-profiles: Loc
+application:
+    service:
+        classroom: http://${API_GATEWAY_URL}:/classroom

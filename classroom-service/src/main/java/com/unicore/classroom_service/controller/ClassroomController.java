@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unicore.classroom_service.dto.request.AddStudentsToListRequest;
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
+import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
@@ -83,6 +85,28 @@ public class ClassroomController {
     public Mono<ApiResponse<List<StudentListResponse>>> addStudentLists(@RequestBody List<StudentListCreationRequest> requests) {
         return studentListService.createStudentListBulk(requests)
             .collectList()
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response,
+                LocalDateTime.now()
+            ));
+    }
+
+    @PostMapping("/students/add")
+    public Mono<ApiResponse<StudentListResponse>> addStudentsToList(@RequestBody AddStudentsToListRequest request) {
+        return studentListService.addStudents(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response,
+                LocalDateTime.now()
+            ));
+    }
+
+    @GetMapping("/students")
+    public Mono<ApiResponse<StudentListResponse>> getClassStudentList(@RequestBody GetByClassRequest request) {
+        return studentListService.getStudentList(request)
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 

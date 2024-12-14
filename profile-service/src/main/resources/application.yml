@@ -70,4 +70,6 @@ unicore:
     dev-url: http://localhost:8080
     prod-url: http://localhost:8080
 
-profiles: Loc
+application:
+    service:
+        classroom: http://localhost:8888/api/v1/classroom

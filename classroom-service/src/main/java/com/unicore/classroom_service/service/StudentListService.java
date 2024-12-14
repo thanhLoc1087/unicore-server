@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.unicore.classroom_service.dto.request.AddForeignStudentsRequest;
+import com.unicore.classroom_service.dto.request.AddStudentsToListRequest;
+import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.dto.response.StudentListResponse;
@@ -36,6 +37,7 @@ public class StudentListService {
     private final ClassroomRepository classroomRepository;
     private final ClassroomMapper classroomMapper;
 
+    // Nhập DS sv nhiều lớplớp
     public Flux<StudentListResponse> createStudentListBulk(List<StudentListCreationRequest> requests) {
         return Flux.fromIterable(requests)
             .flatMap(this::createStudentList);
@@ -52,16 +54,25 @@ public class StudentListService {
             );
     }
     
-    public Mono<StudentListResponse> addStudents(String classId, String subclassCode, Set<String> studentCodes) {
-        return studentListRepository.findByClassIdAndSubclassCode(classId, subclassCode)
+    // Thêm sv vào lớp
+    public Mono<StudentListResponse> addStudents(AddStudentsToListRequest request) {
+        return studentListRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
             .map(studentList -> {
-                studentList.getStudentCodes().addAll(studentCodes);
+                studentList.getStudentCodes().addAll(request.getStudentCodes());
                 return studentList;
             })
             .flatMap(studentListRepository::save)
             .map(studentListMapper::toStudentListResponse);
     }
+
+
+    public Mono<StudentListResponse> getStudentList(GetByClassRequest request) {
+        return studentListRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
+            .map(studentListMapper::toStudentListResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+    }
     
+    // thêm sv ngoài lớplớp
     public Mono<StudentListResponse> addForeignStudents(AddForeignStudentsRequest request) {
         return studentListRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
             .map(studentList -> {
@@ -71,7 +82,6 @@ public class StudentListService {
             .flatMap(studentListRepository::save)
             .map(studentListMapper::toStudentListResponse);
     }
-
 
     private Mono<Boolean> checkDuplicate(StudentListCreationRequest request) {
         return studentListRepository.findByClassIdAndSubclassCode(
@@ -123,8 +133,8 @@ public class StudentListService {
                         .toList();
                     });
             })
-            .doOnError(e -> {
-                log.error("BUGUGU", e);
-            });
+            .doOnError(e -> 
+                log.error("BUGUGU", e)
+            );
     }
 }

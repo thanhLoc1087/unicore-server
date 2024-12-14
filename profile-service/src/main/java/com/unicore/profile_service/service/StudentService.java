@@ -5,16 +5,20 @@ import org.springframework.r2dbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.unicore.profile_service.exception.AppException;
 import com.unicore.profile_service.exception.ErrorCode;
 import com.unicore.profile_service.dto.request.GetClassMemberRequest;
+import com.unicore.profile_service.dto.request.GetStudentListByClass;
 import com.unicore.profile_service.dto.request.StudentBulkCreationRequest;
 import com.unicore.profile_service.dto.request.StudentCreationRequest;
+import com.unicore.profile_service.dto.response.StudentInClassResponse;
 import com.unicore.profile_service.dto.response.StudentResponse;
 import com.unicore.profile_service.mapper.StudentMapper;
 import com.unicore.profile_service.repository.StudentRepository;
+import com.unicore.profile_service.repository.httpclient.ClassroomClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +31,8 @@ import reactor.core.publisher.Mono;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
+
+    private final ClassroomClient classroomClient;
 
     public Mono<StudentResponse> createStudent(StudentCreationRequest request) {
         return Mono.just(request)
@@ -73,8 +79,24 @@ public class StudentService {
         return studentRepository.findAll()
             .map(studentMapper::toStudentResponse);
     }
+
+    public Mono<StudentInClassResponse> getStudentsInClass(GetStudentListByClass request) {
+        return classroomClient.getClassStudentList(request)
+            .flatMap(response -> {
+                // Create a mutable list of student codes
+                List<String> codes = new ArrayList<>(response.getData().getStudentCodes());
+                
+                response.getData().getForeignStudents()
+                    .forEach(student -> codes.add(student.getStudentCode()));
+
+                GetClassMemberRequest memberRequest = new GetClassMemberRequest(response.getData().getLeaderCode(), codes);
+
+                return getStudentsByCodes(memberRequest).collectList();
+            })
+            .map(students -> new StudentInClassResponse(students, null));
+    }
     
-    public Flux<StudentResponse> getStudentsByCodes(GetClassMemberRequest request) {
+    private Flux<StudentResponse> getStudentsByCodes(GetClassMemberRequest request) {
         String leaderCode = request.getLeaderCode();
     
         return studentRepository.findAllByCodeIn(request.getStudentCodes())

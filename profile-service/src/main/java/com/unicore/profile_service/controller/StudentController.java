@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.unicore.profile_service.dto.request.GetClassMemberRequest;
+import com.unicore.profile_service.dto.request.GetStudentListByClass;
 import com.unicore.profile_service.dto.request.MemberBulkDeletionRequest;
 import com.unicore.profile_service.dto.request.StudentBulkCreationRequest;
 import com.unicore.profile_service.dto.request.StudentCreationRequest;
 import com.unicore.profile_service.dto.response.ApiResponse;
+import com.unicore.profile_service.dto.response.StudentInClassResponse;
 import com.unicore.profile_service.dto.response.StudentResponse;
 import com.unicore.profile_service.service.StudentService;
 
@@ -22,6 +23,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+
 
 @RestController
 @RequestMapping("/students")
@@ -64,23 +66,23 @@ public class StudentController {
             );
     }
 
+    @PostMapping("/class")
+    public Mono<ApiResponse<StudentInClassResponse>> getStudentsInClass(@RequestBody GetStudentListByClass request) {
+        return studentService.getStudentsInClass(request)
+            .map(response -> ApiResponse.<StudentInClassResponse>builder()
+                .data(response)
+                .message("Success")
+                .build()
+            );
+    }
+    
+
     @GetMapping("/{id}")
     public Mono<ApiResponse<StudentResponse>> getStudentById(@PathVariable String id) {
         return studentService.getStudentById(id)
             .map(response -> ApiResponse.<StudentResponse>builder()
                 .data(response)
                 .message("Success")
-                .build()
-            );
-    }
-
-    @GetMapping("/class")
-    public Mono<ApiResponse<List<StudentResponse>>> getStudentsByCodes(@RequestBody GetClassMemberRequest request) {
-        return studentService.getStudentsByCodes(request)
-            .collectList()
-            .map(response -> ApiResponse.<List<StudentResponse>>builder()
-                .data(response)
-                .message(response.isEmpty() ? "Empty list" : "Success")
                 .build()
             );
     }
