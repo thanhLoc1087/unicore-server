@@ -1,5 +1,6 @@
 package com.unicore.classevent_service.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,17 +24,16 @@ public class Report extends BaseEvent {
     @JsonProperty("project_id")
     private String projectId;
 
-    private String place;
+    private String room;
 
     private LocalDateTime publishDate;
 
     private SubmissionOption submissionOption;
 
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate date;
 
-    private LocalDateTime remindGradingDate;
-    private LocalDateTime closeSubmissionDate;
+    private LocalDate remindGradingDate;
+    private LocalDate closeSubmissionDate;
 
     private String attachmentUrl;
     

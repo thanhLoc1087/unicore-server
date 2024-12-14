@@ -1,12 +1,10 @@
 package com.unicore.classevent_service.service;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators.In;
 import org.springframework.stereotype.Service;
 
 import com.unicore.classevent_service.dto.request.BulkUpdateTestRequest;

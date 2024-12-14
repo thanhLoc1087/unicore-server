@@ -1,5 +1,6 @@
 package com.unicore.classevent_service.dto.request;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class ReportUpdateRequest {
     private String name;
     private String description;
-    private String place;
+    private String room;
     @JsonProperty("allow_grade_review")
     private boolean allowGradeReview;
     @JsonProperty("review_times")
@@ -39,15 +40,12 @@ public class ReportUpdateRequest {
     @JsonProperty("weight_type")
     private WeightType weightType;
     
-    @JsonProperty("start_date")
-    private LocalDateTime startDate;
-    @JsonProperty("end_date")
-    private LocalDateTime endDate;
+    private LocalDate date;
     
     @JsonProperty("late_turn_in")
-    private LocalDateTime lateTurnIn;
+    private LocalDate lateTurnIn;
     @JsonProperty("close_submission_date")
-    private LocalDateTime closeSubmissionDate;
+    private LocalDate closeSubmissionDate;
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;

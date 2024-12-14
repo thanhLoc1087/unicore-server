@@ -1,5 +1,6 @@
 package com.unicore.classevent_service.dto.request;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,14 +27,11 @@ public class ReportCreationRequest {
     private List<String> subclassCodes;
     private String name;
     private String description;
-    private String place;
+    private String room;
     @JsonProperty("allow_grade_review")
     private Boolean allowGradeReview;
     @JsonProperty("review_times")
     private Integer reviewTimes;
-    // người chấm
-    @JsonProperty("grader_code")
-    private String graderCode;
     
     @JsonProperty("publish_date")
     private LocalDateTime publishDate;
@@ -46,15 +44,12 @@ public class ReportCreationRequest {
     @JsonProperty("weight_type")
     private WeightType weightType;
     
-    @JsonProperty("start_date")
-    private LocalDateTime startDate;
-    @JsonProperty("end_date")
-    private LocalDateTime endDate;
+    private LocalDate date;
     
     @JsonProperty("remind_grading_date")
-    private LocalDateTime remindGradingDate;
+    private LocalDate remindGradingDate;
     @JsonProperty("close_submission_date")
-    private LocalDateTime closeSubmissionDate;
+    private LocalDate closeSubmissionDate;
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;

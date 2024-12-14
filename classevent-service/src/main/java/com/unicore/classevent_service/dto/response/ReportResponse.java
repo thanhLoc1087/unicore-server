@@ -1,5 +1,6 @@
 package com.unicore.classevent_service.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class ReportResponse extends BaseEventResponse{
-    private String place;
+    private String room;
 
     @JsonProperty("project_id")
     private String projectId;
@@ -26,15 +27,12 @@ public class ReportResponse extends BaseEventResponse{
     @JsonProperty("submission_option")
     private SubmissionOption submissionOption;
     
-    @JsonProperty("start_date")
-    private LocalDateTime startDate;
-    @JsonProperty("end_date")
-    private LocalDateTime endDate;
+    private LocalDate date;
     
     @JsonProperty("remind_grading_date")
-    private LocalDateTime remindGradingDate;
+    private LocalDate remindGradingDate;
     @JsonProperty("close_submission_date")
-    private LocalDateTime closeSubmissionDate;
+    private LocalDate closeSubmissionDate;
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;

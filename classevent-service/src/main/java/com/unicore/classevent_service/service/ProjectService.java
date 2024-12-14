@@ -46,6 +46,7 @@ public class ProjectService {
 
     private final EventGroupingService eventGroupingService;
 
+
     public Mono<ProjectResponse> createProject(ProjectCreationRequest request) {
         return Mono.just(request)
             .map(subclassCode -> {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unicore.classevent_service.dto.request.CentralizedTestRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.ReportCreationRequest;
@@ -92,6 +93,18 @@ public class ReportController {
     @PutMapping("/{id}")
     public Mono<ApiResponse<ReportResponse>> updateReport(@PathVariable String id, @RequestBody ReportUpdateRequest request) {
         return reportService.updateReport(id, request)
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
+    @PutMapping("/edit-bulk")
+    public Mono<ApiResponse<List<ReportResponse>>> editTestsBulk(@RequestBody CentralizedTestRequest request) {
+        return reportService.updateBulk(request)
+            .collectList()
             .map(report -> new ApiResponse<>(
                 report, 
                 ApiMessage.SUCCESS.getMessage(), 

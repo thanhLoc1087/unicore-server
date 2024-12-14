@@ -23,16 +23,15 @@ public class ReportMapper {
         report.classId( request.getClassId() );
         report.closeSubmissionDate( request.getCloseSubmissionDate() );
         report.description( request.getDescription() );
-        report.endDate( request.getEndDate() );
+        report.date( request.getDate() );
         report.weight( request.getWeight() );
         report.weightType( request.getWeightType() );
         report.inGroup( request.getInGroup() );
         report.name( request.getName() );
-        report.place( request.getPlace() );
+        report.room( request.getRoom() );
         report.publishDate( request.getPublishDate() );
         report.remindGradingDate( request.getRemindGradingDate() );
         report.reviewTimes( request.getReviewTimes() );
-        report.startDate( request.getStartDate() );
         report.submissionOption( request.getSubmissionOption() );
         report.weight( request.getWeight() );
 
@@ -55,8 +54,8 @@ public class ReportMapper {
         if (request.getDescription() != null) {
             report.setDescription(request.getDescription());
         }
-        if (request.getEndDate() != null) {
-            report.setEndDate(request.getEndDate());
+        if (request.getDate() != null) {
+            report.setDate(request.getDate());
         }
         if (request.getWeight() != null) {
             report.setWeight(request.getWeight());
@@ -70,17 +69,14 @@ public class ReportMapper {
         if (request.getName() != null) {
             report.setName(request.getName());
         }
-        if (request.getPlace() != null) {
-            report.setPlace(request.getPlace());
+        if (request.getRoom() != null) {
+            report.setRoom(request.getRoom());
         }
         if (request.getPublishDate() != null) {
             report.setPublishDate(request.getPublishDate());
         }
         if (((Integer) request.getReviewTimes()) != null) {
             report.setReviewTimes(request.getReviewTimes());
-        }
-        if (request.getStartDate() != null) {
-            report.setStartDate(request.getStartDate());
         }
         if (request.getSubmissionOption() != null) {
             report.setSubmissionOption(request.getSubmissionOption());
@@ -106,17 +102,16 @@ public class ReportMapper {
         reportResponse.classId( report.getClassId() );
         reportResponse.closeSubmissionDate( report.getCloseSubmissionDate() );
         reportResponse.description( report.getDescription() );
-        reportResponse.endDate( report.getEndDate() );
+        reportResponse.date( report.getDate() );
         reportResponse.weight( report.getWeight() );
         reportResponse.weightType( report.getWeightType() );
         reportResponse.id( report.getId() );
         reportResponse.inGroup( report.isInGroup() );
         reportResponse.name( report.getName() );
-        reportResponse.place( report.getPlace() );
+        reportResponse.room( report.getRoom() );
         reportResponse.publishDate( report.getPublishDate() );
         reportResponse.remindGradingDate( report.getRemindGradingDate() );
         reportResponse.reviewTimes( report.getReviewTimes() );
-        reportResponse.startDate( report.getStartDate() );
         reportResponse.submissionOption( report.getSubmissionOption() );
         reportResponse.weight( report.getWeight() );
 
