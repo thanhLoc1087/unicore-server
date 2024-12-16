@@ -15,13 +15,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8081/organization/manage/1",
+							"raw": "http://3.27.150.107:8080/api/v1/organization/manage/1",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8081",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"organization",
 								"manage",
 								"1"
@@ -36,13 +38,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8081/organization/manage",
+							"raw": "http://3.27.150.107:8080/api/v1/organization/manage",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8081",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"organization",
 								"manage"
 							]
@@ -65,13 +69,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8081/organization/manage",
+							"raw": "http://3.27.150.107:8080/api/v1/organization/manage",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8081",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"organization",
 								"manage"
 							]
@@ -90,13 +96,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8081/organization/subjects",
+							"raw": "http://3.27.150.107:8080/api/v1/organization/subjects",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8081",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"organization",
 								"subjects"
 							]
@@ -110,16 +118,18 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8081/organization/subjects/4",
+							"raw": "http://3.27.150.107:8080/api/v1/organization/subjects/1",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8081",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"organization",
 								"subjects",
-								"4"
+								"1"
 							]
 						}
 					},
@@ -129,7 +139,23 @@
 					"name": "Get subject by Code",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://3.27.150.107:8080/api/v1/organization/subjects/code/IT001",
+							"protocol": "http",
+							"host": [
+								"3.27.150.107"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"organization",
+								"subjects",
+								"code",
+								"IT001"
+							]
+						}
 					},
 					"response": []
 				},
@@ -148,13 +174,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8081/organization/subjects",
+							"raw": "http://3.27.150.107:8080/api/v1/organization/subjects",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8081",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"organization",
 								"subjects"
 							]
@@ -169,7 +197,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"organization_id\": 2,\r\n    \"subjects\": [\r\n        {\r\n            \"name\": \"Lập trình hướng đối tượng\",\r\n            \"code\": \"IT002\",\r\n            \"final_format\": \"VD\",\r\n            \"practical_format\": \"TH\",\r\n            \"final_weight\": 50,\r\n            \"practical_weight\": 30,\r\n            \"coursework_weight\": 20,\r\n            \"semester\": 1,\r\n            \"year\": 2022\r\n        },\r\n        {\r\n            \"name\": \"Cấu trúc dữ liệu và giải thuật\",\r\n            \"code\": \"IT003\",\r\n            \"finalFormat\": \"VD\",\r\n            \"finalWeight\": 100,\r\n            \"semester\": 1,\r\n            \"year\": 2022\r\n        }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"organization_id\": 1,\r\n    \"subjects\": [\r\n        {\r\n            \"name\": \"Lập trình hướng đối tượng\",\r\n            \"code\": \"IT002\",\r\n            \"final_format\": \"VD\",\r\n            \"practical_format\": \"TH\",\r\n            \"final_weight\": 50,\r\n            \"practical_weight\": 30,\r\n            \"coursework_weight\": 20,\r\n            \"semester\": 1,\r\n            \"year\": 2022\r\n        },\r\n        {\r\n            \"name\": \"Cấu trúc dữ liệu và giải thuật\",\r\n            \"code\": \"IT003\",\r\n            \"final_format\": \"VD\",\r\n            \"final_weight\": 100,\r\n            \"semester\": 1,\r\n            \"year\": 2022\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -177,13 +205,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8081/organization/subjects/bulk",
+							"raw": "http://3.27.150.107:8080/api/v1/organization/subjects/bulk",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8081",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"organization",
 								"subjects",
 								"bulk"
@@ -198,13 +228,15 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8081/organization/subjects/1",
+							"raw": "http://3.27.150.107:8080/api/v1/organization/subjects/1",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8081",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"organization",
 								"subjects",
 								"1"
@@ -224,13 +256,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8082/profile/teachers",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/teachers",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8082",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"teachers"
 							]
@@ -244,13 +278,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8080/profile/teachers/1",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/teachers/1",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
 							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"teachers",
 								"1"
@@ -266,7 +302,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"organization_id\": 1,\r\n    \"code\": \"125\",\r\n    \"name\": \"Le Thanh B\",\r\n    \"email\": \"helloB@gmail.com\",\r\n    \"dob\": \"2003-10-24\",\r\n    \"gender\": true,\r\n    \"degree\": \"Cu nhan\",\r\n    \"research_direction\": \"Moi truong ao\"\r\n}",
+							"raw": "{\r\n    \"organization_id\": 1,\r\n    \"code\": \"125\",\r\n    \"name\": \"Le Thanh A\",\r\n    \"email\": \"helloA@gmail.com\",\r\n    \"address\": \"Nha Loc\",\r\n    \"phone\": \"0123456789\",\r\n    \"dob\": \"2003-10-24\",\r\n    \"gender\": true,\r\n    \"degree\": \"Cu nhan\",\r\n    \"research_direction\": \"Moi truong ao\",\r\n    \"research_concern\": \"Bla bla bla\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -274,13 +310,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8082/profile/teachers",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/teachers",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8082",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"teachers"
 							]
@@ -303,13 +341,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8082/profile/teachers/bulk",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/teachers/bulk",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8082",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"teachers",
 								"bulk"
@@ -324,13 +364,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8082/profile/students",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/students",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8082",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"students"
 							]
@@ -366,7 +408,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"organization_id\": 1,\r\n    \"code\": \"21521087\",\r\n    \"name\": \"Le Thanh BA\",\r\n    \"email\": \"hi@gmail.com\",\r\n    \"dob\": \"2003-10-24\",\r\n    \"gender\": true,\r\n    \"advisory_class\": \"PMCL2021.1\",\r\n    \"academic_batch\": \"K16\"\r\n}",
+							"raw": "{\r\n    \"organization_id\": 1,\r\n    \"code\": \"21521087\",\r\n    \"name\": \"Le Thanh BA\",\r\n    \"email\": \"hi@gmail.com\",\r\n    \"dob\": \"2003-10-24\",\r\n    \"gender\": true,\r\n    \"phone\": \"0987654321\",\r\n    \"address\": \"Nha Loc B\",\r\n    \"advisory_class\": \"PMCL2021.1\",\r\n    \"academic_batch\": \"K16\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -374,13 +416,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8082/profile/students",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/students",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8082",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"students"
 							]
@@ -403,13 +447,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8082/profile/students/bulk",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/students/bulk",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8082",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"students",
 								"bulk"
@@ -424,13 +470,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8082/profile/staff",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/staff",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8082",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"staff"
 							]
@@ -474,13 +522,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8082/profile/staff",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/staff",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8082",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"staff"
 							]
@@ -503,13 +553,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8082/profile/staff/bulk",
+							"raw": "http://3.27.150.107:8080/api/v1/profile/staff/bulk",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8082",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"profile",
 								"staff",
 								"bulk"
@@ -529,13 +581,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8083/classroom",
+							"raw": "http://3.27.150.107:8080/api/v1/classroom",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8083",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"classroom"
 							]
 						}
@@ -549,7 +603,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"organization_id\": 1,\r\n    \"classes\": [\r\n        {\r\n            \"code\": \"IT001.CLC\",\r\n            \"subject_code\": \"IT001\",\r\n            \"is_org_managed\": true,\r\n            \"teacher_code\": \"127\",\r\n            \"teacher_name\": \"Le Van A\",\r\n            \"type\": \"LT\",\r\n            \"credits\": 3,\r\n            \"start_date\": \"2024-09-05\",\r\n            \"end_date\": \"2024-12-28\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"note\": \"EN\"\r\n        },\r\n        {\r\n            \"code\": \"IT001.CLC.1\",\r\n            \"subject_code\": \"IT001\",\r\n            \"is_org_managed\": true,\r\n            \"teacher_code\": \"126\",\r\n            \"teacher_name\": \"Le Van B\",\r\n            \"type\": \"TH\",\r\n            \"credits\": 1,\r\n            \"start_date\": \"2024-09-05\",\r\n            \"end_date\": \"2024-12-28\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"note\": \"EN\"\r\n        },\r\n        {\r\n            \"code\": \"IT001.CLC.2\",\r\n            \"subject_code\": \"IT001\",\r\n            \"is_org_managed\": true,\r\n            \"teacher_code\": \"126\",\r\n            \"teacher_name\": \"Le Van B\",\r\n            \"type\": \"TH\",\r\n            \"credits\": 1,\r\n            \"start_date\": \"2024-09-05\",\r\n            \"end_date\": \"2024-12-28\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"note\": \"EN\"\r\n        }\r\n        // {\r\n        //     \"code\": \"IT002.CLC\",\r\n        //     \"subject_code\": \"IT002\",\r\n        //     \"is_org_managed\": true,\r\n        //     \"teacher_code\": \"127\",\r\n        //     \"teacher_name\": \"Le Van A\",\r\n        //     \"type\": \"LT\",\r\n        //     \"credits\": 3,\r\n        //     \"start_date\": \"2024-09-05\",\r\n        //     \"end_date\": \"2024-12-28\",\r\n        //     \"semester\": 1,\r\n        //     \"year\": 2022,\r\n        //     \"note\": \"EN\"\r\n        // },\r\n        // {\r\n        //     \"code\": \"IT002.CLC.1\",\r\n        //     \"subject_code\": \"IT002\",\r\n        //     \"is_org_managed\": true,\r\n        //     \"teacher_code\": \"126\",\r\n        //     \"teacher_name\": \"Le Van B\",\r\n        //     \"type\": \"TH\",\r\n        //     \"credits\": 1,\r\n        //     \"start_date\": \"2024-09-05\",\r\n        //     \"end_date\": \"2024-12-28\",\r\n        //     \"semester\": 1,\r\n        //     \"year\": 2022,\r\n        //     \"note\": \"EN\"\r\n        // },\r\n        // {\r\n        //     \"code\": \"IT003.CLC\",\r\n        //     \"subject_code\": \"IT003\",\r\n        //     \"is_org_managed\": true,\r\n        //     \"teacher_code\": \"126\",\r\n        //     \"teacher_name\": \"Le Van B\",\r\n        //     \"type\": \"LT\",\r\n        //     \"credits\": 3,\r\n        //     \"start_date\": \"2024-09-05\",\r\n        //     \"end_date\": \"2024-12-28\",\r\n        //     \"semester\": 1,\r\n        //     \"year\": 2022,\r\n        //     \"note\": \"EN\"\r\n        // }\r\n    ]\r\n}",
+							"raw": "{\r\n    \"organization_id\": 1,\r\n    \"classes\": [\r\n        {\r\n            \"code\": \"IT001.CLC\",\r\n            \"subject_code\": \"IT001\",\r\n            \"is_org_managed\": true,\r\n            \"teacher_code\": \"127\",\r\n            \"teacher_name\": \"Le Van A\",\r\n            \"type\": \"LT\",\r\n            \"credits\": 3,\r\n            \"start_date\": \"2024-09-05\",\r\n            \"end_date\": \"2024-12-28\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"note\": \"EN\"\r\n        },\r\n        {\r\n            \"code\": \"IT001.CLC.1\",\r\n            \"subject_code\": \"IT001\",\r\n            \"is_org_managed\": true,\r\n            \"teacher_code\": \"126\",\r\n            \"teacher_name\": \"Le Van B\",\r\n            \"type\": \"HT1\",\r\n            \"credits\": 1,\r\n            \"start_date\": \"2024-09-05\",\r\n            \"end_date\": \"2024-12-28\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"note\": \"EN\"\r\n        },\r\n        {\r\n            \"code\": \"IT001.CLC.2\",\r\n            \"subject_code\": \"IT001\",\r\n            \"is_org_managed\": true,\r\n            \"teacher_code\": \"126\",\r\n            \"teacher_name\": \"Le Van B\",\r\n            \"type\": \"HT1\",\r\n            \"credits\": 1,\r\n            \"start_date\": \"2024-09-05\",\r\n            \"end_date\": \"2024-12-28\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"note\": \"EN\"\r\n        },\r\n        {\r\n            \"code\": \"IT002.CLC\",\r\n            \"subject_code\": \"IT002\",\r\n            \"is_org_managed\": true,\r\n            \"teacher_code\": \"127\",\r\n            \"teacher_name\": \"Le Van A\",\r\n            \"type\": \"LT\",\r\n            \"credits\": 3,\r\n            \"start_date\": \"2024-09-05\",\r\n            \"end_date\": \"2024-12-28\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"note\": \"EN\"\r\n        },\r\n        {\r\n            \"code\": \"IT002.CLC.1\",\r\n            \"subject_code\": \"IT002\",\r\n            \"is_org_managed\": true,\r\n            \"teacher_code\": \"126\",\r\n            \"teacher_name\": \"Le Van B\",\r\n            \"type\": \"HT2\",\r\n            \"credits\": 1,\r\n            \"start_date\": \"2024-09-05\",\r\n            \"end_date\": \"2024-12-28\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"note\": \"EN\"\r\n        },\r\n        {\r\n            \"code\": \"IT003.CLC\",\r\n            \"subject_code\": \"IT003\",\r\n            \"is_org_managed\": true,\r\n            \"teacher_code\": \"126\",\r\n            \"teacher_name\": \"Le Van B\",\r\n            \"type\": \"LT\",\r\n            \"credits\": 3,\r\n            \"start_date\": \"2024-09-05\",\r\n            \"end_date\": \"2024-12-28\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"note\": \"EN\"\r\n        }\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -557,13 +611,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8083/classroom/bulk",
+							"raw": "http://3.27.150.107:8080/api/v1/classroom/bulk",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8083",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"classroom",
 								"bulk"
 							]
@@ -577,13 +633,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8083/classroom/students/21521087",
+							"raw": "http://3.27.150.107:8080/api/v1/classroom/students/21521087",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8083",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"classroom",
 								"students",
 								"21521087"
@@ -607,13 +665,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8083/classroom/students",
+							"raw": "http://3.27.150.107:8080/api/v1/classroom/students",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8083",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"classroom",
 								"students"
 							]
@@ -639,13 +699,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8083/classroom/grouping",
+							"raw": "http://3.27.150.107:8080/api/v1/classroom/grouping",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8083",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"classroom",
 								"grouping"
 							]
@@ -668,13 +730,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8083/classroom/grouping",
+							"raw": "http://3.27.150.107:8080/api/v1/classroom/grouping",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8083",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"classroom",
 								"grouping"
 							]
@@ -697,13 +761,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8083/classroom/grouping/add-group",
+							"raw": "http://3.27.150.107:8080/api/v1/classroom/grouping/add-group",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8083",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"classroom",
 								"grouping",
 								"add-group"
@@ -727,16 +793,47 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8083/classrooms/grouping/edit",
+							"raw": "http://3.27.150.107:8080/classrooms/grouping/edit",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8083",
+							"port": "8080",
 							"path": [
 								"classrooms",
 								"grouping",
 								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by code",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"class_code\": \"IT001.CLC\",\r\n    \"semester\": 1,\r\n    \"year\": 2022\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://3.27.150.107:8080/api/v1/classroom/code",
+							"protocol": "http",
+							"host": [
+								"3.27.150.107"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"classroom",
+								"code"
 							]
 						}
 					},
@@ -765,13 +862,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8084/classevent/homework",
+							"raw": "http://3.27.150.107:8080/api/v1/classevent/homework",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8084",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"classevent",
 								"homework"
 							]
@@ -794,12 +893,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8084/classevents/homework",
+							"raw": "http://3.27.150.107:8080/api/v1/classevents/homework",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8084",
+							"port": "8080",
 							"path": [
 								"classevents",
 								"homework"
@@ -814,12 +913,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://3.27.150.107:8084/classevents/homework/6736ca00d6675f0da1e4881f",
+							"raw": "http://3.27.150.107:8080/api/v1/classevents/homework/6736ca00d6675f0da1e4881f",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8084",
+							"port": "8080",
 							"path": [
 								"classevents",
 								"homework",
@@ -847,14 +946,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8084/classevents/homework/class",
+							"raw": "http://3.27.150.107:8080/api/v1/classevent/homework/class",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8084",
+							"port": "8080",
 							"path": [
-								"classevents",
+								"classevent",
 								"homework",
 								"class"
 							]
@@ -885,12 +984,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8084/classevents/projects",
+							"raw": "http://3.27.150.107:8080/api/v1/classevents/projects",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8084",
+							"port": "8080",
 							"path": [
 								"classevents",
 								"projects"
@@ -906,7 +1005,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"class_id\": \"1\",\r\n    \"subclass_codes\": [\"IT002.PMCL\"],\r\n    \"name\": \"DA CK\",\r\n    \"description\": \"Do an cuoi ky\",\r\n    \"weight\": 25,\r\n    \"allow_grade_review\": false,\r\n    \"review_times\": 0,\r\n    \"start_date\": \"2024-11-27T10:45:23\",\r\n    \"allow_topic_suggestion\": false,\r\n    \"topics\": []\r\n}",
+							"raw": "{\r\n    \"class_id\": \"1\",\r\n    \"subclass_code\": \"IT002.PMCL\",\r\n    \"name\": \"DA CK\",\r\n    \"description\": \"Do an cuoi ky\",\r\n    \"weight\": 25,\r\n    \"weight_type\": \"FINAL_TERM\",\r\n    \"in_group\": true,\r\n    \"allow_grade_review\": false,\r\n    \"review_times\": 0,\r\n    \"start_date\": \"2024-11-27T10:45:23\",\r\n    \"allow_topic_suggestion\": false,\r\n    \"topics\": []\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -914,14 +1013,16 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8084/classevents/projects",
+							"raw": "http://3.27.150.107:8080/api/v1/classevent/projects",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8084",
+							"port": "8080",
 							"path": [
-								"classevents",
+								"api",
+								"v1",
+								"classevent",
 								"projects"
 							]
 						}
@@ -948,13 +1049,15 @@
 							}
 						},
 						"url": {
-							"raw": "http://3.27.150.107:8084/classevent/tests/internal",
+							"raw": "http://3.27.150.107:8080/api/v1/classevent/tests/internal",
 							"protocol": "http",
 							"host": [
 								"3.27.150.107"
 							],
-							"port": "8084",
+							"port": "8080",
 							"path": [
+								"api",
+								"v1",
 								"classevent",
 								"tests",
 								"internal"
@@ -966,8 +1069,85 @@
 				{
 					"name": "get tests by class",
 					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"class_id\": \"123\",\r\n    \"subclass_code\": \"22\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://3.27.150.107:8080/api/v1/classevent/tests/class",
+							"protocol": "http",
+							"host": [
+								"3.27.150.107"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"classevent",
+								"tests",
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://3.27.150.107:8080/api/v1/classevent/tests/1",
+							"protocol": "http",
+							"host": [
+								"3.27.150.107"
+							],
+							"port": "8080",
+							"path": [
+								"classevent",
+								"tests",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update centralized tests",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"midterm\": true,\r\n    \"schedules\": [\r\n        {\r\n            \"class_code\": \"IT001.CLC\",\r\n            \"semester\": 1,\r\n            \"year\": 2022,\r\n            \"date\": \"12-12-2022\",\r\n            \"day_of_week\": 2,\r\n            \"session\": \"12345\",\r\n            \"room\": \"B1.12\"\r\n        }\r\n\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://3.27.150.107:8080/api/v1/classevent/tests/edit-bulk",
+							"protocol": "http",
+							"host": [
+								"3.27.150.107"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"classevent",
+								"tests",
+								"edit-bulk"
+							]
+						}
 					},
 					"response": []
 				}

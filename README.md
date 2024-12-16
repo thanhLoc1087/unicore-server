@@ -58,48 +58,23 @@ Unicore is a Classroom Management System, designed to help institutions manage k
 ### Push docker image to Docker Hub
 `docker image push <account>/unicore-server:0.9.0`
 ### Create network:
-`docker network create unicore-network`
+`sudo docker network create unicore-network`
 
-`docker run -d \
-  --name mysql-unicore \
-  --hostname mysql \
-  -e MYSQL_ROOT_PASSWORD=0843300042 \
-  -e MYSQL_DATABASE=init_db \
-  -v $(pwd)/init-db:/docker-entrypoint-initdb.d \
-  --network unicore-network \
-  --health-cmd="mysqladmin ping -h localhost -u root --password=0843300042 || exit 1" \
-  --health-interval=10s \
-  --health-retries=5 \
-  mysql:8.0.39-debian`
+`sudo docker run -d --name mysql-unicore -p 3306:3306 --hostname mysql --network unicore-network -e MYSQL_ROOT_PASSWORD=0843300042 -e MYSQL_DATABASE=init_db mysql:8.0.39-debian`
 
-`docker run -d \
-  --name kafka-unicore \
-  --hostname kafka \
-  -p 9094:9094 \
-  -e KAFKA_CFG_NODE_ID=0 \
-  -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
-  -e KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093 \
-  -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094 \
-  -e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094 \
-  -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT \
-  -e KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER \
-  -e KAFKA_CREATE_TOPICS="notificationCreateProfile,paymentCompleted1,paymentCreated1,paymentRequest1,profileOnboarded,profileOnboarding" \
-  --network unicore-network \
-  bitnami/kafka:3.7.0`
+`sudo docker run -d --name mongodb-unicore --hostname mongodb --network unicore-network -e MONGODB_ROOT_PASSWORD=0843300042 -e GLIBC_TUNABLES=glibc.pthread.rseq=0 bitnami/mongodb:latest`
 
-`docker run -d \
-  --name api-gateway-unicore \
-  -p 8080:8888 \
-  --network unicore-network \
-  thanhloc1087/api-gateway:0.1.0`
+`sudo docker run -d --name eureka-server-unicore --hostname eureka-server --network unicore-network -p 8761:8761 thanhloc1087/unicore-eureka-server:0.1.0`
 
-`docker run -d \
-  --name organization-service-unicore \
-  --restart always \
-  -p 8081:8081 \
-  --network unicore-network \
-  --link mysql-unicore:mysql \
-  --link kafka-unicore:kafka \
-  thanhloc1087/organization-service:0.1.0`
+`sudo docker run -d --name api-gateway-unicore --network unicore-network -p 8080:8888 -e ORG_SERVICE_URL=13.211.239.40 -e PROFILE_SERVICE_URL=3.107.178.141 -e CLASSROOM_SERVICE_URL=54.206.111.100 -e CLASSEVENT_SERVICE_URL=13.210.40.11 thanhloc1087/unicore-api-gateway:0.6.1`
 
+`sudo docker run -d --name organization-service-unicore --network unicore-network -p 8081:8081 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e ORG_DB=organizationdb -e API_GATEWAY_URL=3.27.150.107:8080  thanhloc1087/unicore-organization-service:0.8.2`
+`sudo docker run -d --name organization-service-unicore -p 8081:8081 -e MYSQL_URL=3.25.57.214:3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e ORG_DB=organizationdb -e API_GATEWAY_URL=3.27.150.107:8080  thanhloc1087/unicore-organization-service:0.8.2`
+
+`sudo docker run -d --name profile-service-unicore --network unicore-network -p 8082:8082 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e PROFILE_DB=profiledb -e API_GATEWAY_URL=3.27.150.107:8080 thanhloc1087/unicore-profile-service:0.8.1`
+`sudo docker run -d --name profile-service-unicore -p 8082:8082 -e MYSQL_URL=3.25.57.214:3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e PROFILE_DB=profiledb -e API_GATEWAY_URL=3.27.150.107:8080 thanhloc1087/unicore-profile-service:0.8.2`
+
+`sudo docker run -d --name classroom-service-unicore --network unicore-network -p 8083:8083 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.27.150.107:8080 thanhloc1087/unicore-classroom-service:0.5.0`
+
+`sudo docker run -d --name classevent-service-unicore --network unicore-network -p 8084:8084 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.27.150.107:8080 thanhloc1087/unicore-classevent-service:0.5.0`
 

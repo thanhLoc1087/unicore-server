@@ -9,7 +9,7 @@ spring:
     application: 
         name: organization-service
     r2dbc:
-        url: r2dbc:mysql://mysql:3306/${MYSQL_DB:organizationdb}
+        url: r2dbc:mysql://${MYSQL_URL}/${MYSQL_DB:organizationdb}
         username: ${MYSQL_USER:root}
         password: ${MYSQL_PASSWORD:mysql}
         pool:
@@ -30,7 +30,7 @@ spring:
         # database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
 
     liquibase:
-        url: jdbc:mysql://mysql:3306/${MYSQL_DB:organizationdb}
+        url: jdbc:mysql://${MYSQL_URL}/${MYSQL_DB:organizationdb}
         enabled: true
         user: ${MYSQL_USER:root}
         password: ${MYSQL_PASSWORD:mysql}

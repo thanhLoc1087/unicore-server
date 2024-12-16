@@ -19,19 +19,19 @@ spring:
               filters:
               - StripPrefix=2
             - id: profile_service
-              uri: http://${ORG_SERVICE_URL}:8082
+              uri: http://${PROFILE_SERVICE_URL}:8082
               predicates:
               - Path=/${app.api-prefix}/profile/**
               filters:
               - StripPrefix=2
             - id: classroom_service
-              uri: http://${CLASS_SERVICE_URL}:8083
+              uri: http://${CLASSROOM_SERVICE_URL}:8083
               predicates:
               - Path=/${app.api-prefix}/classroom/**
               filters:
               - StripPrefix=2
             - id: classevent_service
-              uri: http://${CLASS_SERVICE_URL}:8084
+              uri: http://${CLASSEVENT_SERVICE_URL}:8084
               predicates:
               - Path=/${app.api-prefix}/classevent/**
               filters:
