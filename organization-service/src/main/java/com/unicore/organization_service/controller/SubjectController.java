@@ -1,7 +1,6 @@
 package com.unicore.organization_service.controller;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -37,9 +36,9 @@ public class SubjectController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
 
     @PostMapping("/bulk")
@@ -48,9 +47,9 @@ public class SubjectController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
     
     @GetMapping
@@ -60,9 +59,9 @@ public class SubjectController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
     
     @GetMapping("/{id}")
@@ -71,9 +70,9 @@ public class SubjectController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
     
     @GetMapping("/code/{code}")
@@ -82,9 +81,9 @@ public class SubjectController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
 
     @DeleteMapping("/{id}")
@@ -93,8 +92,8 @@ public class SubjectController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
 }

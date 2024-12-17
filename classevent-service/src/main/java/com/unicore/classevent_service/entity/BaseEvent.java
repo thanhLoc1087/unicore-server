@@ -1,12 +1,11 @@
 package com.unicore.classevent_service.entity;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classevent_service.enums.SubmissionOption;
+import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.WeightType;
 
 import lombok.AllArgsConstructor;
@@ -56,4 +55,6 @@ public class BaseEvent {
     private boolean allowGradeReview;
     @JsonProperty("review_times")
     private int reviewTimes;
+
+    private EventType type;
 }

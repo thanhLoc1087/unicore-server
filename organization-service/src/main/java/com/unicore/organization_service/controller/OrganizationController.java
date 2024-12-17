@@ -1,7 +1,6 @@
 package com.unicore.organization_service.controller;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -38,8 +37,8 @@ public class OrganizationController {
                 HttpStatus.OK.toString(), 
                 "Success", 
                 response, 
-                Date.from(Instant.now()))
-            );
+                LocalDateTime.now()
+            ));
     }
 
     @GetMapping("/{id}")
@@ -49,8 +48,8 @@ public class OrganizationController {
                 HttpStatus.OK.toString(), 
                 "Success", 
                 response, 
-                Date.from(Instant.now()))
-            );
+                LocalDateTime.now()
+            ));
     }
 
     @GetMapping
@@ -60,9 +59,9 @@ public class OrganizationController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }
 
     @GetMapping("/{id}/subjects")
@@ -72,8 +71,8 @@ public class OrganizationController {
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response, 
-                Date.from(Instant.now()))
-            );
+                response,
+                LocalDateTime.now()
+            ));
     }   
 }

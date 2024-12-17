@@ -58,5 +58,5 @@ springdoc:
 
 application:
     service:
-        classevent: http://localhost:8888/api/v1/classevents
+        classevent: http://localhost:8888/api/v1/classevent
         organization: http://localhost:8888/api/v1/organization

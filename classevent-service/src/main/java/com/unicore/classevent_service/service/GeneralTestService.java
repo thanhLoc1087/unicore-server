@@ -19,11 +19,12 @@ import com.unicore.classevent_service.dto.response.ClassroomResponse;
 import com.unicore.classevent_service.dto.response.GeneralTestResponse;
 import com.unicore.classevent_service.entity.GeneralTest;
 import com.unicore.classevent_service.entity.Project;
+import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.ExamFormat;
 import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.mapper.GeneralTestMapper;
-import com.unicore.classevent_service.repository.GeneralTestRepository;
+import com.unicore.classevent_service.repository.BaseEventRepository;
 import com.unicore.classevent_service.repository.httpclient.ClassroomClient;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Slf4j
 public class GeneralTestService {
-    private final GeneralTestRepository repository;
+    private final BaseEventRepository repository;
     private final GeneralTestMapper mapper;
 
     private final ProjectService projectService;
@@ -65,8 +66,17 @@ public class GeneralTestService {
                     return projectService.saveProject(project);
                 } else {
                     log.info("TEst create");
+                    String testName = "Thi tập trung ";
+                    if (item.getWeightType() == WeightType.FINAL_TERM) {
+                        testName += "Cuối kỳ";
+                    } else if (item.getWeightType() == WeightType.MIDTERM) {
+                        testName += "Giữa kỳ";
+                    } else {
+                        testName += "Thực hành";
+                    }
                     GeneralTest test = GeneralTest.builder()
                         .classId(item.getClassId())
+                        .name(testName)
                         .subclassCode(item.getSubclassCode())
                         .weightType(item.getWeightType())
                         .weight(item.getWeight())
@@ -94,8 +104,10 @@ public class GeneralTestService {
     public Mono<GeneralTestResponse> editTest(String id, GeneralTestUpdateRequest request) {
         return repository.findById(id)
             .map(test -> {
-                test.setPlace(request.getPlace());
-                test.setDate(request.getTime());
+                if (test instanceof GeneralTest generalTest) {
+                    generalTest.setPlace(request.getPlace());
+                    generalTest.setDate(request.getTime());
+                }
                 test.setName(request.getName());
                 test.setDescription(request.getDescription());
                 test.setAllowGradeReview(request.isAllowGradeReview());
@@ -105,21 +117,22 @@ public class GeneralTestService {
                 return test;
             })
             .flatMap(repository::save)
-            .map(mapper::toResponse)
+            .map(test -> mapper.toResponse((GeneralTest) test))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
-    }
-
-    /// Lấy theo lớp
-    public Flux<GeneralTestResponse> getByClass(GetByClassRequest request) {
-        return repository.findAllByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
-            .map(mapper::toResponse)
+        }
+        
+        /// Lấy theo lớp
+        public Flux<GeneralTestResponse> getByClass(GetByClassRequest request) {
+            log.info(request.toString());
+            return repository.findAllByClassIdAndSubclassCodeAndType(request.getClassId(), request.getSubclassCode(), EventType.TEST)
+            .map(test -> mapper.toResponse((GeneralTest) test))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
     public Mono<GeneralTestResponse> getById(String id) {
         log.info("Get test with id: " + id);
         return repository.findById(id)
-            .map(mapper::toResponse)
+            .map(test -> mapper.toResponse((GeneralTest) test))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
@@ -152,17 +165,19 @@ public class GeneralTestService {
                 log.info("YUH 2" + tests.toString());
                 for (int i = 0; i < tests.size(); i++) {
                     BulkUpdateTestRequest singleRequest = request.getSchedules().get(i);
-                    tests.get(i).setDate(singleRequest.getDate());
-                    tests.get(i).setPlace(singleRequest.getRoom());
-                    tests.get(i).setDescription(singleRequest.genDescription());
-                    tests.get(i).setModifiedDate(Date.from(Instant.now()));
-                    tests.get(i).setModifiedBy("LOC");
+                    if (tests.get(i) instanceof GeneralTest generalTest) {
+                        generalTest.setDate(singleRequest.getDate());
+                        generalTest.setPlace(singleRequest.getRoom());
+                        generalTest.setDescription(singleRequest.genDescription());
+                        generalTest.setModifiedDate(Date.from(Instant.now()));
+                        generalTest.setModifiedBy("LOC");
+                    }
                 }
                 return tests;
             })
             .flatMapMany(Flux::fromIterable)
             .flatMap(repository::save)
-            .map(mapper::toResponse)
+            .map(test -> mapper.toResponse((GeneralTest) test))
             .doOnError(e-> log.error("GeneralTest - updateBulk: Error.", e));
     }
 }

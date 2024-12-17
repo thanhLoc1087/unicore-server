@@ -127,9 +127,10 @@ public class ProjectMapper {
         Topic.TopicBuilder topic = Topic.builder();
 
         topic.name(request.getName());
+        topic.nameEn(request.getNameEn());
         topic.description(request.getDescription());
-        topic.teacherCode(request.getTeacherCode());
-        topic.teacherName(request.getDescription());
+        topic.teacherCodes(request.getTeacherCodes());
+        topic.teacherNames(request.getTeacherNames());
         topic.limit(request.getLimit());
 
         List<String> list = request.getSelectors();
