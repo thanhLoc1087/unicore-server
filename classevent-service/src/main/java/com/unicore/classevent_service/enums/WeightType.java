@@ -8,13 +8,13 @@ public enum WeightType {
     @JsonCreator
     public static WeightType fromCode(String code) {
         switch (code) {
-            case "COURSEWORK":
+            case "COURSEWORK", "QT":
                 return COURSEWORK;
-            case "PRACTICAL":
+            case "PRACTICAL", "TH":
                 return PRACTICAL;
-            case "MIDTERM":
+            case "MIDTERM", "GK":
                 return MIDTERM;
-            case "FINAL_TERM":
+            case "FINAL_TERM", "CK":
                 return FINAL_TERM;
             default:
                 return MIDTERM;

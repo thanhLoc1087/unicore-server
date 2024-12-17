@@ -26,12 +26,13 @@ import com.unicore.classevent_service.dto.response.ReportResponse;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.QueryOption;
 import com.unicore.classevent_service.entity.Report;
+import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.SubmissionOption;
 import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.mapper.ReportMapper;
 import com.unicore.classevent_service.repository.ProjectRepository;
-import com.unicore.classevent_service.repository.ReportRepository;
+import com.unicore.classevent_service.repository.BaseEventRepository;
 import com.unicore.classevent_service.repository.httpclient.ClassroomClient;
 
 import jakarta.validation.Valid;
@@ -44,7 +45,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RequiredArgsConstructor
 public class ReportService {
-    private final ReportRepository reportRepository;
+    private final BaseEventRepository reportRepository;
     private final ReportMapper reportMapper;
 
     private final ProjectRepository projectRepository;
@@ -83,19 +84,19 @@ public class ReportService {
 
     public Mono<ReportResponse> getReport(String id) {
         return reportRepository.findById(id)
-            .map(reportMapper::toReportResponse)
+            .map(report -> reportMapper.toReportResponse((Report) report))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
     public Flux<ReportResponse> getClassReports(GetByClassRequest request) {
-        return reportRepository.findAllByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
-            .map(reportMapper::toReportResponse)
+        return reportRepository.findAllByClassIdAndSubclassCodeAndType(request.getClassId(), request.getSubclassCode(), EventType.REPORT)
+            .map(report -> reportMapper.toReportResponse((Report) report))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
     public Flux<ReportResponse> getProjectReports(String projectId) {
-        return reportRepository.findAllByProjectId(projectId)
-            .map(reportMapper::toReportResponse)
+        return reportRepository.findAllByProjectIdAndType(projectId, EventType.REPORT)
+            .map(report -> reportMapper.toReportResponse((Report) report))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
@@ -106,44 +107,48 @@ public class ReportService {
                                             .orElse(LocalDate.now().atTime(LocalTime.MAX));
 
         // Perform the query and map results
-        return reportRepository.findActiveReports(
+        return reportRepository.findActiveEvents(
                     request.getClassId(),
                     request.getSubclassCode(),
                     startDateTime,
-                    endDateTime)
-                .map(reportMapper::toReportResponse)
+                    endDateTime,
+                    EventType.REPORT)
+                .map(report -> reportMapper.toReportResponse((Report) report))
                 .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
     public Mono<ReportResponse> updateReport(String id, ReportUpdateRequest request) {
         return reportRepository.findById(id)
-            .map(report -> reportMapper.toReport(report, request))
+            .map(report -> reportMapper.toReport((Report) report, request))
             .flatMap(this::saveReport)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
     
     public Mono<ReportResponse> chooseOption(QueryChooseOptionRequest request) {
         return reportRepository.findById(request.getReportId())
-            .flatMap(report -> {
-                QueryOption matchedOption = report.getQuery().getOptions().stream()
-                    .filter(option -> option.getId().equals(request.getOptionId()))
-                    .findFirst()
-                    .orElse(null);
-
-                if (matchedOption != null) {
-                    if (matchedOption.getSelectors() == null) {
-                        matchedOption.setSelectors(new ArrayList<>());
-                    }
-                    if (Boolean.TRUE.equals(request.getAdding())) {
-                        matchedOption.getSelectors().add(request.getSelector());
+            .flatMap(response -> {
+                if (response instanceof Report report) {
+                    QueryOption matchedOption = report.getQuery().getOptions().stream()
+                        .filter(option -> option.getId().equals(request.getOptionId()))
+                        .findFirst()
+                        .orElse(null);
+    
+                    if (matchedOption != null) {
+                        if (matchedOption.getSelectors() == null) {
+                            matchedOption.setSelectors(new ArrayList<>());
+                        }
+                        if (Boolean.TRUE.equals(request.getAdding())) {
+                            matchedOption.getSelectors().add(request.getSelector());
+                        } else {
+                            matchedOption.getSelectors().stream()
+                                .filter(selector -> !selector.equals(request.getSelector()));
+                        }
+                        return reportRepository.save(report);
                     } else {
-                        matchedOption.getSelectors().stream()
-                            .filter(selector -> !selector.equals(request.getSelector()));
+                        return Mono.error(new DataNotFoundException());
                     }
-                    return reportRepository.save(report);
-                } else {
-                    return Mono.error(new DataNotFoundException());
                 }
+                return Mono.error(new DataNotFoundException());
             })
             .map(reportMapper::toReportResponse);
     }

@@ -65,7 +65,7 @@ public class EventGroupingController {
     }
     
     @PutMapping("/{id}")
-    public Mono<ApiResponse<EventGroupingResponse>> putMethodName(@PathVariable String id, @RequestBody EventGroupingUpdateRequest request) {
+    public Mono<ApiResponse<EventGroupingResponse>> updateGroupingInfo(@PathVariable String id, @RequestBody EventGroupingUpdateRequest request) {
         return service.updateEventGrouping(id, request)
             .map(grouping -> new ApiResponse<>(
                 grouping, 

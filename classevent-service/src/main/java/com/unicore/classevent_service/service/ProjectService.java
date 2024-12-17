@@ -29,7 +29,7 @@ import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.exception.InvalidRequestException;
 import com.unicore.classevent_service.mapper.ProjectMapper;
-import com.unicore.classevent_service.repository.ProjectRepository;
+import com.unicore.classevent_service.repository.BaseEventRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Slf4j
 public class ProjectService {
-    private final ProjectRepository projectRepository;
+    private final BaseEventRepository projectRepository;
     private final ProjectMapper projectMapper;
 
     private final EventGroupingService eventGroupingService;
@@ -82,13 +82,17 @@ public class ProjectService {
 
     public Mono<ProjectResponse> getProject(String id) {
         return projectRepository.findById(id)
-            .map(projectMapper::toProjectResponse)
+            .map(project -> projectMapper.toProjectResponse((Project) project))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
     public Flux<ProjectResponse> getClassProjects(GetByClassRequest request) {
-        return projectRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
-            .map(projectMapper::toProjectResponse)
+        return projectRepository.findAllByClassIdAndSubclassCodeAndType(
+                request.getClassId(), 
+                request.getSubclassCode(), 
+                EventType.PROJECT
+            )
+            .map(project -> projectMapper.toProjectResponse((Project) project))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
@@ -97,17 +101,19 @@ public class ProjectService {
                                             .orElse(LocalDate.now().atStartOfDay());
 
         // Perform the query and map results
-        return projectRepository.findActiveProjects(
+        return projectRepository.findActiveEvents(
                     request.getClassId(),
                     request.getSubclassCode(),
-                    startDateTime)
-                .map(projectMapper::toProjectResponse)
-                .switchIfEmpty(Mono.error(new DataNotFoundException()));
+                    startDateTime,
+                    startDateTime,
+                    EventType.PROJECT)
+            .map(project -> projectMapper.toProjectResponse((Project) project))
+            .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
     public Mono<ProjectResponse> updateProject(String id, ProjectUpdateRequest request) {
         return projectRepository.findById(id)
-            .map(project -> projectMapper.toProject(project, request))
+            .map(project -> projectMapper.toProject((Project) project, request))
             .flatMap(this::saveProject)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
@@ -115,12 +121,14 @@ public class ProjectService {
     /// THÊM DANH SÁCH ĐỀ TÀI
     public Mono<ProjectResponse> addTopics(String projectId, ProjectAddTopicRequest request) {
         return projectRepository.findById(projectId)    
-            .map(project -> {
-                project.setTopics(request.getTopics());
-                return project;
+            .map(response -> {
+                if (response instanceof Project project) {
+                    project.setTopics(request.getTopics());
+                }
+                return response;
             })
             .flatMap(projectRepository::save)
-            .map(projectMapper::toProjectResponse)
+            .map(project -> projectMapper.toProjectResponse((Project) project))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
@@ -130,11 +138,11 @@ public class ProjectService {
             .map(project -> {
                 Topic newTopic = projectMapper.toTopic(request);
                 newTopic.setStatus(TopicStatus.PENDING);
-                project.getTopics().add(newTopic);
+                ((Project) project).getTopics().add(newTopic);
                 return project;
             })
             .flatMap(projectRepository::save)
-            .map(projectMapper::toProjectResponse)
+            .map(project -> projectMapper.toProjectResponse((Project) project))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
@@ -142,52 +150,57 @@ public class ProjectService {
     public Mono<ProjectResponse> approveTopic(String projectId, TopicApprovalRequest request) {
         return projectRepository.findById(projectId)    
             .map(project -> {
-                for (Topic topic : project.getTopics()) {
-                    if (request.getTopicId().equals(topic.getId())) {
-                        topic.setFeedback(request.getFeedback());
-                        if (request.isApproved()) {
-                            topic.setStatus(TopicStatus.APPROVED);
-                        } else {
-                            topic.setStatus(TopicStatus.PROCESSING);
+                if (project instanceof Project castedProject) {
+                    for (Topic topic : castedProject.getTopics()) {
+                        if (request.getTopicId().equals(topic.getId())) {
+                            topic.setFeedback(request.getFeedback());
+                            if (request.isApproved()) {
+                                topic.setStatus(TopicStatus.APPROVED);
+                            } else {
+                                topic.setStatus(TopicStatus.PROCESSING);
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
                 return project;
             })
             .flatMap(projectRepository::save)
-            .map(projectMapper::toProjectResponse)
+            .map(project -> projectMapper.toProjectResponse((Project) project))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
     
     /// ĐĂNG KÝ ĐỀ TÀI
     public Mono<ProjectResponse> registerTopic(String projectId, ProjectChooseTopicRequest request) {
         return projectRepository.findById(projectId)
-            .flatMap(project -> {
-                Topic matchedOption = project.getTopics().stream()
-                    .filter(topic -> topic.getId().equals(request.getTopicId()))
-                    .findFirst()
-                    .orElse(null);
-
-                if (matchedOption == null) {
-                    return Mono.error(new DataNotFoundException());
-                }
-
-                if (matchedOption.getSelectors() == null) {
-                    matchedOption.setSelectors(new ArrayList<>());
-                }
-                
-                if (Boolean.TRUE.equals(request.getAdding())) {
-                    if (matchedOption.getSelectors().size() < matchedOption.getLimit()) {
-                        matchedOption.getSelectors().add(request.getSelector());
-                    } else {
-                        return Mono.error(new InvalidRequestException());
+            .flatMap(response -> {
+                if (response instanceof Project project) {
+                    Topic matchedOption = project.getTopics().stream()
+                        .filter(topic -> topic.getId().equals(request.getTopicId()))
+                        .findFirst()
+                        .orElse(null);
+    
+                    if (matchedOption == null) {
+                        return Mono.error(new DataNotFoundException());
                     }
-                } else {
-                    matchedOption.getSelectors().stream()
-                        .filter(selector -> !selector.equals(request.getSelector()));
+    
+                    if (matchedOption.getSelectors() == null) {
+                        matchedOption.setSelectors(new ArrayList<>());
+                    }
+                    
+                    if (Boolean.TRUE.equals(request.getAdding())) {
+                        if (matchedOption.getSelectors().size() < matchedOption.getLimit()) {
+                            matchedOption.getSelectors().add(request.getSelector());
+                        } else {
+                            return Mono.error(new InvalidRequestException());
+                        }
+                    } else {
+                        matchedOption.getSelectors().stream()
+                            .filter(selector -> !selector.equals(request.getSelector()));
+                    }
+                    return projectRepository.save(project);
                 }
-                return projectRepository.save(project);
+                return Mono.error(new DataNotFoundException());
             })
             .flatMap(response -> {
                 // Xét trường hợp đăng ký nhóm mới
