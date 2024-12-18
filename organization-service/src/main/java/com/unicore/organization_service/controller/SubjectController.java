@@ -89,11 +89,11 @@ public class SubjectController {
     @DeleteMapping("/{id}")
     public Mono<ApiResponse<Void>> deleteById(@PathVariable String id) {
         return subjectService.deleteById(id)
-            .map(response -> new ApiResponse<>(
+            .then(Mono.just(new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
-                response,
+                null,
                 LocalDateTime.now()
-            ));
+            )));
     }
 }

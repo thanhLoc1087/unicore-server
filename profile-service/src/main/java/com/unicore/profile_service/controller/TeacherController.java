@@ -2,6 +2,7 @@ package com.unicore.profile_service.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -70,7 +71,12 @@ public class TeacherController {
     }
 
     @DeleteMapping("/bulk")
-    public Mono<Void> deleteTeachersBulk(MemberBulkDeletionRequest request) {
-        return teacherService.deleteByIds(request.getIds());
+    public Mono<ApiResponse<String>> deleteTeachersBulk(MemberBulkDeletionRequest request) {
+        return teacherService.deleteByIds(request.getIds())
+            .then(Mono.just(ApiResponse.<String>builder()
+                .data(HttpStatus.OK.toString())
+                .message("Success")
+                .build()
+            ));
     }
 }
