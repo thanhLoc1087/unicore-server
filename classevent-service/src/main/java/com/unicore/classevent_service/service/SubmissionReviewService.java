@@ -10,6 +10,7 @@ import com.unicore.classevent_service.dto.request.ReviewCreationRequest;
 import com.unicore.classevent_service.dto.request.ReviewFeedbackRequest;
 import com.unicore.classevent_service.dto.response.SubmissionReviewResponse;
 import com.unicore.classevent_service.entity.SubmissionReview;
+import com.unicore.classevent_service.enums.ReviewStatus;
 import com.unicore.classevent_service.mapper.SubmissionReviewMapper;
 import com.unicore.classevent_service.repository.SubmissionReviewRepository;
 
@@ -39,13 +40,26 @@ public class SubmissionReviewService {
             .map(mapper::toResponse);
     }
 
-    // Chấm điểm hoặc từ chối
+    // Chấm điểm 
     public Mono<SubmissionReviewResponse> feedbackSubmissionReview(String reviewId, ReviewFeedbackRequest request) {
         return repository.findById(reviewId)
             .map(response -> {
-                response.setGrade(request.getGrade());
-                response.setFeedback(request.getFeedback());
-                response.setFeedbackDate(Date.from(Instant.now()));
+                response.getGrades().add(request.getGrade());
+                response.getFeedbacks().add(request.getFeedback());
+                response.getFeedbackDates().add(Date.from(Instant.now()));
+                response.setStatus(ReviewStatus.REVIEWED);
+                return response;
+            })
+            .flatMap(repository::save)
+            .map(mapper::toResponse);
+    }
+
+    // Tuừ chối
+    public Mono<SubmissionReviewResponse> turnDownSubmissionReview(String reviewId) {
+        return repository.findById(reviewId)
+            .map(response -> {
+                response.setStatus(ReviewStatus.TURNED_DOWN);
+                response.setModifiedDate(Date.from(Instant.now()));
                 return response;
             })
             .flatMap(repository::save)
@@ -59,6 +73,11 @@ public class SubmissionReviewService {
 
     public Flux<SubmissionReviewResponse> getSubmissionReviewByReviewer(String reviewerId) {
         return repository.findAllByReviewerId(reviewerId)
+            .map(mapper::toResponse);
+    }
+
+    public Flux<SubmissionReviewResponse> getSubmissionReviewByReviewerAndStatus(String reviewerId, ReviewStatus status) {
+        return repository.findAllByReviewerIdAndStatus(reviewerId, status)
             .map(mapper::toResponse);
     }
 }

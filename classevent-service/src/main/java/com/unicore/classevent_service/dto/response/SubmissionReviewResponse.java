@@ -1,8 +1,10 @@
 package com.unicore.classevent_service.dto.response;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unicore.classevent_service.enums.ReviewStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,13 +36,17 @@ public class SubmissionReviewResponse {
     @JsonProperty("subclass_code")
     private String subclassCode;
 
-    private Float grade;
-    private String feedback;
+    private List<Float> grades;
+    private List<String> feedbacks;
 
     @JsonProperty("feedback_date")
-    private Date feedbackDate;
+    private List<Date> feedbackDates;
     @JsonProperty("reviewer_id")
     private String reviewerId;
+
+    @JsonProperty("turn_down_reason")
+    private String turnDownReason;
+    private ReviewStatus status;
     
     @JsonProperty("created_date")
     private Date createdDate;

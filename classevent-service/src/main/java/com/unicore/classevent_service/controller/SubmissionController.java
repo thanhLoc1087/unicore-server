@@ -21,6 +21,7 @@ import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.SubmissionResponse;
 import com.unicore.classevent_service.dto.response.SubmissionReviewResponse;
 import com.unicore.classevent_service.enums.ApiMessage;
+import com.unicore.classevent_service.enums.ReviewStatus;
 import com.unicore.classevent_service.service.SubmissionReviewService;
 import com.unicore.classevent_service.service.SubmissionService;
 
@@ -100,10 +101,36 @@ public class SubmissionController {
                 LocalDateTime.now()
             ));
         }
+
+    @PutMapping("/review/{id}/turn-down")
+    public Mono<ApiResponse<SubmissionReviewResponse>> turnDownSubmissionReview(@PathVariable String id) {
+        return submissionReviewService.turnDownSubmissionReview(id)
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+        }
         
     @GetMapping("/review/reviewer/{reviewerId}")
     public Mono<ApiResponse<List<SubmissionReviewResponse>>> getByReviewerId(@PathVariable String reviewerId) {
         return submissionReviewService.getSubmissionReviewByReviewer(reviewerId)
+            .collectList()
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+
+    @GetMapping("/review/reviewer/{reviewerId}/{status}")
+    public Mono<ApiResponse<List<SubmissionReviewResponse>>> getByReviewerIdAndStatus(
+        @PathVariable String reviewerId, 
+        @PathVariable ReviewStatus status
+    ) {
+        return submissionReviewService.getSubmissionReviewByReviewerAndStatus(reviewerId, status)
             .collectList()
             .map(report -> new ApiResponse<>(
                 report, 
