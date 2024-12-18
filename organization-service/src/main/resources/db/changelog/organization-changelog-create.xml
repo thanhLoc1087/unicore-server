@@ -99,4 +99,28 @@
             referencedColumnNames="id"/>
     </changeSet>
 
+    
+    <changeSet id="table-subject_metadata-add-column-final_time" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column final_time already exists in table subject_metadata">
+            <not>
+                <columnExists  tableName="subject_metadata" columnName="final_time" />
+            </not>
+        </preConditions>
+        <addColumn tableName="subject_metadata">
+            <column name="final_time" type="INT">
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="table-subject_metadata-add-column-midterm_time" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column midterm_time already exists in table subject_metadata">
+            <not>
+                <columnExists  tableName="subject_metadata" columnName="midterm_time" />
+            </not>
+        </preConditions>
+        <addColumn tableName="subject_metadata">
+            <column name="midterm_time" type="INT">
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

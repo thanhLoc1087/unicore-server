@@ -10,6 +10,7 @@ import com.unicore.organization_service.exception.AppException;
 import com.unicore.organization_service.exception.ErrorCode;
 import com.unicore.organization_service.dto.request.SubjectBulkCreationRequest;
 import com.unicore.organization_service.dto.request.SubjectCreationRequest;
+import com.unicore.organization_service.dto.response.SubjectInListResponse;
 import com.unicore.organization_service.dto.response.SubjectResponse;
 import com.unicore.organization_service.entity.Subject;
 import com.unicore.organization_service.entity.SubjectMetadata;
@@ -36,18 +37,17 @@ public class SubjectService {
 
     @Transactional
     public Mono<SubjectResponse> createSubject(SubjectCreationRequest request) {
-        return checkDuplicateSubject(request.getCode())
+        return checkDuplicateSubject(request.getCode(), request.getOrganizationId())
             .flatMap(subjectId -> subjectId.isEmpty() 
                 ? saveNewSubject(request)
                 : updateExistingSubject(subjectId, request)
             )
             .onErrorResume(e -> Mono.error(new RuntimeException("Failed to create subject", e)))
-            .doOnError(throwable -> log.error("Error creating subject: " + throwable.getMessage(), throwable))
             .as(transactionalOperator::transactional);
     }
 
     @Transactional
-    public Mono<List<SubjectResponse>> createSubjects(SubjectBulkCreationRequest request) {
+    public Mono<List<SubjectInListResponse>> createSubjects(SubjectBulkCreationRequest request) {
         return Flux.fromIterable(request.getSubjects())
             .map(subject -> {
                 subject.setOrganizationId(request.getOrganizationId());
@@ -60,6 +60,7 @@ public class SubjectService {
                     return Mono.empty();
                 })
             )
+            .map(SubjectInListResponse::fromSubject)
             .collectList()
             .doOnError(throwable -> log.error("Error creating subjects: {}", throwable.getMessage(), throwable));
     }
@@ -80,15 +81,21 @@ public class SubjectService {
     }
 
     private Mono<SubjectResponse> updateExistingSubject(String subjectId, SubjectCreationRequest request) {
-        Subject subject = subjectMapper.toSubject(request);
-        subject.setId(subjectId);
         SubjectMetadata metadata = subjectMapper.toSubjectMetadata(request);
-        metadata.setSubjectId(subjectId);
-        return createSubjectMetadata(metadata)
-            .map(savedMetadata -> {
-                SubjectResponse response = subjectMapper.toSubjectResponse(subject);
-                response.setMetadata(savedMetadata);
+        return subjectRepository.findById(subjectId)
+            .map(response -> {
+                response = subjectMapper.toSubject(request);
                 return response;
+            })
+            .flatMap(subjectRepository::save)
+            .map(subjectMapper::toSubjectResponse)
+            .flatMap(savedSubject -> {
+                metadata.setSubjectId(savedSubject.getId());
+                return createSubjectMetadata(metadata)
+                    .map(savedMetadata -> {
+                        savedSubject.setMetadata(savedMetadata);
+                        return savedSubject;
+                    });
             });
     }
 
@@ -101,8 +108,8 @@ public class SubjectService {
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
-    private Mono<String> checkDuplicateSubject(String subjectCode) {
-        return subjectRepository.findByCode(subjectCode)
+    private Mono<String> checkDuplicateSubject(String subjectCode, String orgId) {
+        return subjectRepository.findByCodeAndOrganizationId(subjectCode, orgId)
             .map(subject -> {
                 log.info("HELOOOO" + subject.getId());
                 return subject.getId();
@@ -116,7 +123,7 @@ public class SubjectService {
             .hasElement();
     }
     
-    public Flux<SubjectResponse> getSubjects() {
+    public Flux<SubjectInListResponse> getSubjects() {
         return subjectRepository.findAll()
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
@@ -127,10 +134,11 @@ public class SubjectService {
                     })
                     .switchIfEmpty(Mono.just(subject))
             )
+            .map(SubjectInListResponse::fromSubject)
             .switchIfEmpty(Mono.error(new Exception("Subject list empty")));
     }
     
-    public Flux<SubjectResponse> getSubjectsByOrg(String orgId) {
+    public Flux<SubjectInListResponse> getSubjectsByOrg(String orgId) {
         return subjectRepository.findByOrganizationId(orgId)
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
@@ -141,6 +149,7 @@ public class SubjectService {
                     })
                     .switchIfEmpty(Mono.just(subject))
             )
+            .map(SubjectInListResponse::fromSubject)
             .switchIfEmpty(Mono.error(new Exception("Subject list empty")));
     }
 
@@ -173,6 +182,9 @@ public class SubjectService {
     }
 
     public Mono<Void> deleteById(String id) {
-        return subjectRepository.deleteById(id);
+        return subjectMetadataRepository.deleteAllBySubjectId(id)
+            .then(
+                subjectRepository.deleteById(id)
+            );
     }
 }

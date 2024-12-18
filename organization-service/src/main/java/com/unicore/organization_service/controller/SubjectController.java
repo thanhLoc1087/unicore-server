@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unicore.organization_service.dto.request.SubjectBulkCreationRequest;
 import com.unicore.organization_service.dto.request.SubjectCreationRequest;
 import com.unicore.organization_service.dto.response.ApiResponse;
+import com.unicore.organization_service.dto.response.SubjectInListResponse;
 import com.unicore.organization_service.dto.response.SubjectResponse;
 import com.unicore.organization_service.service.SubjectService;
 
@@ -42,7 +43,7 @@ public class SubjectController {
     }
 
     @PostMapping("/bulk")
-    public Mono<ApiResponse<List<SubjectResponse>>> createSubject(@RequestBody SubjectBulkCreationRequest request) {
+    public Mono<ApiResponse<List<SubjectInListResponse>>> createSubject(@RequestBody SubjectBulkCreationRequest request) {
         return subjectService.createSubjects(request)
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
@@ -53,7 +54,7 @@ public class SubjectController {
     }
     
     @GetMapping
-    public Mono<ApiResponse<List<SubjectResponse>>> getAllSubjects() {
+    public Mono<ApiResponse<List<SubjectInListResponse>>> getAllSubjects() {
         return subjectService.getSubjects()
             .collectList()
             .map(response -> new ApiResponse<>(

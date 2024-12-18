@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unicore.organization_service.dto.request.OrganizationCreationRequest;
 import com.unicore.organization_service.dto.response.ApiResponse;
 import com.unicore.organization_service.dto.response.OrganizationResponse;
-import com.unicore.organization_service.dto.response.SubjectResponse;
+import com.unicore.organization_service.dto.response.SubjectInListResponse;
 import com.unicore.organization_service.service.OrganizationService;
 import com.unicore.organization_service.service.SubjectService;
 
@@ -65,7 +65,7 @@ public class OrganizationController {
     }
 
     @GetMapping("/{id}/subjects")
-    public Mono<ApiResponse<List<SubjectResponse>>> getOrgSubjects(@PathVariable String id) {
+    public Mono<ApiResponse<List<SubjectInListResponse>>> getOrgSubjects(@PathVariable String id) {
         return subjectService.getSubjectsByOrg(id)
             .collectList()
             .map(response -> new ApiResponse<>(
