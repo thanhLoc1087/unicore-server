@@ -1,0 +1,87 @@
+server:
+    port: 8085
+    servlet:
+        contextPath: /grade
+
+spring:
+    application: 
+        name: grade-service
+    webflux:
+        base-path: /grade
+    data:
+        mongodb:
+            # uri: mongodb://root:0843300042@localhost:27018/gradedb?authSource=admin
+            uri: mongodb://localhost:27017/gradedb?authSource=admin
+        
+logging:
+    level:
+        org:
+            springframework: 
+                web:
+                    filter:
+                        reactive:
+                            function:
+                                client: DEBUG
+                        CommonsRequestLoggingFilter: DEBUG
+                security: DEBUG
+                data:
+                    mongodb: DEBUG
+                boot:
+                    autoconfigure:
+                        mongo: DEBUG
+
+            hibernate:
+                SQL: DEBUG
+        com:
+            netflix:
+                eureka: OFF
+                discovery: OFF
+        
+        reactor:
+            ipc:
+                netty:
+                    channel:
+                        ChannelOperationsHandler: DEBUG
+                http:
+                    server:
+                        HttpServer: DEBUG
+                    client: DEBUG
+
+        io:
+            reactivex:
+                netty:
+                    protocol:
+                        http:
+                            client: DEBUG
+                    handler:
+                        proxy:
+                            HttpProxyHandler: DEBUG
+                            ProxyHandler: DEBUG
+
+openapi:
+  service:
+    title: grade-service doc
+    version: 1.0.0
+    url: http://localhost:8888 #api gateway url
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+eureka:
+    instance:
+        appname: grade-service
+    client:
+        enabled: true
+        register-with-eureka: true
+        fetch-registry: true
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+
+
+application:
+    service:
+        classroom: http://localhost:8888/api/v1/classroom
+        profile: http://localhost:8888/api/v1/profile

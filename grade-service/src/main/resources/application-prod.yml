@@ -1,0 +1,41 @@
+server:
+    port: 8085
+    servlet:
+        contextPath: /grade
+
+spring:
+    application: 
+        name: grade-service
+    webflux:
+        base-path: /grade
+    data:
+        mongodb:
+            uri: mongodb://root:${MONGODB_PASSWORD:0843300042}@mongodb:27017/gradedb?authSource=admin
+        
+logging:
+    level:
+        org:
+            springframework: 
+                security: DEBUG
+            hibernate:
+                SQL: DEBUG
+        com:
+            netflix:
+                eureka: OFF
+                discovery: OFF
+  
+eureka:
+    instance:
+        appname: grade-service
+    client:
+        enabled: true
+        register-with-eureka: true
+        fetch-registry: true
+        service-url:
+            defaultZone: http://localhost:8761/eureka/
+
+
+application:
+    service:
+        classroom: http://${API_GATEWAY_URL}:/classroom
+        profile: http://${API_GATEWAY_URL}:/profile
