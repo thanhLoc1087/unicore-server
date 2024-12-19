@@ -25,7 +25,7 @@ public class Submission {
     private String modifiedBy;
 
     private String eventId;
-    private String submitterId;
+    private String submitterCode;
     private boolean group;
     
     private Float grade;
@@ -36,5 +36,4 @@ public class Submission {
     private String attachmentId;
     private String attachmentName;
     private String attachmentUrl;
-
 }

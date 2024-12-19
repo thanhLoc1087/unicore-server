@@ -17,8 +17,8 @@ public class SubmissionResponse extends BaseDTO {
 
     @JsonProperty("event_id")
     private String eventId;
-    @JsonProperty("submitter_id")
-    private String submitterId;
+    @JsonProperty("submitter_code")
+    private String submitterCode;
     private boolean group;
     
     private Float grade;

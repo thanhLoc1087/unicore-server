@@ -38,3 +38,4 @@ eureka:
 application:
     service:
         classroom: http://${API_GATEWAY_URL}:/classroom
+        profile: http://${API_GATEWAY_URL}:/profile

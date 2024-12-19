@@ -2,6 +2,7 @@ package com.unicore.classevent_service.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -40,6 +41,8 @@ public class Report extends BaseEvent {
     private LocalDate closeSubmissionDate;
 
     private String attachmentUrl;
+
+    private Map<String, Float> grades;
     
     private Query query;
 }

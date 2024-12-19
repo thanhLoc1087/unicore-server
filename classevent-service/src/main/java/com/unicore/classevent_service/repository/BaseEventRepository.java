@@ -11,7 +11,13 @@ import com.unicore.classevent_service.enums.WeightType;
 
 import reactor.core.publisher.Flux;
 
+
 public interface BaseEventRepository extends ReactiveMongoRepository<BaseEvent, String> {
+    
+    Flux<BaseEvent> findAllByClassId(String classId);
+
+    Flux<BaseEvent> findAllByClassIdAndWeightType(String classId, WeightType weightType);
+
     Flux<BaseEvent> findAllByClassIdAndSubclassCodeAndType(String classId, String subclassCode, EventType type);
 
     // Test, Project

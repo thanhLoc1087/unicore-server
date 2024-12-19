@@ -16,6 +16,9 @@ public class SubmissionCreationRequest {
     @JsonProperty("event_id")
     private String eventId;
 
+    @JsonProperty("submitter_code")
+    private String submitterCode;
+
     private EventType eventType;
     
     @JsonProperty("attachment_id")

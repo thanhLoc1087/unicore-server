@@ -13,11 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
+import com.unicore.classevent_service.dto.request.GetClassGradeRequest;
+import com.unicore.classevent_service.dto.request.GetStudentClassGradeRequest;
 import com.unicore.classevent_service.dto.request.ReviewCreationRequest;
 import com.unicore.classevent_service.dto.request.ReviewFeedbackRequest;
 import com.unicore.classevent_service.dto.request.SubmissionCreationRequest;
 import com.unicore.classevent_service.dto.request.SubmissionFeedbackRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
+import com.unicore.classevent_service.dto.response.StudentClassGradeResponse;
+import com.unicore.classevent_service.dto.response.StudentGradeDetail;
 import com.unicore.classevent_service.dto.response.SubmissionResponse;
 import com.unicore.classevent_service.dto.response.SubmissionReviewResponse;
 import com.unicore.classevent_service.enums.ApiMessage;
@@ -151,4 +155,28 @@ public class SubmissionController {
                 LocalDateTime.now()
             ));
     }
+
+    @PostMapping("/grade/class")
+    public Mono<ApiResponse<List<StudentClassGradeResponse>>> getClassStudentGrades(@RequestBody GetClassGradeRequest request) {
+        return submissionService.getStudentClassGrade(request)
+            .collectList()
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+
+    @PostMapping("/grade")
+    public Mono<ApiResponse<StudentGradeDetail>> getStudentGrade(@RequestBody GetStudentClassGradeRequest request) {
+        return submissionService.getStudentClassGradeDetail(request)
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
 }

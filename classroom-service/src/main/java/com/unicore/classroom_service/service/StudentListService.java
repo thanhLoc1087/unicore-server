@@ -67,6 +67,12 @@ public class StudentListService {
 
 
     public Mono<StudentListResponse> getStudentList(GetByClassRequest request) {
+        if (request.getSubclassCode() == null) {
+            return classroomRepository.findById(request.getClassId())
+                .flatMap(classroom -> studentListRepository.findByClassIdAndSubclassCode(request.getClassId(), classroom.getCode()))
+                .map(studentListMapper::toStudentListResponse)
+                .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+        }
         return studentListRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
             .map(studentListMapper::toStudentListResponse)
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
