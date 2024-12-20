@@ -1,7 +1,10 @@
 package com.unicore.classevent_service.dto.response;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.dto.BaseDTO;
+import com.unicore.classevent_service.entity.StudentInGroup;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +20,8 @@ public class SubmissionResponse extends BaseDTO {
 
     @JsonProperty("event_id")
     private String eventId;
-    @JsonProperty("submitter_code")
-    private String submitterCode;
+    
+    private List<StudentInGroup> submitters;
     private boolean group;
     
     private Float grade;

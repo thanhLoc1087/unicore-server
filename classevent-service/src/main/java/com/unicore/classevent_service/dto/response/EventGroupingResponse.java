@@ -34,17 +34,17 @@ public class EventGroupingResponse {
     private LocalDateTime endRegisterDate;
 
     @JsonIgnore
-    public boolean hasLeader;
+    private boolean hasLeader;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public Integer maxSize;
+    private Integer maxSize;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public Integer minSize;
+    private Integer minSize;
 
     private boolean useDefaultGroups;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public List<Group> groups;
+    private List<Group> groups;
 
 }

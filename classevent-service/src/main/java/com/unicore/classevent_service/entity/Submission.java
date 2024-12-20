@@ -1,6 +1,7 @@
 package com.unicore.classevent_service.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -25,7 +26,7 @@ public class Submission {
     private String modifiedBy;
 
     private String eventId;
-    private String submitterCode;
+    private List<StudentInSubmission> submitters;
     private boolean group;
     
     private Float grade;

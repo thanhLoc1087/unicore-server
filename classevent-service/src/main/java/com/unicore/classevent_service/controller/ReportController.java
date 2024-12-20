@@ -2,6 +2,7 @@ package com.unicore.classevent_service.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,6 +94,17 @@ public class ReportController {
     @PutMapping("/{id}")
     public Mono<ApiResponse<ReportResponse>> updateReport(@PathVariable String id, @RequestBody ReportUpdateRequest request) {
         return reportService.updateReport(id, request)
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+
+    @PutMapping("/{id}/grades")
+    public Mono<ApiResponse<ReportResponse>> updateReportGrades(@PathVariable String id, @RequestBody Map<String, Float> grades) {
+        return reportService.updateGrades(id, grades)
             .map(report -> new ApiResponse<>(
                 report, 
                 ApiMessage.SUCCESS.getMessage(), 

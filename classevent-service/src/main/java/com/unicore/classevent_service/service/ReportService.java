@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -153,6 +154,18 @@ public class ReportService {
             .map(reportMapper::toReportResponse);
     }
 
+    public Mono<ReportResponse> updateGrades(String reportId, Map<String, Float> grades) {
+        return reportRepository.findById(reportId)
+            .map(response -> {
+                if (response instanceof Report report) {
+                    report.getGrades().putAll(grades);
+                }
+                return response;
+            })
+            .flatMap(reportRepository::save)
+            .map(report -> reportMapper.toReportResponse((Report) report))
+            .switchIfEmpty(Mono.error(new DataNotFoundException()));
+    }
     
     public Flux<ReportResponse> updateBulk(CentralizedTestRequest request) {
         return Flux.fromIterable(request.getSchedules())

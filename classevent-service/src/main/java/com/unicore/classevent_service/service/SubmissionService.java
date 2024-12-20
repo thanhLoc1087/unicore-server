@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetClassGradeRequest;
+import com.unicore.classevent_service.dto.request.GetGroupingRequest;
 import com.unicore.classevent_service.dto.request.GetStudentClassGradeRequest;
 import com.unicore.classevent_service.dto.request.SubmissionCreationRequest;
 import com.unicore.classevent_service.dto.request.SubmissionFeedbackRequest;
@@ -19,6 +20,8 @@ import com.unicore.classevent_service.dto.response.StudentGradeDetail;
 import com.unicore.classevent_service.dto.response.StudentResponse;
 import com.unicore.classevent_service.dto.response.SubmissionResponse;
 import com.unicore.classevent_service.entity.BaseEvent;
+import com.unicore.classevent_service.entity.Group;
+import com.unicore.classevent_service.entity.StudentInSubmission;
 import com.unicore.classevent_service.entity.Submission;
 import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
@@ -41,26 +44,61 @@ public class SubmissionService {
 
     private final BaseEventRepository baseEventRepository;
 
+    private final EventGroupingService eventGroupingService;
+
+    // Nộp bài
     public Mono<SubmissionResponse> createSubmission(SubmissionCreationRequest request) {
         Submission submission = mapper.toSubmission(request);
         return Mono.just(request)
             .flatMap(creationRequest -> 
                 baseEventRepository.findById(creationRequest.getEventId())
             )
-            .map((BaseEvent event) -> {
+            .flatMap((BaseEvent event) -> {
+                if (event.isInGroup()) {
+                    return eventGroupingService.getGrouping(
+                        new GetGroupingRequest(request.getEventId(), request.getClassId(), request.getSubclassCode()))
+                        .flatMap(eventGrouping -> {
+                            for (Group group : eventGrouping.getGroups()) {
+                                if (group.hasMember(request.getSubmitter().getStudentCode())) {
+                                    submission.setSubmitters(
+                                        group.getMembers().stream().map(StudentInSubmission::fromStudentInGroup).toList()
+                                    );
+                                }
+                            }
+                            if (submission.getSubmitters().isEmpty()) {
+                                submission.setSubmitters(List.of(
+                                    StudentInSubmission.fromStudentInGroup(request.getSubmitter())
+                                ));
+                            }
+                            submission.setGroup(event.isInGroup());
+                            submission.setCreatedDate(Date.from(Instant.now()));
+                            return Mono.just(submission);
+                        });
+                }
                 submission.setGroup(event.isInGroup());
                 submission.setCreatedDate(Date.from(Instant.now()));
-                return submission;
+                submission.setSubmitters(List.of(
+                    StudentInSubmission.fromStudentInGroup(request.getSubmitter())
+                ));
+                return Mono.just(submission);
             })
             .flatMap(repository::save)
             .map(mapper::toSubmissionResponse);
     }
 
+    // Chấm điểm
     public Mono<SubmissionResponse> addFeedback(String id, SubmissionFeedbackRequest request) {
         return repository.findById(id)
             .map(submission -> {
                 submission.setFeedback(request.getFeedback());
                 submission.setGrade(request.getGrade());
+                if (!request.getMemberGrades().isEmpty()) {
+                    for (StudentInSubmission member : submission.getSubmitters()) {
+                        member.setGrade(
+                            request.getMemberGrades().getOrDefault(member.getStudentCode(), request.getGrade())
+                        );
+                    }
+                }
                 submission.setFeedbackDate(Date.from(Instant.now()));
                 submission.setReviewerId("Loc");
                 return submission;
@@ -116,7 +154,7 @@ public class SubmissionService {
             );
     }
     
-    // Lấy chi tiết điểm 1 hs 1 lớplớp
+    // Lấy chi tiết điểm 1 hs 1 lớp
     public Mono<StudentGradeDetail> getStudentClassGradeDetail(GetStudentClassGradeRequest request) {
         if (request.getWeightType() != null) {
             return baseEventRepository.findAllByClassIdAndWeightType(request.getClassId(), request.getWeightType())
@@ -136,11 +174,11 @@ public class SubmissionService {
         return Flux.fromIterable(events)
             .flatMap(event -> 
                     student != null ?
-                    repository.findAllByEventIdAndSubmitterCode(event.getId(), student.getCode())
+                    repository.findAllByEventIdAndSubmittersStudentCode(event.getId(), student.getCode())
                         .map(submission -> new EventSubmissionResponse(studentCode, event, submission))
                         .switchIfEmpty(Mono.just(new EventSubmissionResponse(studentCode, event, null)))
                     :
-                    repository.findAllByEventIdAndSubmitterCode(event.getId(), studentCode)
+                    repository.findAllByEventIdAndSubmittersStudentCode(event.getId(), studentCode)
                         .map(submission -> new EventSubmissionResponse(studentCode,event, submission))
                         .switchIfEmpty(Mono.just(new EventSubmissionResponse(studentCode, event, null)))
                 )
@@ -179,6 +217,7 @@ public class SubmissionService {
             });
     }
 
+    // Tính điểm 
     private Float calculateGrade(List<StudentClassGradeDetailByType> grades) {
         List<StudentClassGradeDetailByType> flexibleWeights = new ArrayList<>();
         Float result = 0f;

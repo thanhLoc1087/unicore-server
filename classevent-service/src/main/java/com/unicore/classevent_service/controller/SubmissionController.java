@@ -39,6 +39,7 @@ public class SubmissionController {
     private final SubmissionService submissionService;
     private final SubmissionReviewService submissionReviewService;
 
+    // Lấy 1 bài nộp bằng id
     @GetMapping("/{id}")
     public Mono<ApiResponse<SubmissionResponse>> getById(@PathVariable String id) {
         return submissionService.getSubmissionById(id)
@@ -50,6 +51,7 @@ public class SubmissionController {
             ));
     }
 
+    // Lấy ds bài nộp theo event 
     @GetMapping("/event/{eventId}")
     public Mono<ApiResponse<List<SubmissionResponse>>> getByEventId(@PathVariable String eventId) {
         return submissionService.getSubmissionsByEventId(eventId)
@@ -62,6 +64,7 @@ public class SubmissionController {
             ));
     }
     
+    // Tạo bài nộp
     @PostMapping
     public Mono<ApiResponse<SubmissionResponse>> createSubmission(@RequestBody SubmissionCreationRequest request) {
         return submissionService.createSubmission(request)
@@ -73,6 +76,7 @@ public class SubmissionController {
             ));
     }
     
+    // Chám điểm
     @PostMapping("/{id}")
     public Mono<ApiResponse<SubmissionResponse>> addFeedback(@PathVariable String id, @RequestBody SubmissionFeedbackRequest request) {
         return submissionService.addFeedback(id, request)

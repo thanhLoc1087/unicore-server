@@ -1,9 +1,11 @@
 package com.unicore.classevent_service.dto.response;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import com.unicore.classevent_service.entity.Report;
+import com.unicore.classevent_service.entity.StudentInSubmission;
 import com.unicore.classevent_service.entity.Submission;
 
 import lombok.AllArgsConstructor;
@@ -26,6 +28,13 @@ public class StudentClassGradeDetailByType {
             .orElse(0.0f);
         if (eventSubmission.getEvent() instanceof Report report) {
             grade = report.getGrades().getOrDefault(eventSubmission.getStudentCode(), 0f);
+        } else if (eventSubmission.getEvent().isInGroup()) {
+            List<StudentInSubmission> members = eventSubmission.getSubmission().getSubmitters();
+            for (StudentInSubmission member : members) {
+                if (member.getStudentCode().equals(eventSubmission.getStudentCode())) {
+                    grade = member.getGrade();
+                }
+            }
         }
         return new StudentClassGradeDetailByType(
             eventSubmission.getEvent().getName(),

@@ -1,6 +1,7 @@
 package com.unicore.classevent_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unicore.classevent_service.entity.StudentInGroup;
 import com.unicore.classevent_service.enums.EventType;
 
 import lombok.AllArgsConstructor;
@@ -15,9 +16,13 @@ import lombok.NoArgsConstructor;
 public class SubmissionCreationRequest {
     @JsonProperty("event_id")
     private String eventId;
+    
+    @JsonProperty("class_id")
+    private String classId;
+    @JsonProperty("subclass_code")
+    private String subclassCode;
 
-    @JsonProperty("submitter_code")
-    private String submitterCode;
+    private StudentInGroup submitter;
 
     private EventType eventType;
     

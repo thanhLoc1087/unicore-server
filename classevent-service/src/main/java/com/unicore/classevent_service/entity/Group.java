@@ -15,4 +15,12 @@ public class Group {
     @JsonProperty("teacher_code")
     private String teacherCode;
     private List<StudentInGroup> members;
+
+    public boolean hasMember(String memberCode) {
+        for (StudentInGroup member: members) {
+            if (member.getStudentCode().equals(memberCode))
+                return true;
+            }
+        return false;
+    }
 }
