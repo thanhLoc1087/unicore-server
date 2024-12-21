@@ -36,6 +36,18 @@ spring:
               - Path=/${app.api-prefix}/classevent/**
               filters:
               - StripPrefix=2
+            - id: grade_service
+              uri: http://localhost:8085
+              predicates:
+              - Path=/${app.api-prefix}/grade/**
+              filters:
+              - StripPrefix=2
+            - id: post_service
+              uri: http://localhost:8086
+              predicates:
+              - Path=/${app.api-prefix}/post/**
+              filters:
+              - StripPrefix=2
 
 # eureka:
 #     instance:
@@ -65,3 +77,7 @@ springdoc:
         name: Organization Service
       - url: /api/v1/profile/v3/api-docs
         name: Profile Service
+      - url: /api/v1/grade/v3/api-docs
+        name: Grade Service
+      - url: /api/v1/post/v3/api-docs
+        name: Post Service
