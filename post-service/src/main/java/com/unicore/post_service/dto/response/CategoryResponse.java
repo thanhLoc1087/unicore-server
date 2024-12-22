@@ -8,14 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponse<T> {
-    @Builder.Default
-    private int code = 1000;
-
-    private String message;
-    private T data;
+public class CategoryResponse {
+    private String id;
+    private String name;
+    private Boolean duplicated;
 }

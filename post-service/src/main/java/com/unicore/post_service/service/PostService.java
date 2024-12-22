@@ -2,16 +2,11 @@ package com.unicore.post_service.service;
 
 import java.time.Instant;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 // import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.unicore.post_service.dto.request.PostRequest;
-import com.unicore.post_service.dto.response.PageResponse;
 import com.unicore.post_service.dto.response.PostResponse;
-import com.unicore.post_service.dto.response.ProfileResponse;
 import com.unicore.post_service.entity.Post;
 import com.unicore.post_service.mapper.PostMapper;
 import com.unicore.post_service.repository.PostRepository;
@@ -30,6 +25,9 @@ public class PostService {
 
     PostRepository postRepository;
     PostMapper postMapper;
+
+    CategoryService categoryService;
+
     DateTimeFormatter dateTimeFormatter;
     ProfileClient profileClient;
 
@@ -37,7 +35,8 @@ public class PostService {
         // var authentication = SecurityContextHolder.getContext().getAuthentication();
 
         Post post = Post.builder()
-            .userId("LocLoc")
+            .createdBy("LocLoc")
+            .creatorEmail("LocLoc")
             // .userId(authentication.getName())
             .content(request.getContent())
             .createdDate(Instant.now())
@@ -45,8 +44,11 @@ public class PostService {
             .build();
 
         post = postRepository.save(post);
+
+        PostResponse response = postMapper.toPostResponse(post);
+        response.setCategories(categoryService.getAllByIds(post.getCategoryIds()));
         
-        return postMapper.toPostResponse(post);
+        return response;
     }
 
     // public PageResponse<PostResponse> getMyPosts(int page, int size) {
