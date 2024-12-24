@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import com.unicore.post_service.enums.PostType;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,12 +17,13 @@ import lombok.Data;
 public class Post {
     @MongoId
     private String id;
-    private String content;
+    private String sourceId;
+    private String name;
+    private String description;
     private Instant createdDate;
-    private Instant modifiedDate;
     private String createdBy;
-    private String creatorEmail;
-    private String modifiedBy;
-
+    private String creatorEmail;    
+    private List<Editor> modifiedBy;
+    private PostType type;
     private List<String> categoryIds;
 }

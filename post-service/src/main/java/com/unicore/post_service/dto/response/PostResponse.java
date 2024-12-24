@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unicore.post_service.entity.Editor;
+import com.unicore.post_service.enums.PostType;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,13 +22,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostResponse {
     private String id;
-    private String content;
+    private String name;
+    private String description;
+
+    @JsonProperty("source_id")
+    private Instant sourceId;
 
     @JsonProperty("created_date")
-    private Instant createdDate;
-
-    @JsonProperty("modified_date")
-    private Instant modifiedDate;
+    private String createdDate;
     
     @JsonProperty("create_by")
     private String createdBy;
@@ -35,7 +38,9 @@ public class PostResponse {
     private String creatorEmail;
 
     @JsonProperty("modified_by")
-    private String modifiedBy;
+    private List<Editor> modifiedBy;
+
+    private PostType type;
 
     @JsonIgnoreProperties("duplicated")
     private List<CategoryResponse> categories;

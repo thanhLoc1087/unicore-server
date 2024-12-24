@@ -5,7 +5,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.unicore.post_service.entity.Post;
+import com.unicore.post_service.enums.PostType;
+
 
 public interface PostRepository extends MongoRepository<Post, String> {
-    Page<Post> findAllByUserId(String userId, Pageable pageable);
+    Page<Post> findAllBySourceIdAndType(String sourceId, PostType type, Pageable pageable);
 }
