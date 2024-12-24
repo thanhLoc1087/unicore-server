@@ -53,7 +53,7 @@ public class BookmarkController {
     }
     
     @PostMapping("/delete")
-    public Mono<ApiResponse<String>> delete(@RequestBody BookmarkRequest request) {
+    public Mono<ApiResponse<String>> deleteByEvent(@RequestBody BookmarkRequest request) {
         return service.deleteBookmarkByEvent(request)
             .then(Mono.just(new ApiResponse<>(
                 HttpStatus.OK.toString(),

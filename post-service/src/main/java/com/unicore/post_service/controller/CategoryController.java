@@ -10,6 +10,7 @@ import com.unicore.post_service.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -19,9 +20,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
-
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/category")
 public class CategoryController {
     private final CategoryService service;
 
