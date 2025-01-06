@@ -1,17 +1,18 @@
 package com.unicore.profile_service.service;
 
+import java.util.List;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.r2dbc.BadSqlGrammarException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-import com.unicore.profile_service.exception.AppException;
-import com.unicore.profile_service.exception.ErrorCode;
+import com.unicore.profile_service.dto.request.TeacherUpdateRequest;
 import com.unicore.profile_service.dto.request.TeacherBulkCreationRequest;
 import com.unicore.profile_service.dto.request.TeacherCreationRequest;
 import com.unicore.profile_service.dto.response.TeacherResponse;
+import com.unicore.profile_service.exception.AppException;
+import com.unicore.profile_service.exception.ErrorCode;
 import com.unicore.profile_service.mapper.TeacherMapper;
 import com.unicore.profile_service.repository.TeacherRepository;
 
@@ -78,11 +79,32 @@ public class TeacherService {
             .map(teacherMapper::toTeacherResponse);
     }
 
-    public Mono<Void> deleteById(String id) {
-        return teacherRepository.deleteById(id);
+    public Mono<TeacherResponse> updateTeacher(TeacherUpdateRequest request) {
+        return teacherRepository.findById(request.getId())
+            .map(teacher -> {
+                teacherMapper.updateTeacher(teacher, request);
+                return teacher;
+            })
+            .flatMap(teacherRepository::save)
+            .map(teacherMapper::toTeacherResponse);
     }
 
-    public Mono<Void> deleteByIds(List<String> ids) {
-        return teacherRepository.deleteAllById(ids);
+    public Flux<TeacherResponse> updateTeacherBulks(List<TeacherUpdateRequest> requests) {
+        return Flux.fromIterable(requests)
+            .flatMap(this::updateTeacher);
+    }
+    
+    public Mono<TeacherResponse> deleteById(String id) {
+        return teacherRepository.findById(id)
+            .flatMap(student -> {
+                student.setDeleted(true);
+                return teacherRepository.save(student);
+            })
+            .map(teacherMapper::toTeacherResponse);
+    }
+
+    public Flux<TeacherResponse> deleteByIds(List<String> ids) {
+        return Flux.fromIterable(ids)
+            .flatMap(this::deleteById);
     }
 }

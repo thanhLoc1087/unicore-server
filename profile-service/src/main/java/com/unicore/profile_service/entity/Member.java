@@ -25,4 +25,6 @@ public abstract class Member {
     protected LocalDate dob;
     protected MemberGender gender;
     protected MemberRole role;
+
+    protected boolean deleted;
 }

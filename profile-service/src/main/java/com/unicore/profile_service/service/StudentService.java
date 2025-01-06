@@ -14,6 +14,7 @@ import com.unicore.profile_service.dto.request.GetClassMemberRequest;
 import com.unicore.profile_service.dto.request.GetStudentListByClass;
 import com.unicore.profile_service.dto.request.StudentBulkCreationRequest;
 import com.unicore.profile_service.dto.request.StudentCreationRequest;
+import com.unicore.profile_service.dto.request.StudentUpdateRequest;
 import com.unicore.profile_service.dto.response.StudentInClassResponse;
 import com.unicore.profile_service.dto.response.StudentResponse;
 import com.unicore.profile_service.mapper.StudentMapper;
@@ -113,11 +114,32 @@ public class StudentService {
             .map(studentMapper::toStudentResponse);
     }
 
-    public Mono<Void> deleteById(String id) {
-        return studentRepository.deleteById(id);
+    public Mono<StudentResponse> updateStudent(StudentUpdateRequest request) {
+        return studentRepository.findById(request.getId())
+            .map(student -> {
+                studentMapper.updateStudent(student, request);
+                return student;
+            })
+            .flatMap(studentRepository::save)
+            .map(studentMapper::toStudentResponse);
     }
 
-    public Mono<Void> deleteByIds(List<String> ids) {
-        return studentRepository.deleteAllById(ids);
+    public Flux<StudentResponse> updateStudentBulks(List<StudentUpdateRequest> requests) {
+        return Flux.fromIterable(requests)
+            .flatMap(this::updateStudent);
+    }
+
+    public Mono<StudentResponse> deleteById(String id) {
+        return studentRepository.findById(id)
+            .flatMap(student -> {
+                student.setDeleted(true);
+                return studentRepository.save(student);
+            })
+            .map(studentMapper::toStudentResponse);
+    }
+
+    public Flux<StudentResponse> deleteByIds(List<String> ids) {
+        return Flux.fromIterable(ids)
+            .flatMap(this::deleteById);
     }
 }

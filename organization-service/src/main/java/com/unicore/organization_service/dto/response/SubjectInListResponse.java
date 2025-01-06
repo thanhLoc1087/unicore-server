@@ -41,6 +41,9 @@ public class SubjectInListResponse {
     @JsonProperty("final_time")
     private int finalTime;
 
+    private int semester;
+    private int year;
+
     static public SubjectInListResponse fromSubject(SubjectResponse subject) {
         return SubjectInListResponse.builder()
             .id(subject.getId())

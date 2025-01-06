@@ -11,6 +11,7 @@ import com.unicore.profile_service.exception.AppException;
 import com.unicore.profile_service.exception.ErrorCode;
 import com.unicore.profile_service.dto.request.StaffBulkCreationRequest;
 import com.unicore.profile_service.dto.request.StaffCreationRequest;
+import com.unicore.profile_service.dto.request.StaffUpdateRequest;
 import com.unicore.profile_service.dto.response.StaffResponse;
 import com.unicore.profile_service.mapper.StaffMapper;
 import com.unicore.profile_service.repository.StaffRepository;
@@ -77,14 +78,34 @@ public class StaffService {
         return staffRepository.findByOrganizationId(organizationId)
             .map(staffMapper::toStaffResponse);
     }
-
-    public Mono<Void> deleteById(String id) {
-        return staffRepository.deleteById(id)
-            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+    
+    public Mono<StaffResponse> updateStaff(StaffUpdateRequest request) {
+        return staffRepository.findById(request.getId())
+            .map(staff -> {
+                staffMapper.updateStaff(staff, request);
+                return staff;
+            })
+            .flatMap(staffRepository::save)
+            .map(staffMapper::toStaffResponse);
     }
 
-    public Mono<Void> deleteByIds(List<String> ids) {
-        return staffRepository.deleteAllById(ids)
-            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+    public Flux<StaffResponse> updateStaffBulks(List<StaffUpdateRequest> requests) {
+        return Flux.fromIterable(requests)
+            .flatMap(this::updateStaff);
+    }
+
+
+    public Mono<StaffResponse> deleteById(String id) {
+        return staffRepository.findById(id)
+            .flatMap(student -> {
+                student.setDeleted(true);
+                return staffRepository.save(student);
+            })
+            .map(staffMapper::toStaffResponse);
+    }
+
+    public Flux<StaffResponse> deleteByIds(List<String> ids) {
+        return Flux.fromIterable(ids)
+            .flatMap(this::deleteById);
     }
 }

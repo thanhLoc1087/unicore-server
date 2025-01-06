@@ -2,16 +2,17 @@ package com.unicore.profile_service.controller;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.profile_service.dto.request.MemberBulkDeletionRequest;
+import com.unicore.profile_service.dto.request.TeacherUpdateRequest;
 import com.unicore.profile_service.dto.request.TeacherBulkCreationRequest;
 import com.unicore.profile_service.dto.request.TeacherCreationRequest;
 import com.unicore.profile_service.dto.response.ApiResponse;
@@ -70,13 +71,45 @@ public class TeacherController {
             );
     }
 
-    @DeleteMapping("/bulk")
-    public Mono<ApiResponse<String>> deleteTeachersBulk(MemberBulkDeletionRequest request) {
-        return teacherService.deleteByIds(request.getIds())
-            .then(Mono.just(ApiResponse.<String>builder()
-                .data(HttpStatus.OK.toString())
+    @PutMapping
+    public Mono<ApiResponse<TeacherResponse>> updateTeacher(@RequestBody TeacherUpdateRequest request) {
+        return teacherService.updateTeacher(request)
+            .map(response -> ApiResponse.<TeacherResponse>builder()
+                .data(response)
                 .message("Success")
                 .build()
-            ));
+            );
+    }
+
+    @PutMapping("/bulk")
+    public Mono<ApiResponse<List<TeacherResponse>>> updateTeachersBulk(@RequestBody List<TeacherUpdateRequest> requests) {
+        return teacherService.updateTeacherBulks(requests)
+            .collectList()
+            .map(response -> ApiResponse.<List<TeacherResponse>>builder()
+                .data(response)
+                .message("Success")
+                .build()
+            );
+    }
+
+    @DeleteMapping("/{id}")
+    public Mono<ApiResponse<TeacherResponse>> deleteTeacher(@PathVariable String id) {
+        return teacherService.deleteById(id)
+            .map(response -> ApiResponse.<TeacherResponse>builder()
+                .data(response)
+                .message("Success")
+                .build()
+        );
+    }
+
+    @DeleteMapping("/bulk")
+    public Mono<ApiResponse<List<TeacherResponse>>> deleteTeachersBulk(@RequestBody MemberBulkDeletionRequest request) {
+        return teacherService.deleteByIds(request.getIds())
+            .collectList()
+            .map(response -> ApiResponse.<List<TeacherResponse>>builder()
+                .data(response)
+                .message("Success")
+                .build()
+        );
     }
 }

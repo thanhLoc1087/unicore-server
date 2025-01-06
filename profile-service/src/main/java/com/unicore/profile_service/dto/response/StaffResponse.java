@@ -21,4 +21,5 @@ public class StaffResponse {
     private LocalDate dob;
     private MemberGender gender;
     private String position;
+    private boolean deleted;
 }
