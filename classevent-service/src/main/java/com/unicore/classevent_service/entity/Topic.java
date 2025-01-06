@@ -21,10 +21,13 @@ public class Topic {
     private String name;
     private String nameEn;
     private String description;
+    
     @JsonProperty("teacher_codes")
     private List<String> teacherCodes;
+
     @JsonProperty("teacher_names")
     private List<String> teacherNames;
+
     private int limit;
 
     @Builder.Default
@@ -37,4 +40,7 @@ public class Topic {
 
     // group indices or student codes
     private List<String> selectors;
+
+    // GVPB
+    private String evaluatorCode;
 }

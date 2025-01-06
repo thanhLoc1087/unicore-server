@@ -218,4 +218,9 @@ public class ProjectService {
             .map(projectMapper::toProjectResponse)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
+
+    public Flux<ProjectResponse> getByTopicIds(List<String> topicIds) {
+        return projectRepository.findProjectsByTopicIds(topicIds)
+            .map(project -> projectMapper.toProjectResponse((Project) project));
+    }
 }

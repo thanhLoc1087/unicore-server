@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class SubjectMetadata {
     private String id;
+    private String name;
     
     @JsonProperty("midterm_format")
     private ExamFormat midtermFormat;
@@ -24,6 +25,11 @@ public class SubjectMetadata {
     private int practicalWeight;
     @JsonProperty("final_weight")
     private int finalWeight;
+    
+    @JsonProperty("midterm_time")
+    private int midtermTime;
+    @JsonProperty("final_time")
+    private int finalTime;
 
     private int semester;
     private int year;

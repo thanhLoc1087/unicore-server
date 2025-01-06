@@ -59,6 +59,8 @@ public class SubjectMetadata {
     @JsonProperty("final_time")
     private int finalTime;
 
+    private boolean deleted;
+
     private int semester;
     private int year;
 }

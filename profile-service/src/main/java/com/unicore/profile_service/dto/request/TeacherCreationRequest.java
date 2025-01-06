@@ -19,9 +19,9 @@ public class TeacherCreationRequest {
     private String email;
     private String phone;
     private String address;
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dob;    
     
-    @JsonFormat(pattern = "dd/MM/yyyy")
     private MemberGender gender;
     private String degree;
     @JsonProperty("research_direction")

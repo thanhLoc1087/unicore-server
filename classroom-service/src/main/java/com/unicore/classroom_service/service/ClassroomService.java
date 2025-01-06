@@ -23,6 +23,7 @@ import com.unicore.classroom_service.entity.Classroom;
 import com.unicore.classroom_service.entity.Group;
 import com.unicore.classroom_service.entity.StudentInGroup;
 import com.unicore.classroom_service.entity.Subclass;
+import com.unicore.classroom_service.entity.SubjectMetadata;
 import com.unicore.classroom_service.enums.ClassType;
 import com.unicore.classroom_service.enums.WeightType;
 import com.unicore.classroom_service.exception.AppException;
@@ -53,7 +54,9 @@ public class ClassroomService {
         return organizationClient.getSubject(classroom.getSubjectCode())
             .map(subject -> {
                 log.info(subject.toString());
-                classroom.setSubjectMetadata(subject.getMetadata());
+                SubjectMetadata subjectMetadata = subject.getMetadata();
+                subjectMetadata.setName(subject.getName());
+                classroom.setSubjectMetadata(subjectMetadata);
                 return classroom;
             })
             .flatMap(newClass -> checkDuplicate(newClass.getCode(), newClass.getSemester(), newClass.getYear()))
@@ -115,29 +118,29 @@ public class ClassroomService {
                 for (ClassroomResponse response : classroomResponses) {
                     for (Subclass subclass : response.getSubclasses()) {
                         if (subclass.getType().isMainClass()) {
-                            if (response.getSubjectMetadata().getMidtermWeight() > 0) {
+                            if (response.getSubject().getMidtermWeight() > 0) {
                                 requests.add(new GeneralTestCreationRequest(
                                     response.getId(),
                                     subclass.getCode(),
                                     WeightType.MIDTERM,
-                                    (float) response.getSubjectMetadata().getMidtermWeight(), 
-                                    response.getSubjectMetadata().getMidtermFormat()
+                                    (float) response.getSubject().getMidtermWeight(), 
+                                    response.getSubject().getMidtermFormat()
                                 ));
                             }
                             requests.add(new GeneralTestCreationRequest(
                                 response.getId(),
                                 subclass.getCode(),
                                 WeightType.FINAL_TERM,
-                                (float) response.getSubjectMetadata().getFinalWeight(), 
-                                response.getSubjectMetadata().getFinalFormat()
+                                (float) response.getSubject().getFinalWeight(), 
+                                response.getSubject().getFinalFormat()
                             ));
                         } else {
                             requests.add(new GeneralTestCreationRequest(
                                 response.getId(),
                                 subclass.getCode(),
                                 WeightType.PRACTICAL,
-                                (float) response.getSubjectMetadata().getPracticalWeight(), 
-                                response.getSubjectMetadata().getPracticalFormat()
+                                (float) response.getSubject().getPracticalWeight(), 
+                                response.getSubject().getPracticalFormat()
                             ));
                         }
                     }
@@ -183,7 +186,7 @@ public class ClassroomService {
             .build();
     }
 
-    public Mono<ClassroomResponse> updateClassSize(StudentListCreationRequest request) {
+    private Mono<ClassroomResponse> updateClassSize(StudentListCreationRequest request) {
         return classroomRepository.findById(request.getClassId())
             .map(classroom -> {
                 for (Subclass subclass : classroom.getSubclasses()) {

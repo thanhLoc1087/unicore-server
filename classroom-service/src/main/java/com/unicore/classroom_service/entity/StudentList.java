@@ -1,5 +1,6 @@
 package com.unicore.classroom_service.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,5 +40,6 @@ public class StudentList {
     private Set<String> studentCodes;
     
     @JsonProperty("foreign_students")
-    private List<StudentInGroup> foreignStudents;
+    @Builder.Default
+    private List<StudentInGroup> foreignStudents = new ArrayList<>();
 }

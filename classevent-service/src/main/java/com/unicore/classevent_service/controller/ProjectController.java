@@ -29,14 +29,13 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/projects")
 public class ProjectController {
     private final ProjectService projectService;
 
-    @GetMapping
+    @PostMapping("/active")
     public Mono<ApiResponse<List<ProjectResponse>>> getActiveProjects(@RequestBody GetByDateRequest request) {
         return projectService.getActiveProjects(request)
             .collectList()
@@ -48,7 +47,7 @@ public class ProjectController {
             ));
     }
     
-    @GetMapping("/class")
+    @PostMapping("/class")
     public Mono<ApiResponse<List<ProjectResponse>>> getClassProjects(@RequestBody GetByClassRequest request) {
         return projectService.getClassProjects(request)
             .collectList()
@@ -125,4 +124,17 @@ public class ProjectController {
                 LocalDateTime.now()
             ));
     }
+
+    @PostMapping("/topics")
+    public Mono<ApiResponse<List<ProjectResponse>>> getProjectsByTopicIds(@RequestBody List<String> topicIds) {
+        return projectService.getByTopicIds(topicIds)
+            .collectList()
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
 }

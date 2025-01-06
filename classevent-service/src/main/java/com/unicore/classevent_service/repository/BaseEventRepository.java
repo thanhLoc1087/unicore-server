@@ -1,6 +1,7 @@
 package com.unicore.classevent_service.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
@@ -44,4 +45,7 @@ public interface BaseEventRepository extends ReactiveMongoRepository<BaseEvent, 
         LocalDateTime todayEndDate,
         EventType type
     );
+
+    @Query("{ 'type': 'PROJECT', 'topics.id': { $in: ?0 }, 'topics': { $exists: true } }")
+    Flux<BaseEvent> findProjectsByTopicIds(List<String> topicIds);
 }

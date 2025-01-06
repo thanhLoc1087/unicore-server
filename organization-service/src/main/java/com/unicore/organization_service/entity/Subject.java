@@ -24,4 +24,6 @@ public class Subject {
     private String code;
 
     private String description;
+
+    private boolean deleted;
 }

@@ -15,6 +15,7 @@ public class StaffResponse {
     private String code;
     private String name;
     private String phone;
+    private String address;
     @Email(message = "Invalid email format")
     private String email;
     private LocalDate dob;

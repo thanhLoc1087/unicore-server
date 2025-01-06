@@ -111,7 +111,7 @@ public class SubjectService {
     private Mono<String> checkDuplicateSubject(String subjectCode, String orgId) {
         return subjectRepository.findByCodeAndOrganizationId(subjectCode, orgId)
             .map(subject -> {
-                log.info("HELOOOO" + subject.getId());
+                log.info("Duplicated Subject Id: " + subject.getId());
                 return subject.getId();
             })
             .onErrorResume(e -> Mono.error(new RuntimeException("Failed to check duplicate subject", e)))
@@ -127,7 +127,7 @@ public class SubjectService {
         return subjectRepository.findAll()
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
-                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDesc(subject.getId())
+                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDescAndDeletedFalse(subject.getId())
                     .map(metadata -> {
                         subject.setMetadata(metadata);
                         return subject;
@@ -142,7 +142,7 @@ public class SubjectService {
         return subjectRepository.findByOrganizationId(orgId)
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
-                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDesc(subject.getId())
+                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDescAndDeletedFalse(subject.getId())
                     .map(metadata -> {
                         subject.setMetadata(metadata);
                         return subject;
@@ -157,7 +157,7 @@ public class SubjectService {
         return subjectRepository.findById(id)
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
-                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDesc(subject.getId())
+                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDescAndDeletedFalse(subject.getId())
                     .map(metadata -> {
                         subject.setMetadata(metadata);
                         return subject;
@@ -171,7 +171,7 @@ public class SubjectService {
         return subjectRepository.findByCode(code)
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
-                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDesc(subject.getId())
+                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDescAndDeletedFalse(subject.getId())
                     .map(metadata -> {
                         subject.setMetadata(metadata);
                         return subject;
@@ -181,10 +181,24 @@ public class SubjectService {
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
-    public Mono<Void> deleteById(String id) {
-        return subjectMetadataRepository.deleteAllBySubjectId(id)
+    public Mono<SubjectResponse> deleteById(String id) {
+        return subjectMetadataRepository.findBySubjectId(id)
+            .flatMap(metadata -> {
+                metadata.setDeleted(true);   
+                return subjectMetadataRepository.save(metadata);
+            })
             .then(
-                subjectRepository.deleteById(id)
+                subjectRepository.findById(id)
+                    .flatMap(subject -> {
+                        subject.setDeleted(true);
+                        return subjectRepository.save(subject);
+                    })
+                    .map(subjectMapper::toSubjectResponse)
             );
+    }
+
+    public Flux<SubjectResponse> deleteByIds(List<String> ids) {
+        return Flux.fromIterable(ids)
+            .flatMap(this::deleteById);
     }
 }

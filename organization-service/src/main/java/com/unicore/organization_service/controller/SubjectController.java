@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +32,7 @@ import reactor.core.publisher.Mono;
 public class SubjectController {
     private final SubjectService subjectService;
 
-    @PostMapping
+    @PatchMapping
     public Mono<ApiResponse<SubjectResponse>> createSubject(@RequestBody SubjectCreationRequest request) {
         return subjectService.createSubject(request)
             .map(response -> new ApiResponse<>(
@@ -96,5 +97,17 @@ public class SubjectController {
                 null,
                 LocalDateTime.now()
             )));
+    }
+
+    @DeleteMapping("/bulk")
+    public Mono<ApiResponse<List<SubjectResponse>>> deleteByIds(@RequestBody List<String> ids) {
+        return subjectService.deleteByIds(ids)
+            .collectList()
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response,
+                LocalDateTime.now()
+            ));
     }
 }

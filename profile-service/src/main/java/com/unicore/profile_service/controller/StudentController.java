@@ -77,7 +77,6 @@ public class StudentController {
             );
     }
     
-
     @GetMapping("/{id}")
     public Mono<ApiResponse<StudentResponse>> getStudentById(@PathVariable String id) {
         return studentService.getStudentById(id)
