@@ -14,7 +14,8 @@ public enum ExamFormat {
     THUC_HANH("TH", false, false),
     VAN_DAP("VD", false, true),
     DO_AN("DA", false, true),
-    DO_AN_TOT_NGHIEP("DATN", true, true);
+    DO_AN_TOT_NGHIEP("DATN", true, true),
+    NONE("NONE", false, false);
 
     private String code;
     private boolean isOrgManaged;
@@ -41,7 +42,7 @@ public enum ExamFormat {
             case "DATN", "DO_AN_TOT_NGHIEP":
                 return DO_AN_TOT_NGHIEP;
             default:
-                throw new IllegalArgumentException("Unknown code: " + code);
+                return NONE;
         }
     }
 }

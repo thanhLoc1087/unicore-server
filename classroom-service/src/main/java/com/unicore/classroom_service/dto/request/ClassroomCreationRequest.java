@@ -1,6 +1,7 @@
 package com.unicore.classroom_service.dto.request;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.enums.ClassType;
@@ -23,8 +24,8 @@ public class ClassroomCreationRequest {
     @JsonProperty("teacher_code")
     private String teacherCode;
 
-    @JsonProperty("teacher_assistant_code")
-    private String teacherAssistantCode;
+    @JsonProperty("teacher_assistant_codes")
+    private List<String> teacherAssistantCodes;
 
     @JsonProperty("teacher_name")
     private String teacherName;

@@ -15,7 +15,8 @@ public enum ExamFormat {
     THUC_HANH(false),
     VAN_DAP(false),
     DO_AN(false),
-    DO_AN_TOT_NGHIEP(true);
+    DO_AN_TOT_NGHIEP(true),
+    NONE(false);
 
     private boolean isOrgManaged;
 
@@ -36,7 +37,7 @@ public enum ExamFormat {
                 return DO_AN_TOT_NGHIEP;
             default:
                 log.info("Unknown code: " + code);
-                throw new IllegalArgumentException("Unknown code: " + code);
+                return NONE;
         }
     }
 }

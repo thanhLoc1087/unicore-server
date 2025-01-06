@@ -10,7 +10,10 @@ public enum MemberGender {
     FEMALE;
     
     @JsonCreator
-    public static MemberGender fromCode(boolean isMale) {
-        return isMale ? MALE : FEMALE;
+    public static MemberGender fromString(String gender) {
+        if (gender.equalsIgnoreCase("male") || gender.equalsIgnoreCase("name")) {
+            return MALE;
+        }
+        return FEMALE;
     }
 }

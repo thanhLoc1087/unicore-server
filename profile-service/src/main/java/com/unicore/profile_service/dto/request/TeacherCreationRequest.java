@@ -2,6 +2,7 @@ package com.unicore.profile_service.dto.request;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.profile_service.enums.MemberGender;
 
@@ -18,7 +19,9 @@ public class TeacherCreationRequest {
     private String email;
     private String phone;
     private String address;
-    private LocalDate dob;
+    private LocalDate dob;    
+    
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private MemberGender gender;
     private String degree;
     @JsonProperty("research_direction")

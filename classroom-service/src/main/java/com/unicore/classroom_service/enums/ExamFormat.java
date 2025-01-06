@@ -14,7 +14,8 @@ public enum ExamFormat {
     THUC_HANH("TH",false),
     VAN_DAP("VD",false),
     DO_AN("DA",false),
-    DO_AN_TOT_NGHIEP("DATN",true);
+    DO_AN_TOT_NGHIEP("DATN",true),
+    NONE("NONE", false);
 
     
     @JsonValue
@@ -40,7 +41,7 @@ public enum ExamFormat {
             case "DATN", "DO_AN_TOT_NGHIEP":
                 return DO_AN_TOT_NGHIEP;
             default:
-                throw new IllegalArgumentException("Unknown code: " + code);
+                return NONE;
         }
     }
 }

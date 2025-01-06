@@ -2,6 +2,7 @@ package com.unicore.classevent_service.dto.request;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GeneralTestUpdateRequest {
     private String place;
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate time;
     private String name;
     private String description;
