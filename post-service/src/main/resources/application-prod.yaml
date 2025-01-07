@@ -7,12 +7,12 @@ spring:
     name: post-service
   data:
     mongodb:
-      uri: mongodb://localhost:27017/post-service?authSource=admin
+      uri: mongodb://root:${MONGODB_PASSWORD:0843300042}@mongodb:27017/postdb?authSource=admin
 
 app:
   services:
     profile:
-      url: http://localhost:8081/profile
+      url: http://${API_GATEWAY_URL}/api/v1/profile
         
 logging:
     level:
@@ -57,7 +57,7 @@ openapi:
   service:
     title: grade-service doc
     version: 1.0.0
-    url: http://localhost:8888 #api gateway url
+    url: http://${API_GATEWAY_URL}:8888 #api gateway url
 
 springdoc:
   api-docs:

@@ -53,5 +53,5 @@ springdoc:
 
 application:
     service:
-        classevent: http://${API_GATEWAY_URL}/classevent
-        organization: http://${API_GATEWAY_URL}/organization
+        classevent: http://${API_GATEWAY_URL}/api/v1/classevent
+        organization: http://${API_GATEWAY_URL}/api/v1/organization

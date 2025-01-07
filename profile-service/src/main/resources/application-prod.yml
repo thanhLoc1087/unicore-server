@@ -77,4 +77,4 @@ unicore:
 
 application:
     service:
-        classroom: http://${API_GATEWAY_URL}:/classroom
+        classroom: http://${API_GATEWAY_URL}/api/v1/classroom
