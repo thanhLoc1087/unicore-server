@@ -56,11 +56,7 @@ public class ClassroomService {
     public Mono<ClassroomResponse> createClassroom(Classroom classroom, SubjectResponse subject) {
         SubjectMetadata subjectMetadata = subject.toMetadata();
         classroom.setSubject(subjectMetadata);
-        return checkDuplicate(classroom.getCode(), classroom.getSemester(), classroom.getYear())
-            .flatMap(result -> Boolean.TRUE.equals(result) ? 
-                    Mono.error(new AppException(ErrorCode.DUPLICATE)) :
-                    saveClassroom(classroom)
-            );
+        return saveClassroom(classroom);
     }
 
     private Mono<Map<String, SubjectResponse>> getSubjects() {
@@ -104,17 +100,18 @@ public class ClassroomService {
         Set<Subclass> subclasses = new HashSet<>();
 
         for (var i = 0; i < classRequests.size(); i++) {
-            ClassroomCreationRequest currentSubclass = classRequests.get(i);
-            subclasses.add(classroomMapper.toSubclass(currentSubclass));
+            Subclass currentSubclass = classroomMapper.toSubclass(classRequests.get(i));
+            currentSubclass.setMainTeacherCode(currentSubclass.getTeacherCodes().getFirst());
+            subclasses.add(currentSubclass);
             if (i + 1 < classRequests.size()) {
                 ClassroomCreationRequest nextSubclass = classRequests.get(i + 1);
                 if (!nextSubclass.getCode().startsWith(currentClassCode)) {
-                    classes.add(buildClassroom(currentClassCode, subclasses, currentSubclass, request.getOrganizationId()));
+                    classes.add(buildClassroom(currentClassCode, subclasses, classRequests.get(i), request.getOrganizationId()));
                     subclasses = new HashSet<>();
                     currentClassCode = nextSubclass.getCode();
                 }
             } else {
-                classes.add(buildClassroom(currentClassCode, subclasses, currentSubclass, request.getOrganizationId()));
+                classes.add(buildClassroom(currentClassCode, subclasses, classRequests.get(i), request.getOrganizationId()));
             }
         }
 
@@ -122,6 +119,40 @@ public class ClassroomService {
             .flatMapMany(subjects ->  {
                 log.info("createClassrooms 1: " + subjects.toString());
                 return Flux.fromIterable(classes)
+                .flatMap(classroom -> {
+                    if (!subjects.containsKey(classroom.getSubjectCode())) {
+                        failedSubjects.add(new SubjectNotExistsError(
+                            classroom.getCode(), 
+                            classroom.getSubjectCode(), 
+                            classroom.getSubjectName()));
+                        return Mono.empty();
+                    }
+                    return Mono.just(classroom);
+                })
+                .flatMap(classroom -> {
+                    return checkDuplicate(classroom.getCode(), classroom.getSemester(), classroom.getYear())
+                        .flatMap(result -> {
+                            if (Boolean.TRUE.equals(result)) {
+                                duplicatedClasses.add(classroom.getCode());
+                                return Mono.empty();
+                            }
+                            return Mono.just(classroom);
+                        });
+                })
+                .collectList()
+                .flatMap(classrooms -> {
+                    if (!duplicatedClasses.isEmpty() || !failedSubjects.isEmpty()) {
+                        return Mono.error(new AppException(
+                            ErrorCode.FAILED_CLASS_CREATION,
+                            Map.<String, Object>of(
+                                "subject_not_found", new ArrayList<>(failedSubjects),
+                                "duplicated", new ArrayList<>(duplicatedClasses)
+                            )
+                        ));
+                    }
+                    return Mono.just(classrooms);
+                })
+                .flatMapMany(Flux::fromIterable)
                 .flatMap(classroom -> {
                     if (subjects.containsKey(classroom.getSubjectCode())) {
                         return createClassroom(classroom, subjects.get(classroom.getSubjectCode()))
@@ -131,17 +162,13 @@ public class ClassroomService {
                                 }
                                 return Mono.empty();
                             });
-                    } 
-                    failedSubjects.add(new SubjectNotExistsError(
-                        classroom.getCode(), 
-                        classroom.getSubjectCode(), 
-                        classroom.getSubjectName()));
+                    }
                     return Mono.empty();
                 });
             })
             .collectList() // Collect all ClassroomResponse objects
             .flatMap(classroomResponses -> {
-                if (!duplicatedClasses.isEmpty()) {
+                if (!duplicatedClasses.isEmpty() || !failedSubjects.isEmpty()) {
                     return Mono.error(new AppException(
                         ErrorCode.FAILED_CLASS_CREATION,
                         Map.<String, Object>of(
@@ -302,7 +329,7 @@ public class ClassroomService {
                             classCode + "." + group.getName().replace(" ", "_");
                         Subclass subclass = Subclass.builder()
                             .code(subclassCode)
-                            .teacherCode(group.getTeacherCode())
+                            .mainTeacherCode(group.getTeacherCode())
                             .startDate(mainSubclass.getStartDate())
                             .endDate(mainSubclass.getEndDate())
                             .maxSize(mainSubclass.getCurrentSize())

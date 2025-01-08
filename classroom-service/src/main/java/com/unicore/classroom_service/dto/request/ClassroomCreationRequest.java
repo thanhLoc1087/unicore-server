@@ -24,14 +24,11 @@ public class ClassroomCreationRequest {
     @JsonProperty("is_org_managed")
     private boolean isOrgManaged;
 
-    @JsonProperty("teacher_code")
-    private String teacherCode;
+    @JsonProperty("teacher_codes")
+    private List<String> teacherCodes;
 
-    @JsonProperty("teacher_assistant_codes")
-    private List<String> teacherAssistantCodes;
-
-    @JsonProperty("teacher_name")
-    private String teacherName;
+    @JsonProperty("teacher_names")
+    private List<String> teacherNames;
 
     private ClassType type;
 
