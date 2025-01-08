@@ -37,7 +37,7 @@ public class StudentListService {
     private final ClassroomRepository classroomRepository;
     private final ClassroomMapper classroomMapper;
 
-    // Nhập DS sv nhiều lớplớp
+    // Nhập DS sv nhiều lớp
     public Flux<StudentListResponse> createStudentListBulk(List<StudentListCreationRequest> requests) {
         return Flux.fromIterable(requests)
             .flatMap(this::createStudentList);

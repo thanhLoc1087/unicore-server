@@ -18,6 +18,9 @@ public class ClassroomCreationRequest {
     @JsonProperty("subject_code")
     private String subjectCode;
     
+    @JsonProperty("subject_name")
+    private String subjectName;
+    
     @JsonProperty("is_org_managed")
     private boolean isOrgManaged;
 

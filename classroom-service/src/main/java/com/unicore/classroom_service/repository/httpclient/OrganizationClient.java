@@ -1,5 +1,7 @@
 package com.unicore.classroom_service.repository.httpclient;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -32,6 +34,17 @@ public class OrganizationClient {
                         .toEntity(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
                         // .bodyToMono(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
                         .map(responseEntity -> responseEntity.getBody().getData());
+    }
+
+    public Mono<List<SubjectResponse>> getAllSubjects() {
+        return webClient.get()
+                        .uri("/subjects")
+                        .retrieve()
+                        .toEntity(new ParameterizedTypeReference<ApiResponse<List<SubjectResponse>>>() {})
+                        .map(responseEntity -> {
+                            log.info("OrgClient getAllSubjects " + responseEntity.getBody().getData().toString());
+                            return responseEntity.getBody().getData();
+                        });
     }
 
 }

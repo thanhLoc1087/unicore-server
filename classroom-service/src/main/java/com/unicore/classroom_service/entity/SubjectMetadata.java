@@ -3,9 +3,11 @@ package com.unicore.classroom_service.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.enums.ExamFormat;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class SubjectMetadata {
     private String id;
     private String name;

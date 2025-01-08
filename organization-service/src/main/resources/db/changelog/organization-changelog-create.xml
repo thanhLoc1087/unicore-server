@@ -52,6 +52,18 @@
             referencedTableName="organization"
             referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="table-subject-add-column-deleted" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column deleted already exists in table subject">
+            <not>
+                <columnExists tableName="subject" columnName="deleted" />
+            </not>
+        </preConditions>
+        <addColumn tableName="subject">
+            <column name="deleted" type="BOOLEAN" defaultValueNumeric="0">
+            </column>
+        </addColumn>
+    </changeSet>
+
 
     <!-- ChangeSet for creating the SubjectMetadata table -->
     <changeSet id="create-table-subject_metadata" author="loc"  runAlways="true">
@@ -119,6 +131,17 @@
         </preConditions>
         <addColumn tableName="subject_metadata">
             <column name="midterm_time" type="INT">
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="table-subject_metadata-add-column-deleted" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column deleted already exists in table subject_metadata">
+            <not>
+                <columnExists tableName="subject_metadata" columnName="deleted" />
+            </not>
+        </preConditions>
+        <addColumn tableName="subject_metadata">
+            <column name="deleted" type="BOOLEAN" defaultValueNumeric="0">
             </column>
         </addColumn>
     </changeSet>

@@ -10,10 +10,15 @@ public enum MemberGender {
     FEMALE;
     
     @JsonCreator
-    public static MemberGender fromString(String gender) {
-        if (gender.equalsIgnoreCase("male") || gender.equalsIgnoreCase("name")) {
-            return MALE;
+    public static MemberGender fromObject(Object gender) {
+        if (gender instanceof String genderStr) {
+            if (genderStr.trim().equalsIgnoreCase("male") || 
+                genderStr.trim().equalsIgnoreCase("nam")) {
+                return MALE;
+            }
+        } else if (gender instanceof Boolean genderBool) {
+            return Boolean.TRUE.equals(genderBool) ? MALE : FEMALE;
         }
-        return FEMALE;
+        throw new IllegalArgumentException("Invalid value for MemberGender: " + gender);
     }
 }

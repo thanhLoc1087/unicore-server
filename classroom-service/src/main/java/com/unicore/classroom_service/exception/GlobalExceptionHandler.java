@@ -22,15 +22,16 @@ public class GlobalExceptionHandler {
         response.setCode(errorCode.getCode());
         response.setMessage(exception.getMessage());
         log.info(exception.toString());
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.internalServerError().body(response);
     }
 
     @ExceptionHandler(value = AppException.class)
-    public ResponseEntity<ApiResponse<String>> handlingAppException(AppException exception) {
+    public ResponseEntity<ApiResponse<Object>> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        ApiResponse<String> response = new ApiResponse<>();
+        ApiResponse<Object> response = new ApiResponse<>();
         response.setCode(errorCode.getCode());
         response.setMessage(errorCode.getMessage());
+        response.setData(exception.getData());
         log.info(exception.toString());
         return ResponseEntity.status(errorCode.getStatusCode()).body(response);
     }

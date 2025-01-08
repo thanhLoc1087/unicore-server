@@ -31,6 +31,6 @@ public class ClassroomResponse {
 
     private List<Subclass> subclasses;
 
-    @JsonProperty("subject_metadata")
-    private SubjectMetadata subjectMetadata;
+    @JsonProperty("subject")
+    private SubjectMetadata subject;
 }

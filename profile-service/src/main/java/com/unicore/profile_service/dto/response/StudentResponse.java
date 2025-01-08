@@ -1,5 +1,6 @@
 package com.unicore.profile_service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.profile_service.enums.MemberGender;
 import java.time.LocalDate;
@@ -16,8 +17,8 @@ public class StudentResponse {
     private String name;
     private String phone;
     private String address;
-    @Email(message = "Invalid email format")
     private String email;
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dob;
     private MemberGender gender;
     @JsonProperty("advisory_class")

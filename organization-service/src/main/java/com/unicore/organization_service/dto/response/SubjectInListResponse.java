@@ -44,7 +44,7 @@ public class SubjectInListResponse {
     private int semester;
     private int year;
 
-    static public SubjectInListResponse fromSubject(SubjectResponse subject) {
+    public static SubjectInListResponse fromSubject(SubjectResponse subject) {
         return SubjectInListResponse.builder()
             .id(subject.getId())
             .name(subject.getName())
@@ -60,6 +60,8 @@ public class SubjectInListResponse {
             .finalWeight(subject.getMetadata().getFinalWeight())
             .midtermTime(subject.getMetadata().getMidtermTime())
             .finalTime(subject.getMetadata().getFinalTime())
+            .year(subject.getMetadata().getYear())
+            .semester(subject.getMetadata().getSemester())
             .build();
     }
 }

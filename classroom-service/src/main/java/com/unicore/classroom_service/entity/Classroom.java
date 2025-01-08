@@ -28,6 +28,7 @@ public class Classroom {
     private String code;
 
     private String subjectCode;
+    private String subjectName;
 
     @Builder.Default
     private ClassType type = ClassType.LOP_THUONG;
@@ -41,5 +42,5 @@ public class Classroom {
 
     private boolean deleted;
 
-    private SubjectMetadata subjectMetadata;
+    private SubjectMetadata subject;
 }

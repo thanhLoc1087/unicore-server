@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearReques
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
+import com.unicore.classroom_service.dto.response.SubjectNotExistsError;
+import com.unicore.classroom_service.dto.response.SubjectResponse;
 import com.unicore.classroom_service.entity.Classroom;
 import com.unicore.classroom_service.entity.Group;
 import com.unicore.classroom_service.entity.StudentInGroup;
@@ -50,23 +53,26 @@ public class ClassroomService {
     private final ClassEventClient classEventClient;
     private final OrganizationClient organizationClient;
 
-    public Mono<ClassroomResponse> createClassroom(Classroom classroom) {
-        return organizationClient.getSubject(classroom.getSubjectCode())
-            .map(subject -> {
-                log.info(subject.toString());
-                SubjectMetadata subjectMetadata = subject.getMetadata();
-                subjectMetadata.setName(subject.getName());
-                classroom.setSubjectMetadata(subjectMetadata);
-                return classroom;
-            })
-            .flatMap(newClass -> checkDuplicate(newClass.getCode(), newClass.getSemester(), newClass.getYear()))
-            .flatMap(result -> {
-                log.info(classroom.toString());
-                return Boolean.TRUE.equals(result) ? 
+    public Mono<ClassroomResponse> createClassroom(Classroom classroom, SubjectResponse subject) {
+        SubjectMetadata subjectMetadata = subject.toMetadata();
+        classroom.setSubject(subjectMetadata);
+        return checkDuplicate(classroom.getCode(), classroom.getSemester(), classroom.getYear())
+            .flatMap(result -> Boolean.TRUE.equals(result) ? 
                     Mono.error(new AppException(ErrorCode.DUPLICATE)) :
-                    saveClassroom(classroom);
-            }
+                    saveClassroom(classroom)
             );
+    }
+
+    private Mono<Map<String, SubjectResponse>> getSubjects() {
+        return organizationClient.getAllSubjects()
+            .map(subjects -> {
+                log.info("getSubjects: " + subjects.toString());
+                Map<String, SubjectResponse> map = new HashMap<>();
+                for (SubjectResponse subject : subjects) {
+                    map.put(subject.getCode(), subject);
+                }
+                return map;
+            });
     }
 
     private Mono<ClassroomResponse> saveClassroom(Classroom classroom) {
@@ -77,7 +83,7 @@ public class ClassroomService {
                 if (throwable instanceof DataAccessException) {
                     log.error("R2DBC data invalidation error: {}", throwable.getCause());
                     // Return an error response or rethrow as a custom exception
-                    return Mono.error(new AppException(ErrorCode.DUPLICATE));
+                    return Mono.error(new AppException(ErrorCode.UNCATEGORIZED));
                 }
                 return Mono.error(throwable); // Propagate other exceptions
             })
@@ -89,6 +95,8 @@ public class ClassroomService {
     @Transactional
     public Flux<ClassroomResponse> createClassrooms(ClassroomBulkCreationRequest request) {
         if (request.getClasses().isEmpty()) return Flux.empty();
+        ConcurrentLinkedQueue<SubjectNotExistsError> failedSubjects = new ConcurrentLinkedQueue<>();
+        ConcurrentLinkedQueue<String> duplicatedClasses = new ConcurrentLinkedQueue<>();
         List<Classroom> classes = new ArrayList<>();
 
         List<ClassroomCreationRequest> classRequests = request.getClasses();
@@ -109,10 +117,39 @@ public class ClassroomService {
                 classes.add(buildClassroom(currentClassCode, subclasses, currentSubclass, request.getOrganizationId()));
             }
         }
-        return Flux.fromIterable(classes)
-            .flatMap(this::createClassroom)
+
+        return getSubjects()
+            .flatMapMany(subjects ->  {
+                log.info("createClassrooms 1: " + subjects.toString());
+                return Flux.fromIterable(classes)
+                .flatMap(classroom -> {
+                    if (subjects.containsKey(classroom.getSubjectCode())) {
+                        return createClassroom(classroom, subjects.get(classroom.getSubjectCode()))
+                            .onErrorResume(AppException.class, e -> {
+                                if (e.getErrorCode() == ErrorCode.DUPLICATE) {
+                                    duplicatedClasses.add(classroom.getCode());
+                                }
+                                return Mono.empty();
+                            });
+                    } 
+                    failedSubjects.add(new SubjectNotExistsError(
+                        classroom.getCode(), 
+                        classroom.getSubjectCode(), 
+                        classroom.getSubjectName()));
+                    return Mono.empty();
+                });
+            })
             .collectList() // Collect all ClassroomResponse objects
             .flatMap(classroomResponses -> {
+                if (!duplicatedClasses.isEmpty()) {
+                    return Mono.error(new AppException(
+                        ErrorCode.FAILED_CLASS_CREATION,
+                        Map.<String, Object>of(
+                            "subject_not_found", new ArrayList<>(failedSubjects),
+                            "duplicated", new ArrayList<>(duplicatedClasses)
+                        )
+                    ));
+                }
                 log.info("AYOOOO" + classroomResponses.toString());
                 List<GeneralTestCreationRequest> requests = new ArrayList<>();
                 for (ClassroomResponse response : classroomResponses) {
@@ -153,7 +190,11 @@ public class ClassroomService {
                         .doOnError(error -> log.error("Error during createBulk", error))
                         .then(Mono.just(classroomResponses)); // Pass classroomResponses downstream
             })
-            .flatMapMany(Flux::fromIterable);
+            .flatMapMany(Flux::fromIterable)
+            .switchIfEmpty(Mono.error(new AppException(
+                ErrorCode.FAILED_CLASS_CREATION,
+                new ArrayList<>(duplicatedClasses)
+            )));
     }
     
     private Classroom buildClassroom(String code, Set<Subclass> subclasses, ClassroomCreationRequest classRequest, String organizationId) {

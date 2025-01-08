@@ -24,6 +24,7 @@ import com.unicore.classevent_service.dto.request.ReportUpdateRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.ClassroomResponse;
 import com.unicore.classevent_service.dto.response.ReportResponse;
+import com.unicore.classevent_service.entity.BaseEvent;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.QueryOption;
 import com.unicore.classevent_service.entity.Report;
@@ -32,7 +33,6 @@ import com.unicore.classevent_service.enums.SubmissionOption;
 import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.mapper.ReportMapper;
-import com.unicore.classevent_service.repository.ProjectRepository;
 import com.unicore.classevent_service.repository.BaseEventRepository;
 import com.unicore.classevent_service.repository.httpclient.ClassroomClient;
 
@@ -49,7 +49,7 @@ public class ReportService {
     private final BaseEventRepository reportRepository;
     private final ReportMapper reportMapper;
 
-    private final ProjectRepository projectRepository;
+    private final BaseEventRepository projectRepository;
 
     private final ClassroomClient classroomClient;
     
@@ -188,7 +188,12 @@ public class ReportService {
             .flatMap(param -> projectRepository.findAllByClassIdAndSubclassCodeAndWeightTypeAndAutocreatedTrue(
                 param.getClassId(), param.getSubclassCode(), param.getWeightType()))
             .collectList()
-            .map(projects -> {
+            .map(events -> {
+                List<Project> projects = new ArrayList<>();
+                for (BaseEvent event : events) {
+                    if (event instanceof Project project)
+                        projects.add(project);
+                }
                 List<Report> reportsToSave = new ArrayList<>();
                 for (int i = 0; i < projects.size(); i++) {
                     BulkUpdateTestRequest singleRequest = request.getSchedules().get(i);

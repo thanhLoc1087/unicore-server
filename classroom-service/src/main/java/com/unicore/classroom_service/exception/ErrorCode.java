@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
     UNCATEGORIZED("UNK", "Uncategorized error.", HttpStatus.INTERNAL_SERVER_ERROR),
+    FAILED_CLASS_CREATION("CLASS01", "Failed to create class.", HttpStatus.BAD_REQUEST),
     INVALID_REQUEST("INV01", "Invalid request.", HttpStatus.BAD_REQUEST),
     NOT_FOUND("NF1001", "Object does not exist.", HttpStatus.NOT_FOUND),
     DUPLICATE("BR1001", "Object already exists.", HttpStatus.BAD_REQUEST),

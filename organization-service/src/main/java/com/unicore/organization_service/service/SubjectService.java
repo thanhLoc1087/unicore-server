@@ -127,7 +127,7 @@ public class SubjectService {
         return subjectRepository.findAll()
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
-                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDescAndDeletedFalse(subject.getId())
+                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDesc(subject.getId())
                     .map(metadata -> {
                         subject.setMetadata(metadata);
                         return subject;
@@ -142,7 +142,7 @@ public class SubjectService {
         return subjectRepository.findByOrganizationId(orgId)
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
-                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDescAndDeletedFalse(subject.getId())
+                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDesc(subject.getId())
                     .map(metadata -> {
                         subject.setMetadata(metadata);
                         return subject;
@@ -157,7 +157,7 @@ public class SubjectService {
         return subjectRepository.findById(id)
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
-                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDescAndDeletedFalse(subject.getId())
+                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDesc(subject.getId())
                     .map(metadata -> {
                         subject.setMetadata(metadata);
                         return subject;
@@ -171,7 +171,7 @@ public class SubjectService {
         return subjectRepository.findByCode(code)
             .map(subjectMapper::toSubjectResponse)
             .flatMap(subject ->  
-                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDescAndDeletedFalse(subject.getId())
+                subjectMetadataRepository.findTopBySubjectOrderByYearDescAndSemesterDesc(subject.getId())
                     .map(metadata -> {
                         subject.setMetadata(metadata);
                         return subject;
