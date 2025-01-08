@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.classroom_service.dto.request.AddStudentsToListRequest;
+import com.unicore.classroom_service.dto.request.ClassFilterRequest;
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
@@ -61,6 +62,18 @@ public class ClassroomController {
     @GetMapping("/{id}")
     public Mono<ApiResponse<ClassroomResponse>> getClassroomById(@PathVariable String id) {
         return classroomService.getClassroomById(id)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                LocalDateTime.now()
+            ));
+    }
+
+    @GetMapping("/filter")
+    public Mono<ApiResponse<List<ClassroomResponse>>> filterClassrooms(@RequestBody ClassFilterRequest request) {
+        return classroomService.filterClassrooms(request)
+            .collectList()
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.unicore.classevent_service.dto.request.CentralizedTestRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
+import com.unicore.classevent_service.dto.request.QueryChooseOptionRequest;
 import com.unicore.classevent_service.dto.request.ReportCreationRequest;
 import com.unicore.classevent_service.dto.request.ReportUpdateRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
@@ -105,6 +106,17 @@ public class ReportController {
     @PutMapping("/{id}/grades")
     public Mono<ApiResponse<ReportResponse>> updateReportGrades(@PathVariable String id, @RequestBody Map<String, Float> grades) {
         return reportService.updateGrades(id, grades)
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
+    @PostMapping("/{id}/register")
+    public Mono<ApiResponse<ReportResponse>> chooseOption(@PathVariable String id, @RequestBody QueryChooseOptionRequest request) {
+        return reportService.chooseOption(id, request)
             .map(report -> new ApiResponse<>(
                 report, 
                 ApiMessage.SUCCESS.getMessage(), 

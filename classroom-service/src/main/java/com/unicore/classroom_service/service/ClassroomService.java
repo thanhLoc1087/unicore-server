@@ -12,6 +12,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.unicore.classroom_service.dto.request.ClassFilterRequest;
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
 import com.unicore.classroom_service.dto.request.GeneralTestBulkCreationRequest;
@@ -303,6 +304,11 @@ public class ClassroomService {
     private Mono<Boolean> checkDuplicate(String code, int semester, int year) {
         return classroomRepository.findByCodeAndSemesterAndYear(code, semester, year)
             .hasElement();
+    }
+
+    public Flux<ClassroomResponse> filterClassrooms(ClassFilterRequest filterRequest) {
+        return classroomRepository.findByFilters(filterRequest)
+            .map(classroomMapper::toClassroomResponse);
     }
 
     public Mono<ClassroomResponse> createSubclassFromGrouping(StudentGroupingCreationRequest request) {

@@ -7,7 +7,7 @@ import com.unicore.classroom_service.entity.Classroom;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface ClassroomRepository extends ReactiveMongoRepository<Classroom, String> {    
+public interface ClassroomRepository extends ReactiveMongoRepository<Classroom, String>, CustomClassroomRepository {    
     public Mono<Classroom> findByCode(String code);
     public Flux<Classroom> findByOrganizationId(String organizationId);
     public Mono<Classroom> findByCodeAndSemesterAndYear(String code, int semester, int year);

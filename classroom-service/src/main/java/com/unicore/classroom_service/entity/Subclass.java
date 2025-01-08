@@ -41,6 +41,4 @@ public class Subclass {
     private int credits;
     private ClassType type;
     private String note;
-
-
 }

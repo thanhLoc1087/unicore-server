@@ -125,8 +125,8 @@ public class ReportService {
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
     
-    public Mono<ReportResponse> chooseOption(QueryChooseOptionRequest request) {
-        return reportRepository.findById(request.getReportId())
+    public Mono<ReportResponse> chooseOption(String id, QueryChooseOptionRequest request) {
+        return reportRepository.findById(id)
             .flatMap(response -> {
                 if (response instanceof Report report) {
                     QueryOption matchedOption = report.getQuery().getOptions().stream()
