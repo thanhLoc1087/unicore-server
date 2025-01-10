@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class HomeworkController {
     private final HomeworkService homeworkService;
 
-    @GetMapping
+    @PostMapping("/active")
     public Mono<ApiResponse<List<HomeworkResponse>>> findActiveHomework(@RequestBody GetByDateRequest request) {
         return homeworkService.findActiveHomework(request)
             .collectList()
@@ -67,7 +67,7 @@ public class HomeworkController {
             ));
     }
     
-    @GetMapping("/class")
+    @PostMapping("/class")
     public Mono<ApiResponse<List<HomeworkResponse>>> getClassHomework(@RequestBody GetByClassRequest request) {
         return homeworkService.getClassHomework(request)
             .collectList()

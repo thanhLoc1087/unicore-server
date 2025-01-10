@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class StudentGroupingService {
     private final StudentGroupingRepository studentGroupingRepository;
-    private StudentGroupingMapper studentGroupingMapper = new StudentGroupingMapper();
+    private final StudentGroupingMapper studentGroupingMapper;
     private final ClassroomService classroomService;
     private final StudentListService studentListService;
 
@@ -83,7 +83,7 @@ public class StudentGroupingService {
                 // Filter members that are not in oldStudentCodes (foreign students)
                 List<StudentInGroup> foreignStudents = request.getGroup().getMembers().stream()
                     .filter(student -> !oldStudentCodes.contains(student.getStudentCode()))
-                    .collect(Collectors.toList());
+                    .toList();
     
                 // If there are foreign students, add them to the external list
                 return (foreignStudents.isEmpty()

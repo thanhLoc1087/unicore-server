@@ -70,7 +70,7 @@ public class ClassroomController {
             ));
     }
 
-    @GetMapping("/filter")
+    @PostMapping("/filter")
     public Mono<ApiResponse<List<ClassroomResponse>>> filterClassrooms(@RequestBody ClassFilterRequest request) {
         return classroomService.filterClassrooms(request)
             .collectList()
@@ -117,7 +117,7 @@ public class ClassroomController {
             ));
     }
 
-    @GetMapping("/students")
+    @PostMapping("/get/students")
     public Mono<ApiResponse<StudentListResponse>> getClassStudentList(@RequestBody GetByClassRequest request) {
         return studentListService.getStudentList(request)
             .map(response -> new ApiResponse<>(

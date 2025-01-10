@@ -33,7 +33,7 @@ import reactor.core.publisher.Mono;
 public class ReportController {
     private final ReportService reportService;
     
-    @GetMapping
+    @PostMapping("/get")
     public Mono<ApiResponse<List<ReportResponse>>> findActiveReports(@RequestBody GetByDateRequest request) {
         return reportService.findActiveReports(request)
             .collectList()
@@ -68,7 +68,7 @@ public class ReportController {
             ));
     }
     
-    @GetMapping("/class")
+    @PostMapping("/class")
     public Mono<ApiResponse<List<ReportResponse>>> getClassReports(@RequestBody GetByClassRequest request) {
         return reportService.getClassReports(request)
             .collectList()

@@ -33,8 +33,8 @@ public class SubjectController {
     private final SubjectService subjectService;
 
     @PatchMapping
-    public Mono<ApiResponse<SubjectResponse>> createSubject(@RequestBody SubjectCreationRequest request) {
-        return subjectService.createSubject(request)
+    public Mono<ApiResponse<List<SubjectInListResponse>>> updateSubjects(@RequestBody SubjectBulkCreationRequest request) {
+        return subjectService.createSubjects(request)
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 

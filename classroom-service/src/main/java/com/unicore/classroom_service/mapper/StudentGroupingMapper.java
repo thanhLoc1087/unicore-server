@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Component;
+
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingUpdateRequest;
 import com.unicore.classroom_service.dto.response.StudentGroupingResponse;
 import com.unicore.classroom_service.entity.Group;
 import com.unicore.classroom_service.entity.StudentGrouping;
 
+@Component
 public class StudentGroupingMapper {
     public StudentGroupingResponse toGroupingResponse(StudentGrouping studentGrouping) {
         if ( studentGrouping == null ) {
