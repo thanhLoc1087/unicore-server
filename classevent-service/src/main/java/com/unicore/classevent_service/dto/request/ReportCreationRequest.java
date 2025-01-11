@@ -37,8 +37,11 @@ public class ReportCreationRequest {
     private LocalDateTime publishDate;
     @JsonProperty("in_group")
     private Boolean inGroup;
+    @JsonProperty("use_default_groups")
+    private Boolean useDefaultGroups;
+    
     @JsonProperty("submission_option")
-    private SubmissionOption submissionOption;
+    private List<SubmissionOption> submissionOptions;
     
     private Float weight;
     @JsonProperty("weight_type")

@@ -14,11 +14,13 @@ import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.HomeworkCreationRequest;
 import com.unicore.classevent_service.dto.request.HomeworkUpdateRequest;
 import com.unicore.classevent_service.dto.response.HomeworkResponse;
+import com.unicore.classevent_service.entity.GroupingSchedule;
 import com.unicore.classevent_service.entity.Homework;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.mapper.HomeworkMapper;
 import com.unicore.classevent_service.repository.BaseEventRepository;
+import com.unicore.classevent_service.repository.GroupingScheduleRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +32,25 @@ import reactor.core.publisher.Mono;
 public class HomeworkService {
     private final BaseEventRepository repository;
     private final HomeworkMapper homeworkMapper;
+    private final GroupingScheduleRepository groupingScheduleRepository;
 
     public Flux<HomeworkResponse> createHomework(HomeworkCreationRequest request) {
         return Flux.fromIterable(request.getSubclassCodes())
-            .map(subclassCodes -> {
+            .flatMap(subclassCode -> {
+                if (Boolean.TRUE.equals(request.getUseDefaultGroups())) {
+                    return groupingScheduleRepository
+                        .findByClassIdAndSubclassCodeAndIsDefaultTrue(request.getClassId(), subclassCode);
+                }
+                GroupingSchedule groupingSchedule = new GroupingSchedule();
+                groupingSchedule.setSubclassCode(subclassCode);
+                return Mono.just(groupingSchedule);
+            })
+            .map(grouping -> {
                 Homework homework = homeworkMapper.toHomework(request);
-                homework.setSubclassCode(subclassCodes);
+                homework.setSubclassCode(grouping.getSubclassCode());
+                if (!grouping.getId().isEmpty()) {
+                    homework.setGroupingId(grouping.getId());
+                }
                 homework.setCreatedBy("Loc");
                 homework.setCreatedDate(Date.from(Instant.now()));
                 return homework;

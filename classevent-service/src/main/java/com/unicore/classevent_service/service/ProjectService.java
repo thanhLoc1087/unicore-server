@@ -21,6 +21,7 @@ import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
 import com.unicore.classevent_service.dto.request.TopicApprovalRequest;
 import com.unicore.classevent_service.dto.request.TopicSuggestionRequest;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
+import com.unicore.classevent_service.entity.GroupingSchedule;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.Topic;
 import com.unicore.classevent_service.enums.EventType;
@@ -30,6 +31,7 @@ import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.exception.InvalidRequestException;
 import com.unicore.classevent_service.mapper.ProjectMapper;
 import com.unicore.classevent_service.repository.BaseEventRepository;
+import com.unicore.classevent_service.repository.GroupingScheduleRepository;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,12 +48,25 @@ public class ProjectService {
 
     private final EventGroupingService eventGroupingService;
 
+    private final GroupingScheduleRepository groupingScheduleRepository;
 
     public Mono<ProjectResponse> createProject(ProjectCreationRequest request) {
-        return Mono.just(request)
-            .map(subclassCode -> {
+        return Mono.just(request.getSubclassCode())
+            .flatMap(subclassCode -> {
+                if (Boolean.TRUE.equals(request.getUseDefaultGroups())) {
+                    return groupingScheduleRepository
+                        .findByClassIdAndSubclassCodeAndIsDefaultTrue(request.getClassId(), subclassCode);
+                }
+                GroupingSchedule groupingSchedule = new GroupingSchedule();
+                groupingSchedule.setSubclassCode(subclassCode);
+                return Mono.just(groupingSchedule);
+            })
+            .map(grouping -> {
                 Project project = projectMapper.toProject(request);
                 project.setWeightType(WeightType.COURSEWORK);
+                if (!grouping.getId().isEmpty()) {
+                    project.setGroupingId(grouping.getId());
+                }
                 project.setCreatedBy("Loc");
                 project.setCreatedDate(Date.from(Instant.now()));
                 return project;

@@ -1,6 +1,7 @@
 package com.unicore.classevent_service.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,7 +25,7 @@ public class Homework extends BaseEvent {
 
     private LocalDateTime publishDate;
 
-    private SubmissionOption submissionOption;
+    private List<SubmissionOption> submissionOptions;
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;

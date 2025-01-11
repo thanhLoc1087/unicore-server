@@ -24,6 +24,10 @@ public class GroupingSchedule {
 
     @JsonProperty("subclass_code")
     private String subclassCode;
+    
+    @JsonProperty("is_default")
+    @Builder.Default
+    private boolean isDefault = false;
 
     @JsonProperty("start_register_date")
     private LocalDateTime startRegisterDate;

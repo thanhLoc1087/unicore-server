@@ -39,8 +39,12 @@ public class HomeworkCreationRequest {
     private LocalDateTime publishDate;
     @JsonProperty("in_group")
     private Boolean inGroup;
-    @JsonProperty("submission_option")
-    private SubmissionOption submissionOption;
+
+    @JsonProperty("use_default_groups")
+    private Boolean useDefaultGroups;
+    
+    @JsonProperty("submission_options")
+    private List<SubmissionOption> submissionOptions;
     
     @JsonProperty("start_date")
     private LocalDateTime startDate;

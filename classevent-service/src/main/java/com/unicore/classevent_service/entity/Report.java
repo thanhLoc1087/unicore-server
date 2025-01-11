@@ -3,6 +3,7 @@ package com.unicore.classevent_service.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -31,7 +32,7 @@ public class Report extends BaseEvent {
 
     private LocalDateTime publishDate;
 
-    private SubmissionOption submissionOption;
+    private List<SubmissionOption> submissionOptions;
 
     private LocalDate date;
     

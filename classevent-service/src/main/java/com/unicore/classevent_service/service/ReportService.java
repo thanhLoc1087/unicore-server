@@ -25,6 +25,7 @@ import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.ClassroomResponse;
 import com.unicore.classevent_service.dto.response.ReportResponse;
 import com.unicore.classevent_service.entity.BaseEvent;
+import com.unicore.classevent_service.entity.GroupingSchedule;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.QueryOption;
 import com.unicore.classevent_service.entity.Report;
@@ -34,6 +35,7 @@ import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.mapper.ReportMapper;
 import com.unicore.classevent_service.repository.BaseEventRepository;
+import com.unicore.classevent_service.repository.GroupingScheduleRepository;
 import com.unicore.classevent_service.repository.httpclient.ClassroomClient;
 
 import jakarta.validation.Valid;
@@ -52,12 +54,25 @@ public class ReportService {
     private final BaseEventRepository projectRepository;
 
     private final ClassroomClient classroomClient;
-    
+    private final GroupingScheduleRepository groupingScheduleRepository;
+
     public Flux<ReportResponse> createReport(ReportCreationRequest request) {
         return Flux.fromIterable(request.getSubclassCodes())
-            .map(subclassCode -> {
+            .flatMap(subclassCode -> {
+                if (Boolean.TRUE.equals(request.getUseDefaultGroups())) {
+                    return groupingScheduleRepository
+                        .findByClassIdAndSubclassCodeAndIsDefaultTrue(request.getClassId(), subclassCode);
+                }
+                GroupingSchedule groupingSchedule = new GroupingSchedule();
+                groupingSchedule.setSubclassCode(subclassCode);
+                return Mono.just(groupingSchedule);
+            })
+            .map(grouping -> {
                 Report report = reportMapper.toReport(request);
-                report.setSubclassCode(subclassCode);
+                report.setSubclassCode(grouping.getSubclassCode());
+                if (!grouping.getId().isEmpty()) {
+                    report.setGroupingId(grouping.getId());
+                }
                 report.setCreatedBy("Loc");
                 report.setCreatedDate(Date.from(Instant.now()));
                 return report;
@@ -214,7 +229,7 @@ public class ReportService {
                         .date(singleRequest.getDate())
                         .closeSubmissionDate(singleRequest.getDate())
                         .remindGradingDate(singleRequest.getDate())
-                        .submissionOption(SubmissionOption.FILE)
+                        .submissionOptions(List.of(SubmissionOption.FILE, SubmissionOption.DRIVE))
                         .room(singleRequest.getRoom())
                         .description(singleRequest.genDescription())
                         .allowGradeReview(true)

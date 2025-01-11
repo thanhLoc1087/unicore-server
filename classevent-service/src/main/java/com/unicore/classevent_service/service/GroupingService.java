@@ -38,6 +38,7 @@ public class GroupingService {
             .map(groupingRequest -> {
                 GroupingSchedule grouping = scheduleMapper.classGroupingToGroupingSchedule(request);
                 grouping.setId(UUID.randomUUID().toString());
+                grouping.setDefault(true);
                 return grouping;
             })
             .flatMap(this::createGroupingSchedule)
