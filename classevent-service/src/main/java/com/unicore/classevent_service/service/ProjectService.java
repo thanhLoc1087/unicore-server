@@ -113,7 +113,7 @@ public class ProjectService {
 
     public Mono<ProjectResponse> updateProject(String id, ProjectUpdateRequest request) {
         return projectRepository.findById(id)
-            .map(project -> projectMapper.toProject((Project) project, request))
+            .map(project -> projectMapper.updateProject((Project) project, request))
             .flatMap(this::saveProject)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
@@ -192,7 +192,7 @@ public class ProjectService {
                         if (matchedOption.getSelectors().size() < matchedOption.getLimit()) {
                             matchedOption.getSelectors().add(request.getSelector());
                         } else {
-                            return Mono.error(new InvalidRequestException());
+                            return Mono.error(new InvalidRequestException(""));
                         }
                     } else {
                         matchedOption.getSelectors().stream()

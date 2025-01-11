@@ -77,6 +77,10 @@ public class StudentListService {
             .map(studentListMapper::toStudentListResponse)
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
+
+    // public Flux<StudentListResponse> getClassWithoutStudentLists(List<GetByClassRequest> requests) {
+
+    // }
     
     // thêm sv ngoài lớplớp
     public Mono<StudentListResponse> addForeignStudents(AddForeignStudentsRequest request) {

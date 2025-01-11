@@ -38,6 +38,9 @@ public class Subclass {
     @JsonProperty("current_size")
     private int currentSize;
 
+    @JsonProperty("grouping_id")
+    private String groupingId;
+
     private int credits;
     private ClassType type;
     private String note;

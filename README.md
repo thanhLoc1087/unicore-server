@@ -71,12 +71,12 @@ Unicore is a Classroom Management System, designed to help institutions manage k
 
 
 `sudo docker run -d --name organization-service-unicore --network unicore-network -p 8081:8081 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e ORG_DB=organizationdb -e API_GATEWAY_URL=3.107.202.61:8080  thanhloc1087/unicore-organization-service:0.8.2`
-`sudo docker run -d --name organization-service-unicore -p 8081:8081 -e MYSQL_URL=54.206.100.239:3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e ORG_DB=organizationdb -e API_GATEWAY_URL=3.107.202.61:8080  thanhloc1087/unicore-organization-service:0.8.3`
+`sudo docker run -d --name organization-service-unicore -p 8081:8081 -e MYSQL_URL=54.206.100.239:3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e ORG_DB=organizationdb -e API_GATEWAY_URL=3.107.202.61:8080  thanhloc1087/unicore-organization-service:0.8.4`
 
 `sudo docker run -d --name profile-service-unicore --network unicore-network -p 8082:8082 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e PROFILE_DB=profiledb -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-profile-service:0.8.1`
-`sudo docker run -d --name profile-service-unicore -p 8082:8082 -e MYSQL_URL=54.206.100.239:3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e PROFILE_DB=profiledb -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-profile-service:0.8.5`
+`sudo docker run -d --name profile-service-unicore -p 8082:8082 -e MYSQL_URL=54.206.100.239:3306 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e PROFILE_DB=profiledb -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-profile-service:0.8.6`
 
-`sudo docker run -d --name classroom-service-unicore --network unicore-network -p 8083:8083 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-classroom-service:0.5.3`
+`sudo docker run -d --name classroom-service-unicore --network unicore-network -p 8083:8083 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-classroom-service:0.5.7`
 
-`sudo docker run -d --name classevent-service-unicore --network unicore-network -p 8084:8084 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-classevent-service:0.5.2`
+`sudo docker run -d --name classevent-service-unicore --network unicore-network -p 8084:8084 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-classevent-service:0.5.5`
 

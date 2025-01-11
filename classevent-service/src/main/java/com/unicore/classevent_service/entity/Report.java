@@ -27,10 +27,6 @@ public class Report extends BaseEvent {
         setType(EventType.REPORT);
     }
 
-    // Nếu nó tạo trong BTL
-    @JsonProperty("project_id")
-    private String projectId;
-
     private String room;
 
     private LocalDateTime publishDate;
@@ -38,6 +34,10 @@ public class Report extends BaseEvent {
     private SubmissionOption submissionOption;
 
     private LocalDate date;
+    
+    @JsonProperty("project_id")
+    // Nếu nó tạo trong BTL
+    private String projectId; 
 
     private LocalDate remindGradingDate;
     private LocalDate closeSubmissionDate;

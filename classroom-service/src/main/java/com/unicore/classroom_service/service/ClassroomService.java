@@ -17,9 +17,11 @@ import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
 import com.unicore.classroom_service.dto.request.GeneralTestBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.GeneralTestCreationRequest;
+import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
+import com.unicore.classroom_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.dto.response.SubjectNotExistsError;
 import com.unicore.classroom_service.dto.response.SubjectResponse;
@@ -257,19 +259,6 @@ public class ClassroomService {
             .build();
     }
 
-    private Mono<ClassroomResponse> updateClassSize(StudentListCreationRequest request) {
-        return classroomRepository.findById(request.getClassId())
-            .map(classroom -> {
-                for (Subclass subclass : classroom.getSubclasses()) {
-                    if (subclass.getCode().equals(request.getSubclassCode())) {
-                        subclass.setCurrentSize(request.getStudentCodes().size());
-                        break;
-                    }
-                }
-                return classroomMapper.toClassroomResponse(classroom);
-            });
-    }
-
     public Mono<ClassroomResponse> getClassroomById(String id) {
         return classroomRepository.findById(id)
             .map(classroomMapper::toClassroomResponse);
@@ -373,5 +362,20 @@ public class ClassroomService {
 
 
             //// Xét trường hợp sv ở lớp khác, lưu sv vào foreign_students
+    }
+
+    public Mono<ClassroomResponse> updateClassGroupingId(UpdateClassGroupingRequest request) {
+        return classroomRepository.findById(request.getClassId())
+            .map(response -> {
+                for (Subclass subclass : response.getSubclasses()) {
+                    if (subclass.getCode().equals(request.getSubclassCode())) {
+                        subclass.setGroupingId(request.getGroupingId());
+                        break;
+                    }
+                }
+                return response;
+            })
+            .flatMap(classroomRepository::save)
+            .map(classroomMapper::toClassroomResponse);
     }
 }

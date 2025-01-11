@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetClassBySemesterAndYearRequest;
+import com.unicore.classevent_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.ClassroomResponse;
 import com.unicore.classevent_service.dto.response.EventGroupingResponse;
@@ -42,6 +43,14 @@ public class ClassroomClient {
             .bodyValue(request) // Serialize the request body to JSON
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<ApiResponse<ClassroomResponse>>() {});
-
+    }
+        
+    public Mono<ApiResponse<ClassroomResponse>> updateClassroom(UpdateClassGroupingRequest request) {
+        return webClient.put()
+            .uri("/grouping") // Adjust the base URL as needed
+            .contentType(MediaType.APPLICATION_JSON) // Specify the content type
+            .bodyValue(request) // Serialize the request body to JSON
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<ApiResponse<ClassroomResponse>>() {});
     }
 }

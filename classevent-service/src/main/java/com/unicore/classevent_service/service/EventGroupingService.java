@@ -50,7 +50,7 @@ public class EventGroupingService {
     public Mono<EventGroupingResponse> createEventGrouping(EventGroupingCreationRequest request, EventType type) {
         return checkDuplicate(request.getEventId())
             .flatMap(result -> Boolean.TRUE.equals(result) ? 
-                Mono.error(new InvalidRequestException()) :
+                Mono.error(new InvalidRequestException("")) :
                 Mono.just(request)
                     .map(grouping -> {
                         EventGrouping eventGrouping = mapper.toEventGrouping(request);

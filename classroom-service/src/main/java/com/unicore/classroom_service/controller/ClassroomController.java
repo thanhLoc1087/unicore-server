@@ -16,6 +16,7 @@ import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
+import com.unicore.classroom_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.dto.response.StudentListResponse;
@@ -25,6 +26,8 @@ import com.unicore.classroom_service.service.StudentListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 @RestController
@@ -131,6 +134,17 @@ public class ClassroomController {
     @GetMapping("/students/{studentCode}")
     public Mono<ApiResponse<List<ClassroomResponse>>> getStudentClasses(@PathVariable String studentCode) {
         return studentListService.getStudentClasses(studentCode)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response,
+                LocalDateTime.now()
+            ));
+    }
+
+    @PutMapping("/internal/grouping")
+    public Mono<ApiResponse<ClassroomResponse>> updateGrouping(@RequestBody UpdateClassGroupingRequest request) {
+        return classroomService.updateClassGroupingId(request)
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
