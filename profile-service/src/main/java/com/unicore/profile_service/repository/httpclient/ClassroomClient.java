@@ -27,7 +27,7 @@ public class ClassroomClient {
 
     public Mono<ApiResponse<StudentListResponse>> getClassStudentList(@RequestBody GetStudentListByClass request) {
         return webClient.post()
-            .uri("/students") // Adjust the base URL as needed
+            .uri("/get/students") // Adjust the base URL as needed
             .contentType(MediaType.APPLICATION_JSON) // Specify the content type
             .bodyValue(request) // Serialize the request body to JSON
             .retrieve()

@@ -21,8 +21,6 @@ public class Homework extends BaseEvent {
     {
         setType(EventType.HOMEWORK);
     }
-    // Nếu nó tạo trong BTL
-    private String projectId;
 
     private LocalDateTime publishDate;
 

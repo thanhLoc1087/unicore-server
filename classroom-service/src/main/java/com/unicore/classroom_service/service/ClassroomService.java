@@ -102,7 +102,9 @@ public class ClassroomService {
 
         for (var i = 0; i < classRequests.size(); i++) {
             Subclass currentSubclass = classroomMapper.toSubclass(classRequests.get(i));
-            currentSubclass.setMainTeacherCode(currentSubclass.getTeacherCodes().getFirst());
+            if (!classRequests.get(i).isOrgManaged()) {
+                currentSubclass.setMainTeacherCode(currentSubclass.getTeacherCodes().getFirst());
+            }
             subclasses.add(currentSubclass);
             if (i + 1 < classRequests.size()) {
                 ClassroomCreationRequest nextSubclass = classRequests.get(i + 1);

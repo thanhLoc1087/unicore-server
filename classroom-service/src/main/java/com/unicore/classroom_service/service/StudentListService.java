@@ -50,7 +50,7 @@ public class StudentListService {
                     .map(studentListMapper::toStudentList)
                     .flatMap(studentListRepository::save)
                     .map(studentListMapper::toStudentListResponse) :
-                Mono.error(() -> new AppException(ErrorCode.DUPLICATE))
+                Mono.error(() -> new AppException(ErrorCode.STUDENT_LIST_IMPORTED))
             );
     }
     
@@ -103,16 +103,24 @@ public class StudentListService {
             .flatMap(classroom -> {
                 for (Subclass subclass : classroom.getSubclasses()) {
                     if (subclass.getType().isMainClass() && !subclass.getCode().equals(request.getSubclassCode())) {
+                        // lớp con 
                         return studentListRepository.findByClassIdAndSubclassCode(
                             request.getClassId(),
                             request.getSubclassCode()
                         ).map(mainStudentList ->  
                             mainStudentList.getStudentCodes().containsAll(request.getStudentCodes()));
+                    } else if (subclass.getCode().equals(request.getSubclassCode())) {
+                        return studentListRepository.findByClassIdAndSubclassCode(
+                            request.getClassId(),
+                            request.getSubclassCode()
+                        )
+                        .hasElement()
+                        .map(hasElement -> !hasElement);
                     }
                 }
-                return Mono.just(true);
+                return Mono.empty();
             })
-            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.CLASS_NOT_FOUND)));
     }
 
     public Mono<List<ClassroomResponse>> getStudentClasses(String studentCode) {

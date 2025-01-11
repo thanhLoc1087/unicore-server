@@ -25,9 +25,6 @@ public class ReportUpdateRequest {
     private boolean allowGradeReview;
     @JsonProperty("review_times")
     private int reviewTimes;
-    // người chấm
-    @JsonProperty("grader_code")
-    private String graderCode;
     
     @JsonProperty("publish_date")
     private LocalDateTime publishDate;
@@ -42,8 +39,6 @@ public class ReportUpdateRequest {
     
     private LocalDate date;
     
-    @JsonProperty("late_turn_in")
-    private LocalDate lateTurnIn;
     @JsonProperty("close_submission_date")
     private LocalDate closeSubmissionDate;
     

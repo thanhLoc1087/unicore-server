@@ -9,12 +9,12 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ExamFormat {
-    TU_LUAN("TL",true),
-    TRAC_NGHIEM("TN",true),
-    THUC_HANH("TH",false),
-    VAN_DAP("VD",false),
-    DO_AN("DA",false),
-    DO_AN_TOT_NGHIEP("DATN",true),
+    TU_LUAN("TU_LUAN",true),
+    TRAC_NGHIEM("TRAC_NGHIEM",true),
+    THUC_HANH("THUC_HANH",false),
+    VAN_DAP("VAN_DAP",false),
+    DO_AN("DO_AN",false),
+    DO_AN_TOT_NGHIEP("DO_AN_TOT_NGHIEP",true),
     NONE("NONE", false);
 
     

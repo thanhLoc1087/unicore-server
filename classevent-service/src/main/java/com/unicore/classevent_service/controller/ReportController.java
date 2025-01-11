@@ -33,7 +33,7 @@ import reactor.core.publisher.Mono;
 public class ReportController {
     private final ReportService reportService;
     
-    @PostMapping("/get")
+    @PostMapping("/active")
     public Mono<ApiResponse<List<ReportResponse>>> findActiveReports(@RequestBody GetByDateRequest request) {
         return reportService.findActiveReports(request)
             .collectList()

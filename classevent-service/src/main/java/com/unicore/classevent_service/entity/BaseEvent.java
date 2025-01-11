@@ -37,6 +37,7 @@ public class BaseEvent {
 
     @JsonProperty("class_id")
     private String classId;
+    
     @JsonProperty("subclass_code")
     private String subclassCode;
 
@@ -55,6 +56,8 @@ public class BaseEvent {
     private boolean allowGradeReview;
     @JsonProperty("review_times")
     private int reviewTimes;
+
+    private String groupingId;
 
     private EventType type;
 }

@@ -90,7 +90,10 @@ public class ReportService {
     }
 
     public Flux<ReportResponse> getClassReports(GetByClassRequest request) {
-        return reportRepository.findAllByClassIdAndSubclassCodeAndType(request.getClassId(), request.getSubclassCode(), EventType.REPORT)
+        return reportRepository.findAllReportsByClassIdAndSubclassCode(
+                request.getClassId(), 
+                request.getSubclassCode()
+            )
             .map(report -> reportMapper.toReportResponse((Report) report))
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }

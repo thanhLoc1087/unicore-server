@@ -2,6 +2,7 @@ package com.unicore.classevent_service.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,6 +12,7 @@ import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.SubmissionOption;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -42,7 +44,8 @@ public class Report extends BaseEvent {
 
     private String attachmentUrl;
 
-    private Map<String, Float> grades;
+    @Builder.Default
+    private Map<String, Float> grades = new HashMap<>();
     
     private Query query;
 }
