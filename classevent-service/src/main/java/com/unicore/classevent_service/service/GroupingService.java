@@ -41,14 +41,14 @@ public class GroupingService {
                 grouping.setDefault(true);
                 return grouping;
             })
-            .flatMap(this::createGroupingSchedule)
-            .flatMap(response -> classroomClient.updateClassroom(
+            .flatMap(grouping -> classroomClient.updateClassroom(
                 new UpdateClassGroupingRequest(
                     request.getClassId(), 
                     request.getSubclassCode(), 
-                    response.getId()
-                )).map(classroom -> response)
-            );
+                    grouping.getId()
+                )).map(classroom -> grouping)
+            )
+            .flatMap(this::createGroupingSchedule);
     }
 
     public Mono<GroupingResponse> createEventGroupingSchedule(String eventId, GroupingScheduleRequest request) {
@@ -90,5 +90,6 @@ public class GroupingService {
     }
 
     // ddang ky nhom
+    
 
 }

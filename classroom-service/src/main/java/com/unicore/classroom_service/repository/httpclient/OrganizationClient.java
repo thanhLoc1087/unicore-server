@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.unicore.classroom_service.dto.request.GetSubjectByYearAndSemesterRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.SubjectResponse;
 
@@ -34,6 +35,17 @@ public class OrganizationClient {
                         .toEntity(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
                         // .bodyToMono(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
                         .map(responseEntity -> responseEntity.getBody().getData());
+    }
+
+    public Mono<List<SubjectResponse>> getSubjectsBySemesterAndYear(GetSubjectByYearAndSemesterRequest request) {
+        return webClient.post()
+            .uri("/subjects/semester")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ApiResponse<List<SubjectResponse>>>() {})
+            // .bodyToMono(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
+            .map(responseEntity -> responseEntity.getBody().getData());
     }
 
     public Mono<List<SubjectResponse>> getAllSubjects() {

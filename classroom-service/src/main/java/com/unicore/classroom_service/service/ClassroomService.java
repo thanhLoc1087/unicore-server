@@ -17,8 +17,8 @@ import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
 import com.unicore.classroom_service.dto.request.GeneralTestBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.GeneralTestCreationRequest;
-import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
+import com.unicore.classroom_service.dto.request.GetSubjectByYearAndSemesterRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.request.UpdateClassGroupingRequest;
@@ -62,8 +62,8 @@ public class ClassroomService {
         return saveClassroom(classroom);
     }
 
-    private Mono<Map<String, SubjectResponse>> getSubjects() {
-        return organizationClient.getAllSubjects()
+    private Mono<Map<String, SubjectResponse>> getSubjects(int semester, int year) {
+        return organizationClient.getSubjectsBySemesterAndYear(new GetSubjectByYearAndSemesterRequest(semester, year))
             .map(subjects -> {
                 log.info("getSubjects: " + subjects.toString());
                 Map<String, SubjectResponse> map = new HashMap<>();
@@ -120,7 +120,7 @@ public class ClassroomService {
             }
         }
 
-        return getSubjects()
+        return getSubjects(request.getSemester(), request.getYear())
             .flatMapMany(subjects ->  {
                 log.info("createClassrooms 1: " + subjects.toString());
                 return Flux.fromIterable(classes)

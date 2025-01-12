@@ -10,5 +10,7 @@ import lombok.Data;
 public class ClassroomBulkCreationRequest {
     @JsonProperty("organization_id")
     private String organizationId;
+    private int semester;
+    private int year;
     private List<ClassroomCreationRequest> classes;
 }

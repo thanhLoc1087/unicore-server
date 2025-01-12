@@ -8,6 +8,7 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 
 import com.unicore.organization_service.exception.AppException;
 import com.unicore.organization_service.exception.ErrorCode;
+import com.unicore.organization_service.dto.request.GetSubjectByYearAndSemesterRequest;
 import com.unicore.organization_service.dto.request.SubjectBulkCreationRequest;
 import com.unicore.organization_service.dto.request.SubjectCreationRequest;
 import com.unicore.organization_service.dto.response.SubjectInListResponse;
@@ -179,6 +180,26 @@ public class SubjectService {
                     .switchIfEmpty(Mono.just(subject))
             )
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+    }
+
+    public Flux<SubjectResponse> getSubjectsBySemesterAndYear(GetSubjectByYearAndSemesterRequest request) {
+        return subjectRepository.findAll()
+            .map(subjectMapper::toSubjectResponse)
+            .flatMap(subject -> subjectMetadataRepository.findBySubjectId(subject.getId())
+                .collectList()
+                .map(subjectMets -> {
+                    SubjectMetadata result = subjectMets.get(0);
+                    for (SubjectMetadata subjectMet : subjectMets) {
+                        if (subjectMet.isGreaterThan(request.getSemester(), request.getYear()) 
+                            && !subjectMet.isGreaterThan(result.getSemester(), request.getYear())) {
+                                result = subjectMet;
+                            }
+                        
+                    }
+                    subject.setMetadata(result);
+                    return subject;
+                })
+            );
     }
 
     public Mono<SubjectResponse> deleteById(String id) {

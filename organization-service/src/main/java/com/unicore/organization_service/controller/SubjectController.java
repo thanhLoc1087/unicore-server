@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unicore.organization_service.dto.request.GetSubjectByYearAndSemesterRequest;
 import com.unicore.organization_service.dto.request.SubjectBulkCreationRequest;
-import com.unicore.organization_service.dto.request.SubjectCreationRequest;
 import com.unicore.organization_service.dto.response.ApiResponse;
 import com.unicore.organization_service.dto.response.SubjectInListResponse;
 import com.unicore.organization_service.dto.response.SubjectResponse;
@@ -65,6 +65,19 @@ public class SubjectController {
                 LocalDateTime.now()
             ));
     }
+
+    @PostMapping("/semester")
+    public Mono<ApiResponse<List<SubjectResponse>>> getAllSubjectsBySemesterAndYear(@RequestBody GetSubjectByYearAndSemesterRequest request) {
+        return subjectService.getSubjectsBySemesterAndYear(request)
+            .collectList()
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response,
+                LocalDateTime.now()
+            ));
+    }
+    
     
     @GetMapping("/{id}")
     public Mono<ApiResponse<SubjectResponse>> getSubject(@PathVariable String id) {

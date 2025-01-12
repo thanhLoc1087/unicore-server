@@ -63,4 +63,11 @@ public class SubjectMetadata {
 
     private int semester;
     private int year;
+
+    public boolean isGreaterThan(int semester, int year) {
+        if (this.semester == semester && this.year == year) return true;
+        if (this.year > year) return true;
+        if (this.year == year && this.semester >= semester) return true;
+        return false;
+    }
 }
