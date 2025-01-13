@@ -24,6 +24,9 @@ public class GroupingSchedule {
 
     @JsonProperty("subclass_code")
     private String subclassCode;
+
+    @JsonProperty("org_managed")
+    private boolean orgManaged;
     
     @JsonProperty("is_default")
     @Builder.Default

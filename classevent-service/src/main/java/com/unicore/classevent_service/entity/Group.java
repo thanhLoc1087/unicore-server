@@ -27,7 +27,7 @@ public class Group {
         for (StudentInGroup member: members) {
             if (member.getStudentCode().equals(memberCode))
                 return true;
-            }
+        }
         return false;
     }
 }

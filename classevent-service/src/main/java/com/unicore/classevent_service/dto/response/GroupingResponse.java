@@ -1,6 +1,7 @@
 package com.unicore.classevent_service.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,5 +31,6 @@ public class GroupingResponse {
     @JsonProperty("min_size")
     private int minSize;
 
-    private List<Group> groups;
+    @Builder.Default
+    private List<Group> groups = new ArrayList<>();
 }
