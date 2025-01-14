@@ -11,8 +11,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.unicore.classroom_service.dto.request.GeneralTestBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.GetByClassRequest;
+import com.unicore.classroom_service.dto.request.InternStudentListImportRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.GeneralTestResponse;
+import com.unicore.classroom_service.dto.response.InternTopic;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -47,5 +49,14 @@ public class ClassEventClient {
             .bodyValue(request)
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<ApiResponse<List<GeneralTestResponse>>>() {});
+    }
+
+    public Mono<ApiResponse<List<InternTopic>>> importInternTopics(InternStudentListImportRequest request) {
+        return webClient.post()
+            .uri("/topic/intern/bulk")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<ApiResponse<List<InternTopic>>>() {});
     }
 }

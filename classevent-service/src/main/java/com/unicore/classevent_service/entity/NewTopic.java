@@ -1,7 +1,6 @@
 package com.unicore.classevent_service.entity;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 
@@ -19,11 +18,12 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class NewTopic {
+public abstract class NewTopic {
     @Id
     private String id;
     private String name;
     private String description;
+    private String note;
     
     @JsonProperty("teacher_codes")
     private List<String> teacherCodes;
@@ -35,4 +35,6 @@ public class NewTopic {
     private TopicStatus status = TopicStatus.APPROVED;
 
     TopicType type; 
+
+    public abstract String genId();
 }

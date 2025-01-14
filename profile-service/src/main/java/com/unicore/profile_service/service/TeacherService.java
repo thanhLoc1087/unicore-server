@@ -1,6 +1,7 @@
 package com.unicore.profile_service.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.r2dbc.BadSqlGrammarException;
@@ -67,6 +68,17 @@ public class TeacherService {
         return teacherRepository.findByCode(code)
             .map(teacherMapper::toTeacherResponse)
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+    }
+
+    public Mono<TeacherResponse> getTeacherByEmail(String email) {
+        return teacherRepository.findByEmail(email)
+            .map(teacherMapper::toTeacherResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+    }
+
+    public Flux<TeacherResponse> getTeacherByEmails(Set<String> emails) {
+        return Flux.fromIterable(emails)
+            .flatMap(this::getTeacherByEmail);
     }
 
     public Flux<TeacherResponse> getTeachers() {

@@ -1,8 +1,9 @@
-package com.unicore.classevent_service.entity;
+package com.unicore.classroom_service.dto.response;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import com.unicore.classevent_service.enums.TopicType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,10 +12,17 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InternTopic extends NewTopic { 
-    {
-        setType(TopicType.THUC_TAP);
-    }
+public class InternTopic {
+    private String id;
+    private String name;
+    private String description;
+    private String note;
+    
+    @JsonProperty("teacher_codes")
+    private List<String> teacherCodes;
+
+    @JsonProperty("teacher_names")
+    private List<String> teacherNames;
     private String classId;
     private String companyName;
     private LocalDate startDate;
@@ -22,19 +30,9 @@ public class InternTopic extends NewTopic {
     private Float companyGrade;
     
     private String councilCode;
-    private TopicGradingMember councilPrincipal;
-    private TopicGradingMember councilSecretary;
-    private TopicGradingMember councilMember;
     private boolean councilGraded;
 
     private String studentCode;
     private String studentName;
     private String studentEmail;
-    @Override
-    public String genId() {
-        String id = classId;
-        id += "_" + studentCode;
-        setId(id);
-        return id;
-    }
 }

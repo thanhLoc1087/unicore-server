@@ -4,23 +4,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.unicore.classroom_service.dto.request.AddForeignStudentsRequest;
 import com.unicore.classroom_service.dto.request.AddStudentsToListRequest;
 import com.unicore.classroom_service.dto.request.GetByClassRequest;
+import com.unicore.classroom_service.dto.request.InternStudentListImportRequest;
+import com.unicore.classroom_service.dto.request.InternStudentRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.dto.response.StudentListResponse;
+import com.unicore.classroom_service.dto.response.TeacherResponse;
 import com.unicore.classroom_service.entity.Classroom;
+import com.unicore.classroom_service.entity.StudentList;
 import com.unicore.classroom_service.entity.Subclass;
+import com.unicore.classroom_service.enums.ClassType;
 import com.unicore.classroom_service.exception.AppException;
 import com.unicore.classroom_service.exception.ErrorCode;
 import com.unicore.classroom_service.mapper.ClassroomMapper;
 import com.unicore.classroom_service.mapper.StudentListMapper;
 import com.unicore.classroom_service.repository.ClassroomRepository;
 import com.unicore.classroom_service.repository.StudentListRepository;
+import com.unicore.classroom_service.repository.httpclient.ClassEventClient;
+import com.unicore.classroom_service.repository.httpclient.ProfileClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +40,9 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @Slf4j
 public class StudentListService {
+    private final ClassEventClient classEventClient;
+    private final ProfileClient profileClient;
+
     private final StudentListRepository studentListRepository;
     private final StudentListMapper studentListMapper;
 
@@ -41,6 +53,78 @@ public class StudentListService {
     public Flux<StudentListResponse> createStudentListBulk(List<StudentListCreationRequest> requests) {
         return Flux.fromIterable(requests)
             .flatMap(this::createStudentList);
+    }
+
+    public Mono<StudentListResponse> createInternStudentList(InternStudentListImportRequest request) {
+        return classroomRepository.findById(request.getClassId())
+            .map(response -> {
+                List<String> studentCodes = request.getStudents()
+                    .stream().map(InternStudentRequest::getStudentCode).toList();
+                classEventClient.importInternTopics(request).subscribe();
+                createSubclassesFromInternList(response, request).subscribe();
+                return StudentList.builder()
+                    .classId(response.getId())
+                    .subclassCode(response.getCode())
+                    .semester(response.getSemester())
+                    .year(response.getYear())
+                    .studentCodes(Set.copyOf(studentCodes))
+                    .build();
+            })
+            .flatMap(studentListRepository::save)
+            .map(studentListMapper::toStudentListResponse);
+    }
+
+    private Flux<StudentListResponse> createInternStudentListForSubclasses(List<StudentList> lists) {
+        return Flux.fromIterable(lists)
+            .flatMap(studentListRepository::save)
+            .map(studentListMapper::toStudentListResponse);
+    }
+
+    private Mono<ClassroomResponse> createSubclassesFromInternList(Classroom classroom, InternStudentListImportRequest request) {
+        List<String> emails = request.getStudents().stream().map(InternStudentRequest::getTeacherMail).toList();
+        return profileClient.getTeachersByEmails(emails)
+            .flatMap(teachers -> {
+                Map<String, TeacherResponse> teacherMap = teachers.stream()
+                    .collect(Collectors.toMap(
+                        TeacherResponse::getEmail,
+                        teacher -> teacher 
+                    ));
+
+                Map<String, Subclass> subclasses = new HashMap<>();
+                Map<String, StudentList> studentLists = new HashMap<>();
+
+                for (InternStudentRequest student : request.getStudents()) {
+                    if (!subclasses.containsKey(student.getTeacherMail())) {
+                        TeacherResponse teacher = teacherMap.get(student.getTeacherMail());
+                        Subclass subclass = Subclass.builder()
+                            .code(teacher.getCode())
+                            .mainTeacherCode(teacher.getCode())
+                            .teacherCodes(List.of(teacher.getCode()))
+                            .type(ClassType.NHOM_HUONG_DAN)
+                            .build();
+                        subclasses.put(student.getTeacherMail(), subclass);
+
+                        StudentList studentList = StudentList.builder()
+                            .classId(classroom.getId())
+                            .subclassCode(teacher.getCode())
+                            .semester(classroom.getSemester())
+                            .year(classroom.getYear())
+                            .studentCodes(Set.of(student.getStudentCode()))
+                            .build();
+                        studentLists.put(student.getTeacherMail(), studentList);
+                    } else {
+                        StudentList studentList = studentLists.get(student.getTeacherMail());
+                        studentList.getStudentCodes().add(student.getStudentCode());
+                    }
+                }
+
+                createInternStudentListForSubclasses(List.copyOf(studentLists.values())).subscribe();
+                classroom.setSubclasses(List.copyOf(subclasses.values()));
+
+                return Mono.just(classroom);
+            })
+            .flatMap(classroomRepository::save)
+            .map(classroomMapper::toClassroomResponse);
     }
 
     public Mono<StudentListResponse> createStudentList(StudentListCreationRequest request) {

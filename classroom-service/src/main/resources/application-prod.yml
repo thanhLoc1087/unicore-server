@@ -55,3 +55,4 @@ application:
     service:
         classevent: http://${API_GATEWAY_URL}/api/v1/classevent
         organization: http://${API_GATEWAY_URL}/api/v1/organization
+        profile: http://${API_GATEWAY_URL}/api/v1/profile

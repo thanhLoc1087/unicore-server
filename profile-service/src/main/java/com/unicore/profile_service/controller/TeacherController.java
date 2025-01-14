@@ -1,6 +1,7 @@
 package com.unicore.profile_service.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +43,17 @@ public class TeacherController {
     @PostMapping("/bulk")
     public Mono<ApiResponse<List<TeacherResponse>>> createTeachers(@RequestBody @Valid TeacherBulkCreationRequest request) {
         return teacherService.createTeachers(request)
+            .collectList()
+            .map(response -> ApiResponse.<List<TeacherResponse>>builder()
+                .data(response)
+                .message(response.isEmpty() ? "Empty list" : "Success")
+                .build()
+            );
+    }
+    
+    @PostMapping("/emails")
+    public Mono<ApiResponse<List<TeacherResponse>>> getTeachersFromEmails(@RequestBody List<String> emails) {
+        return teacherService.getTeacherByEmails(Set.copyOf(emails))
             .collectList()
             .map(response -> ApiResponse.<List<TeacherResponse>>builder()
                 .data(response)
