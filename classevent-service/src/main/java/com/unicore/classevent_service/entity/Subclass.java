@@ -1,6 +1,7 @@
 package com.unicore.classevent_service.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.enums.ClassType;
@@ -17,11 +18,10 @@ import lombok.NoArgsConstructor;
 public class Subclass {
     private String code;
 
-    @JsonProperty("teacher_code")
-    private String teacherCode;
-
-    @JsonProperty("teacher_assistant_code")
-    private String teacherAssistantCode;
+    @JsonProperty("teacher_codes")
+    private List<String> teacherCodes;
+    @JsonProperty("teacher_names")
+    private List<String> teacherNames;
 
     @JsonProperty("start_date")
     private LocalDate startDate;

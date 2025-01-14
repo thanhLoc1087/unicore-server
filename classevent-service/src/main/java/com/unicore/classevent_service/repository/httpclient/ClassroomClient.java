@@ -44,6 +44,16 @@ public class ClassroomClient {
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<ApiResponse<ClassroomResponse>>() {});
     }
+
+    
+    public Mono<ClassroomResponse> getClassById(String classId) {
+        return webClient.get()
+            .uri("/{classId}", classId)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ApiResponse<ClassroomResponse>>() {})
+            // .bodyToMono(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
+            .map(responseEntity -> responseEntity.getBody().getData());
+    }
         
     public Mono<ApiResponse<ClassroomResponse>> updateClassroom(UpdateClassGroupingRequest request) {
         return webClient.put()

@@ -17,6 +17,8 @@ public interface BaseEventRepository extends ReactiveMongoRepository<BaseEvent, 
     
     Flux<BaseEvent> findAllByClassId(String classId);
 
+    Flux<BaseEvent> findAllByClassIdAndSubclassCode(String classId, String subclassCode);
+
     Flux<BaseEvent> findAllByClassIdAndWeightType(String classId, WeightType weightType);
 
     Flux<BaseEvent> findAllByClassIdAndSubclassCodeAndType(String classId, String subclassCode, EventType type);
