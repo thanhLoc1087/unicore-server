@@ -25,6 +25,9 @@ public abstract class NewTopic {
     private String description;
     private String note;
     
+    @JsonProperty("teacher_mails")
+    private List<String> teacherMails;
+    
     @JsonProperty("teacher_codes")
     private List<String> teacherCodes;
 

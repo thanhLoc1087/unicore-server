@@ -1,5 +1,7 @@
 package com.unicore.classevent_service.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.unicore.classevent_service.dto.request.InternStudentListImportRequest;
@@ -23,6 +25,8 @@ public class TopicService {
         return Flux.fromIterable(request.getStudents())
             .map(internRequest -> {
                 InternTopic internTopic = topicMapper.toInternTopic(internRequest);
+                internTopic.setTeacherMails(List.of(internRequest.getTeacherMail()));
+                internTopic.setTeacherNames(List.of(internRequest.getTeacherName()));
                 internTopic.setClassId(request.getClassId());
                 internTopic.genId();
                 return internTopic;

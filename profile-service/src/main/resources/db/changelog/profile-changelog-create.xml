@@ -186,5 +186,39 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet id="table-teacher-add-column-deleted" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column deleted already exists in table teacher">
+            <not>
+                <columnExists tableName="teacher" columnName="deleted" />
+            </not>
+        </preConditions>
+        <addColumn tableName="teacher">
+            <column name="deleted" type="BOOLEAN" defaultValueNumeric="0">
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="table-student-add-column-deleted" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column deleted already exists in table student">
+            <not>
+                <columnExists tableName="student" columnName="deleted" />
+            </not>
+        </preConditions>
+        <addColumn tableName="student">
+            <column name="deleted" type="BOOLEAN" defaultValueNumeric="0">
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="table-staff-add-column-deleted" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column deleted already exists in table staff">
+            <not>
+                <columnExists tableName="staff" columnName="deleted" />
+            </not>
+        </preConditions>
+        <addColumn tableName="staff">
+            <column name="deleted" type="BOOLEAN" defaultValueNumeric="0">
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
