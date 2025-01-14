@@ -15,6 +15,7 @@ import com.unicore.classroom_service.dto.request.ClassFilterRequest;
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
+import com.unicore.classroom_service.dto.request.InternStudentListImportRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
@@ -108,6 +109,18 @@ public class ClassroomController {
                 LocalDateTime.now()
             ));
     }
+
+    @PostMapping("/students/intern")
+    public Mono<ApiResponse<StudentListResponse>> importInternStudents(@RequestBody InternStudentListImportRequest request) {
+        return studentListService.createInternStudentList(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response,
+                LocalDateTime.now()
+            ));
+    }
+    
 
     @PostMapping("/students/add")
     public Mono<ApiResponse<StudentListResponse>> addStudentsToList(@RequestBody AddStudentsToListRequest request) {

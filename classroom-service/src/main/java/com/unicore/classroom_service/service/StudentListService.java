@@ -2,6 +2,7 @@ package com.unicore.classroom_service.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,6 +63,7 @@ public class StudentListService {
                     .stream().map(InternStudentRequest::getStudentCode).toList();
                 classEventClient.importInternTopics(request).subscribe();
                 createSubclassesFromInternList(response, request).subscribe();
+
                 return StudentList.builder()
                     .classId(response.getId())
                     .subclassCode(response.getCode())
@@ -109,7 +111,7 @@ public class StudentListService {
                             .subclassCode(teacher.getCode())
                             .semester(classroom.getSemester())
                             .year(classroom.getYear())
-                            .studentCodes(Set.of(student.getStudentCode()))
+                            .studentCodes(new HashSet<>(Set.of(student.getStudentCode())))
                             .build();
                         studentLists.put(student.getTeacherMail(), studentList);
                     } else {
@@ -119,7 +121,7 @@ public class StudentListService {
                 }
 
                 createInternStudentListForSubclasses(List.copyOf(studentLists.values())).subscribe();
-                classroom.setSubclasses(List.copyOf(subclasses.values()));
+                classroom.getSubclasses().addAll(List.copyOf(subclasses.values()));
 
                 return Mono.just(classroom);
             })

@@ -12,13 +12,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.TeacherResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
+@Slf4j
 public class ProfileClient {
     private WebClient webClient;
 
-    public ProfileClient(@Value("${application.service.organization}") String url) {
+    public ProfileClient(@Value("${application.service.profile}") String url) {
         this.webClient = WebClient.builder()
             .baseUrl(url)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -32,6 +34,9 @@ public class ProfileClient {
             .bodyValue(emails)
             .retrieve()
             .toEntity(new ParameterizedTypeReference<ApiResponse<List<TeacherResponse>>>() {})
-            .map(responseEntity -> responseEntity.getBody().getData());
+            .map(responseEntity -> {
+                log.info(responseEntity.getBody().getData().toString());
+                return responseEntity.getBody().getData();
+            });
     }
 }
