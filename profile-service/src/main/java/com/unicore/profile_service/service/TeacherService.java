@@ -66,14 +66,16 @@ public class TeacherService {
 
     public Mono<TeacherResponse> getTeacherByCode(String code) {
         return teacherRepository.findByCode(code)
-            .map(teacherMapper::toTeacherResponse)
-            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+            .map(teacherMapper::toTeacherResponse);
+    }
+    public Flux<TeacherResponse> getTeacherByCodes(Set<String> codes) {
+        return Flux.fromIterable(codes)
+            .flatMap(this::getTeacherByCode);
     }
 
     public Mono<TeacherResponse> getTeacherByEmail(String email) {
         return teacherRepository.findByEmail(email)
-            .map(teacherMapper::toTeacherResponse)
-            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+            .map(teacherMapper::toTeacherResponse);
     }
 
     public Flux<TeacherResponse> getTeacherByEmails(Set<String> emails) {

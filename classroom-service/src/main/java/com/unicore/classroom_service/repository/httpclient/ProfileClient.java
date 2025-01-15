@@ -1,5 +1,6 @@
 package com.unicore.classroom_service.repository.httpclient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -35,8 +36,19 @@ public class ProfileClient {
             .retrieve()
             .toEntity(new ParameterizedTypeReference<ApiResponse<List<TeacherResponse>>>() {})
             .map(responseEntity -> {
-                log.info(responseEntity.getBody().getData().toString());
-                return responseEntity.getBody().getData();
+                return responseEntity.getBody() != null ? responseEntity.getBody().getData() : new ArrayList<>();
+            });
+    }
+
+    public Mono<List<TeacherResponse>> getTeachersByCodes(List<String> codes) {
+        return webClient.post()
+            .uri("/teachers/codes")
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(codes)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ApiResponse<List<TeacherResponse>>>() {})
+            .map(responseEntity -> {
+                return responseEntity.getBody() != null ? responseEntity.getBody().getData() : new ArrayList<>();
             });
     }
 }

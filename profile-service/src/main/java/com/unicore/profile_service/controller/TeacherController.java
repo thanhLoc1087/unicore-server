@@ -62,6 +62,17 @@ public class TeacherController {
             );
     }
     
+    @PostMapping("/codes")
+    public Mono<ApiResponse<List<TeacherResponse>>> getTeachersFromCodes(@RequestBody List<String> codes) {
+        return teacherService.getTeacherByCodes(Set.copyOf(codes))
+            .collectList()
+            .map(response -> ApiResponse.<List<TeacherResponse>>builder()
+                .data(response)
+                .message(response.isEmpty() ? "Empty list" : "Success")
+                .build()
+            );
+    }
+    
     @GetMapping
     public Mono<ApiResponse<List<TeacherResponse>>> getTeachers() {
         return teacherService.getTeachers()

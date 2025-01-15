@@ -25,6 +25,8 @@ import com.unicore.classroom_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.dto.response.SubjectNotExistsError;
 import com.unicore.classroom_service.dto.response.SubjectResponse;
+import com.unicore.classroom_service.dto.response.TeacherNotExistsError;
+import com.unicore.classroom_service.dto.response.TeacherResponse;
 import com.unicore.classroom_service.entity.Classroom;
 import com.unicore.classroom_service.entity.Group;
 import com.unicore.classroom_service.entity.StudentInGroup;
@@ -38,6 +40,7 @@ import com.unicore.classroom_service.mapper.ClassroomMapper;
 import com.unicore.classroom_service.repository.ClassroomRepository;
 import com.unicore.classroom_service.repository.httpclient.ClassEventClient;
 import com.unicore.classroom_service.repository.httpclient.OrganizationClient;
+import com.unicore.classroom_service.repository.httpclient.ProfileClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +57,7 @@ public class ClassroomService {
     private final StudentListService studentListService;
 
     private final ClassEventClient classEventClient;
+    private final ProfileClient profileClient;
     private final OrganizationClient organizationClient;
 
     public Mono<ClassroomResponse> createClassroom(Classroom classroom, SubjectResponse subject) {
@@ -69,6 +73,18 @@ public class ClassroomService {
                 Map<String, SubjectResponse> map = new HashMap<>();
                 for (SubjectResponse subject : subjects) {
                     map.put(subject.getCode(), subject);
+                }
+                return map;
+            });
+    }
+
+    private Mono<Map<String, TeacherResponse>> getTeachers(List<String> codes) {
+        return profileClient.getTeachersByCodes(codes)
+            .map(teachers -> {
+                log.info("getteachers: " + teachers.toString());
+                Map<String, TeacherResponse> map = new HashMap<>();
+                for (TeacherResponse teacher : teachers) {
+                    map.put(teacher.getCode(), teacher);
                 }
                 return map;
             });
@@ -95,6 +111,7 @@ public class ClassroomService {
     public Flux<ClassroomResponse> createClassrooms(ClassroomBulkCreationRequest request) {
         if (request.getClasses().isEmpty()) return Flux.empty();
         ConcurrentLinkedQueue<SubjectNotExistsError> failedSubjects = new ConcurrentLinkedQueue<>();
+        ConcurrentLinkedQueue<TeacherNotExistsError> failedTeachers = new ConcurrentLinkedQueue<>();
         ConcurrentLinkedQueue<String> duplicatedClasses = new ConcurrentLinkedQueue<>();
         List<Classroom> classes = new ArrayList<>();
 
@@ -120,7 +137,30 @@ public class ClassroomService {
             }
         }
 
-        return getSubjects(request.getSemester(), request.getYear())
+        
+        List<String> teacherCodes = new ArrayList<>();
+        for (ClassroomCreationRequest classroom : request.getClasses()) {
+            teacherCodes.addAll(classroom.getTeacherCodes());
+        }
+
+        return getTeachers(teacherCodes)
+            .map(teachers -> {
+                for (ClassroomCreationRequest classRequest : request.getClasses()) {
+                    List<String> codes = classRequest.getTeacherCodes();
+                    List<String> names = classRequest.getTeacherNames();
+                    for (int i = 0; i < codes.size(); i++) {
+                        if (!teachers.containsKey(codes.get(i))) {
+                            failedTeachers.add(new TeacherNotExistsError(
+                                classRequest.getCode(), 
+                                codes.get(i), 
+                                names.get(i))
+                            );
+                        }
+                    }
+                }
+                return teachers;
+            })
+            .flatMap(teachers -> getSubjects(request.getSemester(), request.getYear()))
             .flatMapMany(subjects ->  {
                 log.info("createClassrooms 1: " + subjects.toString());
                 return Flux.fromIterable(classes)
@@ -146,11 +186,12 @@ public class ClassroomService {
                 })
                 .collectList()
                 .flatMap(classrooms -> {
-                    if (!duplicatedClasses.isEmpty() || !failedSubjects.isEmpty()) {
+                    if (!duplicatedClasses.isEmpty() || !failedSubjects.isEmpty() || !failedTeachers.isEmpty()) {
                         return Mono.error(new AppException(
                             ErrorCode.FAILED_CLASS_CREATION,
                             Map.<String, Object>of(
                                 "subject_not_found", new ArrayList<>(failedSubjects),
+                                "teacher_not_found", new ArrayList<>(failedTeachers),
                                 "duplicated", new ArrayList<>(duplicatedClasses)
                             )
                         ));
