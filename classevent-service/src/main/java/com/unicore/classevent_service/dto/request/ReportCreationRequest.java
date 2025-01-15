@@ -49,7 +49,17 @@ public class ReportCreationRequest {
     @JsonProperty("weight_type")
     private WeightType weightType;
     
-    private LocalDate date;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonProperty("report_date")
+    private LocalDate reportDate;
+    
+    @JsonProperty("start_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime startDate;
+    
+    @JsonProperty("end_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime endDate;
     
     @JsonProperty("remind_grading_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

@@ -35,11 +35,6 @@ public class HomeworkResponse extends BaseEventResponse{
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;
-    
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime startDate;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime endDate;
 
     @Override
     public EventType getEventType() {

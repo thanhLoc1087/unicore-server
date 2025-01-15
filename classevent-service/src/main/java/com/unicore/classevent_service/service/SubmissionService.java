@@ -1,9 +1,8 @@
 package com.unicore.classevent_service.service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +57,7 @@ public class SubmissionService {
                 baseEventRepository.findById(creationRequest.getEventId())
             )
             .flatMap((BaseEvent event) -> {
+                submission.setSubmitTimeStatus(submission.calculateSubmissionTime(event.getEndDate()));
                 if (event.isInGroup()) {
                     return eventGroupingService.getGrouping(
                         new GetGroupingRequest(request.getEventId(), request.getClassId(), request.getSubclassCode()))
@@ -75,12 +75,12 @@ public class SubmissionService {
                                 ));
                             }
                             submission.setGroup(event.isInGroup());
-                            submission.setCreatedDate(Date.from(Instant.now()));
+                            submission.setCreatedDate(LocalDateTime.now());
                             return Mono.just(submission);
                         });
                 }
                 submission.setGroup(event.isInGroup());
-                submission.setCreatedDate(Date.from(Instant.now()));
+                submission.setCreatedDate(LocalDateTime.now());
                 submission.setSubmitters(List.of(
                     StudentInSubmission.fromStudentInGroup(request.getSubmitter())
                 ));
@@ -103,7 +103,7 @@ public class SubmissionService {
                         );
                     }
                 }
-                submission.setFeedbackDate(Date.from(Instant.now()));
+                submission.setFeedbackDate(LocalDateTime.now());
                 submission.setReviewerId("Loc");
                 return submission;
             })

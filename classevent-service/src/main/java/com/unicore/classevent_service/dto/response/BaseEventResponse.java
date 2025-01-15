@@ -1,5 +1,6 @@
 package com.unicore.classevent_service.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -28,6 +29,14 @@ public abstract class BaseEventResponse {
     private String createdBy;
     @JsonProperty("modified_by")
     private String modifiedBy;
+    
+    @JsonProperty("start_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime startDate;
+    
+    @JsonProperty("end_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime endDate;
 
     @JsonProperty("in_group")
     private boolean inGroup;

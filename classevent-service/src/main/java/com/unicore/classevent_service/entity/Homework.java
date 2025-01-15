@@ -27,9 +27,6 @@ public class Homework extends BaseEvent {
 
     private List<SubmissionOption> submissionOptions;
 
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-
     private LocalDateTime remindGradingDate;
     private LocalDateTime closeSubmissionDate;
 

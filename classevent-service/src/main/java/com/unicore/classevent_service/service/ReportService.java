@@ -226,7 +226,7 @@ public class ReportService {
                         .weightType(project.getWeightType())
                         .fixedWeight(false)
                         .publishDate(LocalDateTime.now())
-                        .date(singleRequest.getDate())
+                        .reportDate(singleRequest.getDate())
                         .closeSubmissionDate(singleRequest.getDate())
                         .remindGradingDate(singleRequest.getDate())
                         .submissionOptions(List.of(SubmissionOption.FILE, SubmissionOption.DRIVE))

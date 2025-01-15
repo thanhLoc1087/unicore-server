@@ -30,7 +30,8 @@ public class ReportResponse extends BaseEventResponse{
     private SubmissionOption submissionOption;
     
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate date;
+    @JsonProperty("report_date")
+    private LocalDate reportDate;
     
     @JsonProperty("remind_grading_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

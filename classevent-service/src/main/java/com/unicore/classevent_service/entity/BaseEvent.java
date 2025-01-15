@@ -1,5 +1,6 @@
 package com.unicore.classevent_service.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -32,6 +33,10 @@ public class BaseEvent {
     @JsonProperty("modified_by")
     private String modifiedBy;
 
+    
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    
     @JsonProperty("in_group")
     private boolean inGroup;
 

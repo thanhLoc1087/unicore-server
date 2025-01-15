@@ -34,7 +34,7 @@ public class Report extends BaseEvent {
 
     private List<SubmissionOption> submissionOptions;
 
-    private LocalDate date;
+    private LocalDate reportDate;
     
     @JsonProperty("project_id")
     // Nếu nó tạo trong BTL

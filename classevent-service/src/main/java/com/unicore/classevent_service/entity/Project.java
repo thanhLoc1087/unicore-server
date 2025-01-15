@@ -22,7 +22,6 @@ public class Project extends BaseEvent {
     {
         setType(EventType.PROJECT);
     }
-    private LocalDateTime startDate;
     
     @JsonProperty("allow_topic_suggestion")
     private boolean allowTopicSuggestion;
