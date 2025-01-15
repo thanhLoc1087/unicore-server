@@ -23,4 +23,4 @@ ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
 EXPOSE 8083
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Ho_Chi_Minh", "-jar", "app.jar"]
