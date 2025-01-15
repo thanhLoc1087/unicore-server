@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.unicore.identity.validator.DateOfBirthConstraint;
 
 import lombok.AccessLevel;
@@ -39,5 +40,6 @@ public class UserCreationRequest {
     List<String> roles;
 
     @DateOfBirthConstraint(min = 6, message = "INVALID_DOB")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate dob;
 }

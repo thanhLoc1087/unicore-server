@@ -2,6 +2,7 @@ package com.unicore.classroom_service.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AccessLevel;
@@ -23,5 +24,7 @@ public class ApiResponse<T> {
 
     String message;
     T data;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime time;
 }

@@ -21,7 +21,7 @@ public class PostRequest {
     private String description;
 
     @JsonProperty("source_id")
-    private Instant sourceId;
+    private String sourceId;
 
     @JsonProperty("create_by")
     private String createdBy;

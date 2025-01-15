@@ -3,6 +3,7 @@ package com.unicore.classevent_service.dto.request;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.entity.Topic;
 import com.unicore.classevent_service.enums.WeightType;
@@ -39,6 +40,7 @@ public class ProjectCreationRequest {
     @JsonProperty("review_times")
     private int reviewTimes;    
     @JsonProperty("start_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDate;
     
     @JsonProperty("allow_topic_suggestion")

@@ -3,6 +3,7 @@ package com.unicore.classroom_service.dto.response;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.enums.WeightType;
 
@@ -16,8 +17,10 @@ import lombok.NoArgsConstructor;
 public class GeneralTestResponse {
     private String id;
     @JsonProperty("created_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createdDate;
     @JsonProperty("modified_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date modifiedDate;
     @JsonProperty("created_by")
     private String createdBy;
@@ -40,6 +43,7 @@ public class GeneralTestResponse {
     private int reviewTimes;
     
     private String place;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime time;
 
     @JsonProperty("weight_type")

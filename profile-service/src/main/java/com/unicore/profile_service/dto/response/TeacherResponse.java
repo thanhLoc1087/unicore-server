@@ -21,7 +21,7 @@ public class TeacherResponse {
     private String email;
     private String phone;
     private String address;
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
     private MemberGender gender;
     private MemberRole role;

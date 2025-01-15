@@ -3,6 +3,7 @@ package com.unicore.identity.dto.request;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.unicore.identity.validator.DateOfBirthConstraint;
 
 import lombok.AccessLevel;
@@ -24,5 +25,6 @@ public class UserUpdateRequest {
     List<String> roles;
 
     @DateOfBirthConstraint(min = 6, message = "INVALID_DOB")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate dob;
 }

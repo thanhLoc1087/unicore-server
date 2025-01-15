@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.lang.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -22,5 +23,6 @@ public class GetByDateRequest {
     @JsonProperty("subclass_code")
     private String subclassCode;
     
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime date;
 }

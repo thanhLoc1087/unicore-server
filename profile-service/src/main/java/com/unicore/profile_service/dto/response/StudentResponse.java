@@ -18,7 +18,7 @@ public class StudentResponse {
     private String phone;
     private String address;
     private String email;
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
     private MemberGender gender;
     @JsonProperty("advisory_class")

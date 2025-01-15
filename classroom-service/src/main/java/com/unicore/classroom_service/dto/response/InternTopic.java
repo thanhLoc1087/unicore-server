@@ -26,7 +26,9 @@ public class InternTopic {
     private List<String> teacherNames;
     private String classId;
     private String companyName;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     private Float companyGrade;
     

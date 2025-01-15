@@ -3,6 +3,7 @@ package com.unicore.classroom_service.dto.request;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.enums.ClassType;
 
@@ -35,9 +36,11 @@ public class ClassroomCreationRequest {
     private int credits;
     
     @JsonProperty("start_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
     
     @JsonProperty("end_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     
     @JsonProperty("max_size")

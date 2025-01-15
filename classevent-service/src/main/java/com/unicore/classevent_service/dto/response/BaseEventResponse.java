@@ -2,6 +2,7 @@ package com.unicore.classevent_service.dto.response;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.WeightType;
@@ -18,8 +19,10 @@ import lombok.experimental.SuperBuilder;
 public abstract class BaseEventResponse {
     private String id;
     @JsonProperty("created_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createdDate;
     @JsonProperty("modified_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date modifiedDate;
     @JsonProperty("created_by")
     private String createdBy;

@@ -2,6 +2,7 @@ package com.unicore.classevent_service.dto.request;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -15,9 +16,11 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class GroupingScheduleRequest {
     @JsonProperty("start_register_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startRegisterDate;
 
     @JsonProperty("end_register_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endRegisterDate;
 
     @JsonProperty("max_size")

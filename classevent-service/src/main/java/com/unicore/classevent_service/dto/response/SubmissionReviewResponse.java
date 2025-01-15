@@ -3,6 +3,7 @@ package com.unicore.classevent_service.dto.response;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classevent_service.enums.ReviewStatus;
 
@@ -40,6 +41,7 @@ public class SubmissionReviewResponse {
     private List<String> feedbacks;
 
     @JsonProperty("feedback_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private List<Date> feedbackDates;
     @JsonProperty("reviewer_id")
     private String reviewerId;
@@ -49,10 +51,12 @@ public class SubmissionReviewResponse {
     private ReviewStatus status;
     
     @JsonProperty("created_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date createdDate;
     @JsonProperty("created_by")
     private String createdBy;
     @JsonProperty("modified_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date modifiedDate;
     @JsonProperty("modified_by")
     private String modifiedBy;

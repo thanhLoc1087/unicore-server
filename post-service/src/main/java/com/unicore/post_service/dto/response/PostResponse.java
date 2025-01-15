@@ -26,7 +26,7 @@ public class PostResponse {
     private String description;
 
     @JsonProperty("source_id")
-    private Instant sourceId;
+    private String sourceId;
 
     @JsonProperty("created_date")
     private String createdDate;

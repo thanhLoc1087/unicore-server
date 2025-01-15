@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.entity.Group;
 
@@ -20,9 +21,11 @@ public class StudentGroupingUpdateRequest {
     private String id;
 
     @JsonProperty("start_register_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startRegisterDate;
 
     @JsonProperty("end_register_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endRegisterDate;
 
     @JsonProperty("has_leader")
