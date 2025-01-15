@@ -9,7 +9,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
+import com.unicore.classevent_service.dto.response.ClassroomResponse;
 import com.unicore.classevent_service.dto.response.StudentInClassResponse;
+import com.unicore.classevent_service.dto.response.StudentResponse;
 
 import reactor.core.publisher.Mono;
 
@@ -32,4 +34,14 @@ public class ProfileClient {
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<ApiResponse<StudentInClassResponse>>() {});
         }
+
+    
+    public Mono<StudentResponse> getStudentByCode(String code) {
+        return webClient.get()
+            .uri("/students/code/{code}", code)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ApiResponse<StudentResponse>>() {})
+            // .bodyToMono(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
+            .map(responseEntity -> responseEntity.getBody().getData());
+    }
 }

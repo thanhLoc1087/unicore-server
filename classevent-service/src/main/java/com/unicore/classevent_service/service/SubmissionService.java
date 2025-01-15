@@ -2,6 +2,8 @@ package com.unicore.classevent_service.service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -31,11 +33,13 @@ import com.unicore.classevent_service.repository.SubmissionRepository;
 import com.unicore.classevent_service.repository.httpclient.ProfileClient;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SubmissionService {
     private final SubmissionRepository repository;
     private final SubmissionMapper mapper;
@@ -127,13 +131,19 @@ public class SubmissionService {
             .flatMapMany(events -> 
                 profileClient.getClassStudents(new GetByClassRequest(request.getClassId(), null))
                     .flatMapMany(classStudents -> {
+                        log.info(classStudents.toString());
                         List<StudentResponse> students = new ArrayList<>();
-                        students.addAll(classStudents.getData().getStudents());
-                        students.addAll(classStudents.getData().getForeignStudents());
+                        if (classStudents.getData().getStudents() != null) {
+                            students.addAll(classStudents.getData().getStudents());
+                        }
+                        if (classStudents.getData().getForeignStudents() != null) {
+                            students.addAll(classStudents.getData().getForeignStudents());
+                        }
                         return Flux.fromIterable(students);
                     })
                     .flatMap(student -> getStudentEventSubmissions(events, student.getCode(), student))
                     .map(gradeDetail -> {
+                        log.info(gradeDetail.toString());
                         StudentClassGradeResponse studentGrade = new StudentClassGradeResponse();
                         studentGrade.setStudentCode(gradeDetail.getStudentCode());
                         studentGrade.setStudentName(gradeDetail.getStudentName());
@@ -149,6 +159,7 @@ public class SubmissionService {
                         studentGrade.setFinalGrade(
                             calculateGrade(gradeDetail.getFinals())
                         );
+                        log.info(studentGrade.toString());
                         return studentGrade;
                     })
             );
@@ -159,11 +170,17 @@ public class SubmissionService {
         if (request.getWeightType() != null) {
             return baseEventRepository.findAllByClassIdAndWeightType(request.getClassId(), request.getWeightType())
                 .collectList()
-                .flatMap(events -> getStudentEventSubmissions(events, request.getStudentCode(), null));
+                .flatMap(events -> 
+                    profileClient.getStudentByCode(request.getStudentCode())
+                        .flatMap(student -> getStudentEventSubmissions(events, request.getStudentCode(), student))
+                );
         }
         return baseEventRepository.findAllByClassId(request.getClassId())
             .collectList()
-            .flatMap(events -> getStudentEventSubmissions(events, request.getStudentCode(), null));
+            .flatMap(events -> 
+                profileClient.getStudentByCode(request.getStudentCode())
+                    .flatMap(student -> getStudentEventSubmissions(events, request.getStudentCode(), student))
+            );
     }
 
     private Mono<StudentGradeDetail> getStudentEventSubmissions(
@@ -171,19 +188,16 @@ public class SubmissionService {
         String studentCode,
         StudentResponse student
     ) {
+        // log.info("student " + student.toString());
         return Flux.fromIterable(events)
-            .flatMap(event -> 
-                    student != null ?
+            .flatMap(event ->
                     repository.findAllByEventIdAndSubmittersStudentCode(event.getId(), student.getCode())
                         .map(submission -> new EventSubmissionResponse(studentCode, event, submission))
-                        .switchIfEmpty(Mono.just(new EventSubmissionResponse(studentCode, event, null)))
-                    :
-                    repository.findAllByEventIdAndSubmittersStudentCode(event.getId(), studentCode)
-                        .map(submission -> new EventSubmissionResponse(studentCode,event, submission))
                         .switchIfEmpty(Mono.just(new EventSubmissionResponse(studentCode, event, null)))
                 )
             .collectList()
             .map(submissions -> {
+                log.info(submissions.toString());
                 StudentGradeDetail details = new StudentGradeDetail();
                 details.setStudentCode(student.getCode());
                 details.setStudentName(student.getName());

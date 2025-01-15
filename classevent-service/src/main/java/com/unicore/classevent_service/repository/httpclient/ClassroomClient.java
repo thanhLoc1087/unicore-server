@@ -57,7 +57,7 @@ public class ClassroomClient {
         
     public Mono<ApiResponse<ClassroomResponse>> updateClassroom(UpdateClassGroupingRequest request) {
         return webClient.put()
-            .uri("/grouping") // Adjust the base URL as needed
+            .uri("/internal/grouping") // Adjust the base URL as needed
             .contentType(MediaType.APPLICATION_JSON) // Specify the content type
             .bodyValue(request) // Serialize the request body to JSON
             .retrieve()

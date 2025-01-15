@@ -1,5 +1,6 @@
 package com.unicore.classevent_service.dto.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StudentInClassResponse {
-    private List<StudentResponse> students;
+    private List<StudentResponse> students = new ArrayList<>();
 
     @JsonProperty("foreign_students")
-    private List<StudentResponse> foreignStudents;
+    private List<StudentResponse> foreignStudents = new ArrayList<>();
 }

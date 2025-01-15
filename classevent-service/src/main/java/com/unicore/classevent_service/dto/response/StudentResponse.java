@@ -2,6 +2,7 @@ package com.unicore.classevent_service.dto.response;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -14,6 +15,7 @@ public class StudentResponse {
     private String code;
     private String name;
     private String email;
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dob;
     @JsonProperty("advisory_class")
     private String advisoryClass;

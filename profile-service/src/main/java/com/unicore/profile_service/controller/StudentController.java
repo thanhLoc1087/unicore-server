@@ -25,6 +25,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -129,4 +131,15 @@ public class StudentController {
                 .build()
             );
     }
+
+    @GetMapping("/code/{code}")
+    public Mono<ApiResponse<StudentResponse>> getByCode(@PathVariable String code) {
+        return studentService.getStudentByCode(code)
+            .map(response -> ApiResponse.<StudentResponse>builder()
+                .data(response)
+                .message("Success")
+                .build()
+            );
+    }
+    
 }
