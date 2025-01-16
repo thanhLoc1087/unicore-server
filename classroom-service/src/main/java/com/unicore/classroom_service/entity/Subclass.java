@@ -44,4 +44,9 @@ public class Subclass {
     private int credits;
     private ClassType type;
     private String note;
+    
+    private boolean studentImported;
+    private boolean midtermImported;
+    private boolean finalImported;
+    private boolean councilImported;
 }

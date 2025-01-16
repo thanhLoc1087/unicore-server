@@ -17,11 +17,14 @@ import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
 import com.unicore.classroom_service.dto.request.GeneralTestBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.GeneralTestCreationRequest;
+import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
 import com.unicore.classroom_service.dto.request.GetSubjectByYearAndSemesterRequest;
 import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.request.UpdateClassGroupingRequest;
+import com.unicore.classroom_service.dto.request.UpdateClassImportStatusRequest;
+import com.unicore.classroom_service.dto.response.ClassroomFilterResponse;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.dto.response.SubjectNotExistsError;
 import com.unicore.classroom_service.dto.response.SubjectResponse;
@@ -315,6 +318,27 @@ public class ClassroomService {
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
+    public Mono<ClassroomResponse> updateClassImportStatus(UpdateClassImportStatusRequest request) {
+        return classroomRepository.findByCodeAndSemesterAndYear(
+                request.getClassCode(),
+                request.getSemester(),
+                request.getYear()
+            )
+            .flatMap(classroom -> {
+                for (Subclass subclass : classroom.getSubclasses()) {
+                    if (subclass.getCode().equals(request.getClassCode())) {
+                        subclass.setCouncilImported(request.isCouncilImported());
+                        subclass.setFinalImported(request.isFinalImported());
+                        subclass.setMidtermImported(request.isMidtermImported());
+                        break;
+                    }
+                }
+                return classroomRepository.save(classroom);
+            })
+            .map(classroomMapper::toClassroomResponse)
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+    }
+
     public Flux<ClassroomResponse> getClassrooms() {
         return classroomRepository.findAll()
             .map(classroomMapper::toClassroomResponse);
@@ -341,6 +365,33 @@ public class ClassroomService {
     public Flux<ClassroomResponse> filterClassrooms(ClassFilterRequest filterRequest) {
         return classroomRepository.findByFilters(filterRequest)
             .map(classroomMapper::toClassroomResponse);
+    }
+
+    public Mono<ClassroomFilterResponse> filterClassroomsAndOtherStuff(ClassFilterRequest filterRequest) {
+        ClassroomFilterResponse result = new ClassroomFilterResponse();
+        return classroomRepository.findByFilters(filterRequest)
+            .map(classroom -> {
+                result.getClasses().add(classroomMapper.toClassroomResponse(classroom));
+                for (Subclass subclass : classroom.getSubclasses()) {
+                    GetByClassRequest classInfo = new GetByClassRequest(classroom.getId(), subclass.getCode());
+                    if (!subclass.isStudentImported())
+                        result.getNoStudentLists().add(classInfo);
+
+                    if (subclass.getType() == ClassType.LOP_THUONG) {
+                        if (classroom.getSubject().getMidtermWeight() > 0 && !subclass.isMidtermImported())
+                            result.getNoMidterm().add(classInfo);
+                        if (!subclass.isFinalImported())
+                            result.getNoFinal().add(classInfo);
+                        }
+                    else if (subclass.getType() == ClassType.THUC_TAP && !subclass.isCouncilImported())
+                        result.getNoInternCouncil().add(classInfo);
+                    else if (subclass.getType() == ClassType.KHOA_LUAN && !subclass.isCouncilImported())
+                        result.getNoThesisCouncil().add(classInfo);
+                }
+                return classroom;
+            })
+            .collectList()
+            .map(classes -> result);
     }
 
     public Mono<ClassroomResponse> createSubclassFromGrouping(StudentGroupingCreationRequest request) {

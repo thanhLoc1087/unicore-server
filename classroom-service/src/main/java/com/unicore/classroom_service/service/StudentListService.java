@@ -58,6 +58,18 @@ public class StudentListService {
 
     public Mono<StudentListResponse> createInternStudentList(InternStudentListImportRequest request) {
         return classroomRepository.findById(request.getClassId())
+            .flatMap(classroom -> {
+                for (Subclass subclass : classroom.getSubclasses()) {
+                    if (subclass.getType().isMainClass()) {
+                        if (subclass.isStudentImported()) return Mono.error(new AppException(ErrorCode.STUDENT_LIST_IMPORTED));
+                        else {
+                            subclass.setStudentImported(true);
+                            return classroomRepository.save(classroom);
+                        }
+                    }
+                }
+                return Mono.error(new AppException(ErrorCode.CLASS_NOT_FOUND));
+            })
             .map(response -> {
                 List<String> studentCodes = request.getStudents()
                     .stream().map(InternStudentRequest::getStudentCode).toList();
@@ -130,7 +142,20 @@ public class StudentListService {
     }
 
     public Mono<StudentListResponse> createStudentList(StudentListCreationRequest request) {
-        return checkDuplicate(request)
+        return classroomRepository.findById(request.getClassId())
+            .flatMap(classroom -> {
+                for (Subclass subclass : classroom.getSubclasses()) {
+                    if (subclass.getCode().equals(request.getSubclassCode())) {
+                        if (subclass.isStudentImported()) return Mono.error(new AppException(ErrorCode.STUDENT_LIST_IMPORTED));
+                        else {
+                            subclass.setStudentImported(true);
+                            return classroomRepository.save(classroom);
+                        }
+                    }
+                }
+                return Mono.error(new AppException(ErrorCode.CLASS_NOT_FOUND));
+            })
+            .flatMap(temp -> checkDuplicate(request))
             .flatMap(result -> result.equals(Boolean.FALSE) ?
                 Mono.just(request)
                     .map(studentListMapper::toStudentList)
@@ -164,9 +189,10 @@ public class StudentListService {
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
-    // public Flux<StudentListResponse> getClassWithoutStudentLists(List<GetByClassRequest> requests) {
-
-    // }
+    public Flux<StudentListResponse> getStudentListsByClassId(String classId) {
+        return studentListRepository.findByClassId(classId)
+            .map(studentListMapper::toStudentListResponse);
+    }
     
     // thêm sv ngoài lớplớp
     public Mono<StudentListResponse> addForeignStudents(AddForeignStudentsRequest request) {
@@ -179,7 +205,8 @@ public class StudentListService {
             .map(studentListMapper::toStudentListResponse);
     }
 
-    private Mono<Boolean> checkDuplicate(StudentListCreationRequest request) {
+    private Mono<Boolean> 
+    checkDuplicate(StudentListCreationRequest request) {
         return studentListRepository.findByClassIdAndSubclassCode(
                 request.getClassId(),
                 request.getSubclassCode()

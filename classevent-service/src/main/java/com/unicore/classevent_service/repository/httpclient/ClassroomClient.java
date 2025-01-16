@@ -13,6 +13,7 @@ import com.unicore.classevent_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.ClassroomResponse;
 import com.unicore.classevent_service.dto.response.EventGroupingResponse;
+import com.unicore.classevent_service.dto.response.UpdateClassImportStatusRequest;
 
 import reactor.core.publisher.Mono;
 
@@ -58,6 +59,15 @@ public class ClassroomClient {
     public Mono<ApiResponse<ClassroomResponse>> updateClassroom(UpdateClassGroupingRequest request) {
         return webClient.put()
             .uri("/internal/grouping") // Adjust the base URL as needed
+            .contentType(MediaType.APPLICATION_JSON) // Specify the content type
+            .bodyValue(request) // Serialize the request body to JSON
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<ApiResponse<ClassroomResponse>>() {});
+    }
+        
+    public Mono<ApiResponse<ClassroomResponse>> updateClassroomImportStatus(UpdateClassImportStatusRequest request) {
+        return webClient.put()
+            .uri("/update/import-status") // Adjust the base URL as needed
             .contentType(MediaType.APPLICATION_JSON) // Specify the content type
             .bodyValue(request) // Serialize the request body to JSON
             .retrieve()

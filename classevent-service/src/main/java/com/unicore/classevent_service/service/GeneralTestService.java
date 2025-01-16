@@ -14,11 +14,14 @@ import com.unicore.classevent_service.dto.request.GeneralTestUpdateRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetClassBySemesterAndYearRequest;
 import com.unicore.classevent_service.dto.request.GetTestForBulkUpdateParams;
+import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.BaseEventResponse;
 import com.unicore.classevent_service.dto.response.ClassroomResponse;
 import com.unicore.classevent_service.dto.response.GeneralTestResponse;
+import com.unicore.classevent_service.dto.response.UpdateClassImportStatusRequest;
 import com.unicore.classevent_service.entity.GeneralTest;
 import com.unicore.classevent_service.entity.Project;
+import com.unicore.classevent_service.entity.Subclass;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.ExamFormat;
 import com.unicore.classevent_service.enums.WeightType;
@@ -121,12 +124,12 @@ public class GeneralTestService {
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
         }
         
-        /// Lấy theo lớp
-        public Flux<GeneralTestResponse> getByClass(GetByClassRequest request) {
-            log.info(request.toString());
-            return repository.findAllByClassIdAndSubclassCodeAndType(request.getClassId(), request.getSubclassCode(), EventType.TEST)
-            .map(test -> mapper.toResponse((GeneralTest) test))
-            .switchIfEmpty(Mono.error(new DataNotFoundException()));
+    /// Lấy theo lớp
+    public Flux<GeneralTestResponse> getByClass(GetByClassRequest request) {
+        log.info(request.toString());
+        return repository.findAllByClassIdAndSubclassCodeAndType(request.getClassId(), request.getSubclassCode(), EventType.TEST)
+        .map(test -> mapper.toResponse((GeneralTest) test))
+        .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
     public Mono<GeneralTestResponse> getById(String id) {
@@ -142,10 +145,31 @@ public class GeneralTestService {
                 classroomClient.getClassroomByCode(
                     new GetClassBySemesterAndYearRequest(schedule.getClassCode(), schedule.getSemester(), schedule.getYear())
                 )
-            ).map(response -> {
+            ).flatMap(response -> {
                 log.info("YUH 0" + response.toString());
-                return response.getData();
+                ClassroomResponse classroom = response.getData();
+                UpdateClassImportStatusRequest updateRequest = new UpdateClassImportStatusRequest(
+                    classroom.getCode(),
+                    classroom.getSemester(),
+                    classroom.getYear(),
+                    request.isMidterm(),
+                    !request.isMidterm(),
+                    false
+                );
+                for (Subclass subclass : classroom.getSubclasses()) {
+                    if (subclass.getType().isMainClass()) {
+                        updateRequest.setCouncilImported(subclass.isCouncilImported());
+                        if (request.isMidterm()) {
+                            updateRequest.setFinalImported(subclass.isFinalImported());
+                        } else {
+                            updateRequest.setMidtermImported(subclass.isMidtermImported());
+                        }
+                        break;
+                    }
+                }
+                return classroomClient.updateClassroomImportStatus(updateRequest);
             })
+            .map(ApiResponse::getData)
             .collectList()
             .map(classes -> {
                 log.info("YUH 1" + classes.toString());

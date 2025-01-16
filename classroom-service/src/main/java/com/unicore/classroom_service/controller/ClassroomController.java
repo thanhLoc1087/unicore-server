@@ -18,7 +18,9 @@ import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearReques
 import com.unicore.classroom_service.dto.request.InternStudentListImportRequest;
 import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.request.UpdateClassGroupingRequest;
+import com.unicore.classroom_service.dto.request.UpdateClassImportStatusRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
+import com.unicore.classroom_service.dto.response.ClassroomFilterResponse;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
 import com.unicore.classroom_service.dto.response.StudentListResponse;
 import com.unicore.classroom_service.service.ClassroomService;
@@ -75,9 +77,8 @@ public class ClassroomController {
     }
 
     @PostMapping("/filter")
-    public Mono<ApiResponse<List<ClassroomResponse>>> filterClassrooms(@RequestBody ClassFilterRequest request) {
-        return classroomService.filterClassrooms(request)
-            .collectList()
+    public Mono<ApiResponse<ClassroomFilterResponse>> filterClassrooms(@RequestBody ClassFilterRequest request) {
+        return classroomService.filterClassroomsAndOtherStuff(request)
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 
@@ -90,6 +91,17 @@ public class ClassroomController {
     public Mono<ApiResponse<ClassroomResponse>> getClassroomByCode(@RequestBody GetClassBySemesterAndYearRequest request) {
         log.info(request.toString());
         return classroomService.getClassroomByCodeSemesterYear(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response, 
+                LocalDateTime.now()
+            ));
+    }
+
+    @PutMapping("/update/import-status")
+    public Mono<ApiResponse<ClassroomResponse>> updateClassImportStatus(@RequestBody UpdateClassImportStatusRequest request) {
+        return classroomService.updateClassImportStatus(request)
             .map(response -> new ApiResponse<>(
                 HttpStatus.OK.toString(), 
                 "Success", 

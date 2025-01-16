@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.unicore.classroom_service.entity.Subclass;
 import com.unicore.classroom_service.entity.SubjectMetadata;
@@ -33,7 +34,7 @@ public class ClassroomResponse {
     private int year;
 
     private ClassType type;
-
+    
     private List<Subclass> subclasses;
 
     @JsonProperty("subject_metadata")

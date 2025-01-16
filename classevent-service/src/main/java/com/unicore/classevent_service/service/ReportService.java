@@ -24,11 +24,13 @@ import com.unicore.classevent_service.dto.request.ReportUpdateRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.ClassroomResponse;
 import com.unicore.classevent_service.dto.response.ReportResponse;
+import com.unicore.classevent_service.dto.response.UpdateClassImportStatusRequest;
 import com.unicore.classevent_service.entity.BaseEvent;
 import com.unicore.classevent_service.entity.GroupingSchedule;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.QueryOption;
 import com.unicore.classevent_service.entity.Report;
+import com.unicore.classevent_service.entity.Subclass;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.SubmissionOption;
 import com.unicore.classevent_service.enums.WeightType;
@@ -191,7 +193,32 @@ public class ReportService {
                 classroomClient.getClassroomByCode(
                     new GetClassBySemesterAndYearRequest(schedule.getClassCode(), schedule.getSemester(), schedule.getYear())
                 )
-            ).map(ApiResponse::getData)
+            )
+            .flatMap(response -> {
+                log.info("YUH 0" + response.toString());
+                ClassroomResponse classroom = response.getData();
+                UpdateClassImportStatusRequest updateRequest = new UpdateClassImportStatusRequest(
+                    classroom.getCode(),
+                    classroom.getSemester(),
+                    classroom.getYear(),
+                    request.isMidterm(),
+                    !request.isMidterm(),
+                    false
+                );
+                for (Subclass subclass : classroom.getSubclasses()) {
+                    if (subclass.getType().isMainClass()) {
+                        updateRequest.setCouncilImported(subclass.isCouncilImported());
+                        if (request.isMidterm()) {
+                            updateRequest.setFinalImported(subclass.isFinalImported());
+                        } else {
+                            updateRequest.setMidtermImported(subclass.isMidtermImported());
+                        }
+                        break;
+                    }
+                }
+                return classroomClient.updateClassroomImportStatus(updateRequest);
+            })
+            .map(ApiResponse::getData)
             .collectList()
             .map(classes -> {
                 List<GetTestForBulkUpdateParams> temp = new ArrayList<>();
