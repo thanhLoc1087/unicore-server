@@ -67,7 +67,7 @@ Unicore is a Classroom Management System, designed to help institutions manage k
 
 `sudo docker run -d --name eureka-server-unicore --hostname eureka-server --network unicore-network -p 8761:8761 thanhloc1087/unicore-eureka-server:0.1.0`
 
-`sudo docker run -d --name api-gateway-unicore --network unicore-network -p 8080:8888 -e ORG_SERVICE_URL=3.104.75.6 -e PROFILE_SERVICE_URL=13.239.233.211 -e CLASSROOM_SERVICE_URL=3.107.48.180 -e CLASSEVENT_SERVICE_URL=3.106.167.64 thanhloc1087/unicore-api-gateway:0.6.1`
+`sudo docker run -d --name api-gateway-unicore -p 8080:8888 -e ORG_SERVICE_URL=3.104.75.6 -e PROFILE_SERVICE_URL=13.239.233.211 -e CLASSROOM_SERVICE_URL=3.107.48.180 -e CLASSEVENT_SERVICE_URL=3.106.167.64 -e POST_SERVICE_URL=3.107.48.180 thanhloc1087/unicore-api-gateway:0.6.1`
 
 
 `sudo docker run -d --name organization-service-unicore --network unicore-network -p 8081:8081 -e MYSQL_USER=root -e MYSQL_PASSWORD=0843300042 -e ORG_DB=organizationdb -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-organization-service:0.8.2`
@@ -79,4 +79,6 @@ Unicore is a Classroom Management System, designed to help institutions manage k
 `sudo docker run -d --name classroom-service-unicore --network unicore-network -p 8083:8083 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-classroom-service:0.5.9`
 
 `sudo docker run -d --name classevent-service-unicore --network unicore-network -p 8084:8084 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-classevent-service:0.5.8`
+
+`sudo docker run -d --name post-service-unicore --network unicore-network -p 8086:8086 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-post-service:0.5.0`
 
