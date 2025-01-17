@@ -1,10 +1,8 @@
 package com.unicore.post_service.dto.request;
 
-import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.post_service.enums.PostType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,13 +21,11 @@ public class PostRequest {
     @JsonProperty("source_id")
     private String sourceId;
 
-    @JsonProperty("create_by")
+    @JsonProperty("created_by")
     private String createdBy;
 
-    @JsonProperty("create_email")
+    @JsonProperty("creator_email")
     private String creatorEmail;
-    
-    private PostType type;
     
     @JsonProperty("category_ids")
     private List<String> categoryIds;

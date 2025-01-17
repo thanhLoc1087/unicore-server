@@ -1,6 +1,8 @@
 package com.unicore.post_service.entity;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,10 +22,11 @@ public class Post {
     private String sourceId;
     private String name;
     private String description;
-    private Instant createdDate;
+    private LocalDateTime createdDate;
     private String createdBy;
-    private String creatorEmail;    
+    private String creatorEmail;
     private List<Editor> modifiedBy;
     private PostType type;
-    private List<String> categoryIds;
+    @Builder.Default
+    private List<String> categoryIds = new ArrayList<>();
 }

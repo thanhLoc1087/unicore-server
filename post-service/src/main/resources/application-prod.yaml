@@ -55,7 +55,7 @@ logging:
 
 openapi:
   service:
-    title: grade-service doc
+    title: post-service doc
     version: 1.0.0
     url: http://${API_GATEWAY_URL}:8888 #api gateway url
 
@@ -67,7 +67,7 @@ springdoc:
 
 eureka:
     instance:
-        appname: grade-service
+        appname: post-service
     client:
         enabled: true
         register-with-eureka: true

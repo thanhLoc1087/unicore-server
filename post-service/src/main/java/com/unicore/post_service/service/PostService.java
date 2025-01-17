@@ -1,12 +1,13 @@
 package com.unicore.post_service.service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-// import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.unicore.post_service.dto.request.PostRequest;
@@ -40,15 +41,18 @@ public class PostService {
     DateTimeFormatter dateTimeFormatter;
     ProfileClient profileClient;
 
-    public PostResponse createPost(PostRequest request) {
+    public PostResponse createPost(PostRequest request, PostType type) {
         // var authentication = SecurityContextHolder.getContext().getAuthentication();
 
         Post post = Post.builder()
+            .sourceId(request.getSourceId())
+            .name(request.getName())
+            .createdDate(LocalDateTime.now())
             .createdBy(request.getCreatedBy())
             .creatorEmail(request.getCreatorEmail())
+            .type(type)
             // .userId(authentication.getName())
             .description(request.getDescription())
-            .createdDate(Instant.now())
             .build();
 
         post = postRepository.save(post);
@@ -76,15 +80,15 @@ public class PostService {
             .stream().map(postMapper::toPostResponse).toList();
     }
 
-    public PageResponse<PostResponse> getPosts(String orgId, int page, int size, PostType type) {
+    public PageResponse<PostResponse> getPosts(String sourceId, int page, int size, PostType type) {
         Sort sort = Sort.by("createdDate").descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
-        var pageData = postRepository.findAllBySourceIdAndType(orgId, type, pageable);
+        var pageData = postRepository.findAllBySourceIdAndType(sourceId, type, pageable);
         
         var postsList = pageData.getContent().stream().map(post -> {
             var postResponse = postMapper.toPostResponse(post);
-            postResponse.setCreatedDate(dateTimeFormatter.format(post.getCreatedDate()));
+            postResponse.setCreatedDate(dateTimeFormatter.format(post.getCreatedDate().toInstant(ZoneOffset.UTC)));
             return postResponse;
         }).toList();
 

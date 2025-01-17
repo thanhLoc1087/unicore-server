@@ -29,10 +29,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class PostController {
     PostService postService;
 
-    @PostMapping("/create")
-    public ApiResponse<PostResponse> createPost(@RequestBody PostRequest request) {
+    @PostMapping("/class/create")
+    public ApiResponse<PostResponse> createClassPost(@RequestBody PostRequest request) {
         return ApiResponse.<PostResponse>builder()
-            .data(postService.createPost(request))
+            .data(postService.createPost(request, PostType.CLASS))
+            .build();
+    }
+
+    @PostMapping("/org/create")
+    public ApiResponse<PostResponse> createOrgPost(@RequestBody PostRequest request) {
+        return ApiResponse.<PostResponse>builder()
+            .data(postService.createPost(request, PostType.ORG))
+            .build();
+    }
+
+    @PostMapping("/event/create")
+    public ApiResponse<PostResponse> createProjectPost(@RequestBody PostRequest request) {
+        return ApiResponse.<PostResponse>builder()
+            .data(postService.createPost(request, PostType.PROJECT))
             .build();
     }
 
@@ -45,34 +59,34 @@ public class PostController {
     
     @GetMapping("/org")
     public ApiResponse<PageResponse<PostResponse>> getOrgPosts(
-        @RequestParam(value="source_id", required=true) String sourceId,
+        @RequestParam(value="org_id", required=true) String orgId,
         @RequestParam(value="page", defaultValue="1", required=false) int page,
         @RequestParam(value="size", defaultValue="10", required=false) int size
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
-            .data(postService.getPosts(sourceId, page, size, PostType.ORG))
+            .data(postService.getPosts(orgId, page, size, PostType.ORG))
             .build();
     }
 
     @GetMapping("/class")
     public ApiResponse<PageResponse<PostResponse>> getClassPosts(
-        @RequestParam(value="source_id", required=true) String sourceId,
+        @RequestParam(value="class_id", required=true) String classId,
         @RequestParam(value="page", defaultValue="1", required=false) int page,
         @RequestParam(value="size", defaultValue="10", required=false) int size
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
-            .data(postService.getPosts(sourceId, page, size, PostType.CLASS))
+            .data(postService.getPosts(classId, page, size, PostType.CLASS))
             .build();
     }
 
     @GetMapping("/project")
     public ApiResponse<PageResponse<PostResponse>> getProjectPosts(
-        @RequestParam(value="source_id", required=true) String sourceId,
+        @RequestParam(value="event_id", required=true) String eventId,
         @RequestParam(value="page", defaultValue="1", required=false) int page,
         @RequestParam(value="size", defaultValue="10", required=false) int size
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
-            .data(postService.getPosts(sourceId, page, size, PostType.PROJECT))
+            .data(postService.getPosts(eventId, page, size, PostType.PROJECT))
             .build();
         }
         
