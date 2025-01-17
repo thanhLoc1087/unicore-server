@@ -67,6 +67,7 @@ public class SubjectService {
     }
 
     private Mono<SubjectResponse> saveNewSubject(SubjectCreationRequest request) {
+        log.info("save new subject: " + request.toString());
         Subject subject = subjectMapper.toSubject(request);
         SubjectMetadata metadata = subjectMapper.toSubjectMetadata(request);
         return subjectRepository.save(subject)
@@ -82,6 +83,7 @@ public class SubjectService {
     }
 
     private Mono<SubjectResponse> updateExistingSubject(String subjectId, SubjectCreationRequest request) {
+        log.info("update subject: " + request.toString());
         SubjectMetadata metadata = subjectMapper.toSubjectMetadata(request);
         return subjectRepository.findById(subjectId)
             .map(response -> {
@@ -102,10 +104,12 @@ public class SubjectService {
 
     private Mono<SubjectMetadata> createSubjectMetadata(SubjectMetadata subjectMetadata) {
         return checkDuplicateMetadata(subjectMetadata.getSubjectId(), subjectMetadata.getSemester(), subjectMetadata.getYear())
-            .flatMap(isDuplicate -> Boolean.TRUE.equals(isDuplicate) 
-                ? Mono.error(new AppException(ErrorCode.DUPLICATE)) 
-                : subjectMetadataRepository.save(subjectMetadata)
-            )
+            .flatMap(isDuplicate -> {
+                log.info("Check duplicate metadata: " + isDuplicate);
+                return Boolean.TRUE.equals(isDuplicate) 
+                    ? Mono.error(new AppException(ErrorCode.DUPLICATE)) 
+                    : subjectMetadataRepository.save(subjectMetadata);
+            })
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
 
@@ -121,7 +125,7 @@ public class SubjectService {
 
     private Mono<Boolean> checkDuplicateMetadata(String subjectId, int semester, int year) {
         return subjectMetadataRepository.findBySubjectIdAndSemesterAndYear(subjectId, semester, year)
-            .hasElement();
+            .hasElements();
     }
     
     public Flux<SubjectInListResponse> getSubjects() {

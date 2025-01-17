@@ -16,7 +16,7 @@ public interface SubjectMetadataRepository extends ReactiveCrudRepository<Subjec
         + "AND deleted = 0 ORDER BY year DESC, semester DESC LIMIT 1")
     Mono<SubjectMetadata> findTopBySubjectOrderByYearDescAndSemesterDesc(@Param("subjectId") String subjectId);
 
-    Mono<SubjectMetadata> findBySubjectIdAndSemesterAndYear(Object subjectId, int semester, int year);
+    Flux<SubjectMetadata> findBySubjectIdAndSemesterAndYear(Object subjectId, int semester, int year);
 
     Mono<Void> deleteAllBySubjectId(String subjectId);
 

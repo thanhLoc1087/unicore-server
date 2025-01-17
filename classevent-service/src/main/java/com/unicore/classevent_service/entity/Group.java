@@ -18,7 +18,7 @@ public class Group {
     @JsonProperty("grouping_id")
     private String groupingId;
 
-    private String index;
+    private Integer index;
     private String name;
 
     private List<StudentInGroup> members;

@@ -1,8 +1,11 @@
 package com.unicore.classevent_service.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.util.Optionals;
 import org.springframework.stereotype.Service;
 
 import com.unicore.classevent_service.dto.GroupRequest;
@@ -10,6 +13,7 @@ import com.unicore.classevent_service.dto.request.ClassGroupingScheduleRequest;
 import com.unicore.classevent_service.dto.request.GroupingScheduleRequest;
 import com.unicore.classevent_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classevent_service.dto.response.GroupingResponse;
+import com.unicore.classevent_service.entity.Group;
 import com.unicore.classevent_service.entity.GroupingSchedule;
 import com.unicore.classevent_service.exception.DataNotFoundException;
 import com.unicore.classevent_service.exception.InvalidRequestException;
@@ -21,6 +25,7 @@ import com.unicore.classevent_service.repository.GroupingScheduleRepository;
 import com.unicore.classevent_service.repository.httpclient.ClassroomClient;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -104,8 +109,17 @@ public class GroupingService {
                 if (schedule.getEndRegisterDate().isBefore(LocalDateTime.now())) {
                     return Mono.error(new InvalidRequestException("Overdue."));
                 }
+
+                Integer lastIndex = schedule.getGroups().get(schedule.getGroups().size()).getIndex();
+                int index = schedule.getGroups().isEmpty() ? 1
+                    : (lastIndex != null ? lastIndex + 1 : 1);
+
                 return Mono.just(request)
-                    .map(groupMapper::toGroup)
+                    .map(newGroup -> {
+                        Group group = groupMapper.toGroup(request);
+                        group.setIndex(index);
+                        return group;
+                    })
                     .flatMap(groupRepository::save)
                     .map(savedGroup -> {
                         schedule.getGroups().add(savedGroup);
@@ -126,14 +140,28 @@ public class GroupingService {
     }
 
     // xoa nhom
-    public Mono<GroupingResponse> deleteGrouping(String groupId) {
+    public Mono<GroupingResponse> deleteGroup(String groupId) {
         return groupRepository.findById(groupId)
             .flatMap(group -> {
                 String scheduleId = group.getGroupingId();
                 return groupRepository.delete(group)
-                    .flatMap(temp -> getGroupingById(scheduleId));
-            });
+                    .then(Mono.just(scheduleId));
+            })
+            .flatMap(this::getGroupingById)
+            .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
-    
+    // xoa nhieu nhom
+    public Flux<GroupingResponse> deleteGroups(List<String> groupIds) {
+    return Flux.fromIterable(groupIds)
+        .flatMap(groupId -> groupRepository.findById(groupId)
+            .flatMap(group -> {
+                String scheduleId = group.getGroupingId();
+                return groupRepository.delete(group)
+                    .then(Mono.just(scheduleId));
+            })
+            .switchIfEmpty(Mono.error(new DataNotFoundException()))
+        )
+        .flatMap(this::getGroupingById);
+    }
 }

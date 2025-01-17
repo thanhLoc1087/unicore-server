@@ -1,6 +1,7 @@
 package com.unicore.classevent_service.controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -106,7 +107,19 @@ public class GroupingController {
 
     @DeleteMapping("/{groupId}")
     public Mono<ApiResponse<GroupingResponse>> updateGroup(@PathVariable String groupId) {
-        return service.deleteGrouping(groupId)
+        return service.deleteGroup(groupId)
+            .map(grouping -> new ApiResponse<>(
+                grouping, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+
+    @PostMapping("/delete-bulk")
+    public Mono<ApiResponse<List<GroupingResponse>>> updateGroup(@RequestBody List<String> groupIds) {
+        return service.deleteGroups(groupIds)
+            .collectList()
             .map(grouping -> new ApiResponse<>(
                 grouping, 
                 ApiMessage.SUCCESS.getMessage(), 

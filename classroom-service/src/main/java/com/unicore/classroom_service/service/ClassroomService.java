@@ -373,16 +373,17 @@ public class ClassroomService {
             .map(classroom -> {
                 result.getClasses().add(classroomMapper.toClassroomResponse(classroom));
                 for (Subclass subclass : classroom.getSubclasses()) {
+                    log.info(subclass.toString());
                     GetByClassRequest classInfo = new GetByClassRequest(classroom.getId(), subclass.getCode());
                     if (!subclass.isStudentImported())
                         result.getNoStudentLists().add(classInfo);
 
-                    if (subclass.getType() == ClassType.LOP_THUONG) {
+                    if (subclass.getType() == ClassType.LY_THUYET) {
                         if (classroom.getSubject().getMidtermWeight() > 0 && !subclass.isMidtermImported())
                             result.getNoMidterm().add(classInfo);
                         if (!subclass.isFinalImported())
                             result.getNoFinal().add(classInfo);
-                        }
+                    }
                     else if (subclass.getType() == ClassType.THUC_TAP && !subclass.isCouncilImported())
                         result.getNoInternCouncil().add(classInfo);
                     else if (subclass.getType() == ClassType.KHOA_LUAN && !subclass.isCouncilImported())
