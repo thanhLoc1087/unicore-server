@@ -4,12 +4,13 @@ FROM maven:3.9.8-amazoncorretto-21 AS build
 # Set working directory and copy files
 WORKDIR /app
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
 COPY src ./src
+
+# Build source code with Maven
 RUN mvn clean package -DskipTests
 
 # Stage 2: create runtime image
-FROM amazoncorretto:21-alpine AS runtime
+FROM amazoncorretto:21.0.4
 
 # Set working directory and copy the JAR file
 WORKDIR /app
