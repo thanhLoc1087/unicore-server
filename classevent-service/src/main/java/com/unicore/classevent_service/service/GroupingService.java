@@ -2,10 +2,8 @@ package com.unicore.classevent_service.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.util.Optionals;
 import org.springframework.stereotype.Service;
 
 import com.unicore.classevent_service.dto.GroupRequest;
@@ -109,15 +107,24 @@ public class GroupingService {
                 if (schedule.getEndRegisterDate().isBefore(LocalDateTime.now())) {
                     return Mono.error(new InvalidRequestException("Overdue."));
                 }
+                if (request.getMembers().size() < schedule.getMinSize() ||
+                    request.getMembers().size() > schedule.getMaxSize()
+                ) {
+                    return Mono.error(new InvalidRequestException(
+                        "Invalid group size. Min: " + schedule.getMinSize() + ", Max: " + schedule.getMaxSize()));
+                }
 
-                Integer lastIndex = schedule.getGroups().get(schedule.getGroups().size()).getIndex();
-                int index = schedule.getGroups().isEmpty() ? 1
-                    : (lastIndex != null ? lastIndex + 1 : 1);
+                int lastIndex = 0;
+                if (!schedule.getGroups().isEmpty()) {
+                    lastIndex = schedule.getGroups().getLast().getIndex();
+                }
+                int index = lastIndex + 1;
 
                 return Mono.just(request)
                     .map(newGroup -> {
                         Group group = groupMapper.toGroup(request);
                         group.setIndex(index);
+                        group.setLeaderCode(group.getMembers().getFirst().getStudentCode());
                         return group;
                     })
                     .flatMap(groupRepository::save)
@@ -125,6 +132,30 @@ public class GroupingService {
                         schedule.getGroups().add(savedGroup);
                         return schedule;
                     });
+            })
+            .switchIfEmpty(Mono.error(new DataNotFoundException()));
+    }
+
+    public Mono<Group> internalCreateGroup(GroupRequest request) {
+        return getGroupingById(request.getGroupingId())
+            .flatMap(schedule -> {
+                if (schedule.getEndRegisterDate().isBefore(LocalDateTime.now())) {
+                    return Mono.error(new InvalidRequestException("Overdue."));
+                }
+
+                int lastIndex = 0;
+                if (!schedule.getGroups().isEmpty()) {
+                    lastIndex = schedule.getGroups().getLast().getIndex();
+                }
+                int index = lastIndex + 1;
+
+                return Mono.just(request)
+                    .map(newGroup -> {
+                        Group group = groupMapper.toGroup(request);
+                        group.setIndex(index);
+                        return group;
+                    })
+                    .flatMap(groupRepository::save);
             })
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }

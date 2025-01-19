@@ -4,6 +4,8 @@ import org.mapstruct.Mapper;
 
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
+import com.unicore.classroom_service.dto.response.StudentForGroupingResponse;
+import com.unicore.classroom_service.dto.response.StudentResponse;
 import com.unicore.classroom_service.entity.Classroom;
 import com.unicore.classroom_service.entity.Subclass;
 
@@ -13,4 +15,6 @@ public interface ClassroomMapper {
     public Classroom toClassroom(ClassroomResponse response);
     public ClassroomResponse toClassroomResponse(Classroom classroom);
     public Subclass toSubclass(ClassroomCreationRequest request);
+
+    public StudentForGroupingResponse toForGroupingResponse(StudentResponse response);
 }

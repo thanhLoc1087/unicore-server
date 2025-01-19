@@ -17,10 +17,13 @@ import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.ProjectAddTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectChooseTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
+import com.unicore.classevent_service.dto.request.ProjectTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
-import com.unicore.classevent_service.dto.request.TopicSuggestionRequest;
+import com.unicore.classevent_service.dto.request.TopicApprovalRequest;
+import com.unicore.classevent_service.dto.request.TopicRegisterScheduleRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
+import com.unicore.classevent_service.entity.ProjectTopic;
 import com.unicore.classevent_service.enums.ApiMessage;
 import com.unicore.classevent_service.service.ProjectService;
 
@@ -92,9 +95,22 @@ public class ProjectController {
             ));
     }
 
-    @PutMapping("/{id}/topics")
-    public Mono<ApiResponse<ProjectResponse>> addTopics(@PathVariable String id, @RequestBody @Valid ProjectAddTopicRequest request) {
+    @PostMapping("/{id}/topics/schedule")
+    public Mono<ApiResponse<ProjectResponse>> createRegisterTopicSchedule(@PathVariable String id, @RequestBody TopicRegisterScheduleRequest request) {
+        return projectService.createRegisterTopicSchedule(id, request)
+            .map(project -> new ApiResponse<>(
+                project, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
+
+    @PutMapping("/{id}/topics/import")
+    public Mono<ApiResponse<List<ProjectTopic>>> addTopics(@PathVariable String id, @RequestBody @Valid ProjectAddTopicRequest request) {
         return projectService.addTopics(id, request)
+            .collectList()
             .map(project -> new ApiResponse<>(
                 project, 
                 ApiMessage.SUCCESS.getMessage(), 
@@ -104,7 +120,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{id}/topics/suggest")
-    public Mono<ApiResponse<ProjectResponse>> suggestTopic(@PathVariable String id, @RequestBody @Valid TopicSuggestionRequest request) {
+    public Mono<ApiResponse<ProjectTopic>> suggestTopic(@PathVariable String id, @RequestBody @Valid ProjectTopicRequest request) {
         return projectService.suggestTopic(id, request)
             .map(project -> new ApiResponse<>(
                 project, 
@@ -114,9 +130,20 @@ public class ProjectController {
             ));
     }
 
-    @PutMapping("/{id}/topics/register")
-    public Mono<ApiResponse<ProjectResponse>> registerTopic(@PathVariable String id, @RequestBody @Valid ProjectChooseTopicRequest request) {
-        return projectService.registerTopic(id, request)
+    @PutMapping("/topics/approve")
+    public Mono<ApiResponse<ProjectTopic>> approveTopic(@RequestBody @Valid TopicApprovalRequest request) {
+        return projectService.approveTopic(request)
+            .map(project -> new ApiResponse<>(
+                project, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+
+    @PutMapping("/topics/register")
+    public Mono<ApiResponse<ProjectTopic>> registerTopic(@RequestBody @Valid ProjectChooseTopicRequest request) {
+        return projectService.registerTopic(request)
             .map(project -> new ApiResponse<>(
                 project, 
                 ApiMessage.SUCCESS.getMessage(), 
@@ -128,6 +155,18 @@ public class ProjectController {
     @PostMapping("/topics")
     public Mono<ApiResponse<List<ProjectResponse>>> getProjectsByTopicIds(@RequestBody List<String> topicIds) {
         return projectService.getByTopicIds(topicIds)
+            .collectList()
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+
+    @PostMapping("/{projectId}/topics")
+    public Mono<ApiResponse<List<ProjectTopic>>> getProjectsByProjectId(@PathVariable String projectId) {
+        return projectService.getTopicsByProjectId(projectId)
             .collectList()
             .map(report -> new ApiResponse<>(
                 report, 

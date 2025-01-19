@@ -28,4 +28,7 @@ public class GroupingScheduleRequest {
 
     @JsonProperty("min_size")
     private int minSize;
+
+    @JsonProperty("has_leader")
+    private boolean hasLeader;
 }

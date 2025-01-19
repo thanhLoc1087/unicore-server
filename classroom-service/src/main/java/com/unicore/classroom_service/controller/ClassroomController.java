@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.classroom_service.dto.request.AddStudentsToListRequest;
+import com.unicore.classroom_service.dto.request.CheckStudentClassForGroupingRequest;
 import com.unicore.classroom_service.dto.request.ClassFilterRequest;
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.GetByClassRequest;
@@ -22,6 +23,7 @@ import com.unicore.classroom_service.dto.request.UpdateClassImportStatusRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.ClassroomFilterResponse;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
+import com.unicore.classroom_service.dto.response.StudentForGroupingResponse;
 import com.unicore.classroom_service.dto.response.StudentListResponse;
 import com.unicore.classroom_service.service.ClassroomService;
 import com.unicore.classroom_service.service.StudentListService;
@@ -133,7 +135,6 @@ public class ClassroomController {
             ));
     }
     
-
     @PostMapping("/students/add")
     public Mono<ApiResponse<StudentListResponse>> addStudentsToList(@RequestBody AddStudentsToListRequest request) {
         return studentListService.addStudents(request)
@@ -177,5 +178,17 @@ public class ClassroomController {
                 LocalDateTime.now()
             ));
     }
+
+    @PostMapping("/student/check-grouping")
+    public Mono<ApiResponse<StudentForGroupingResponse>> checkStudentClassForGrouping(@RequestBody CheckStudentClassForGroupingRequest request) {
+        return classroomService.checkStudentClassForGrouping(request)
+            .map(response -> new ApiResponse<>(
+                HttpStatus.OK.toString(), 
+                "Success", 
+                response,
+                LocalDateTime.now()
+            ));
+    }
+    
     
 }

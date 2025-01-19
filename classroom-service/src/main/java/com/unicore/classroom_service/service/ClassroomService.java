@@ -12,6 +12,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.unicore.classroom_service.dto.request.CheckStudentClassForGroupingRequest;
 import com.unicore.classroom_service.dto.request.ClassFilterRequest;
 import com.unicore.classroom_service.dto.request.ClassroomBulkCreationRequest;
 import com.unicore.classroom_service.dto.request.ClassroomCreationRequest;
@@ -26,6 +27,7 @@ import com.unicore.classroom_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classroom_service.dto.request.UpdateClassImportStatusRequest;
 import com.unicore.classroom_service.dto.response.ClassroomFilterResponse;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
+import com.unicore.classroom_service.dto.response.StudentForGroupingResponse;
 import com.unicore.classroom_service.dto.response.SubjectNotExistsError;
 import com.unicore.classroom_service.dto.response.SubjectResponse;
 import com.unicore.classroom_service.dto.response.TeacherNotExistsError;
@@ -470,5 +472,57 @@ public class ClassroomService {
             })
             .flatMap(classroomRepository::save)
             .map(classroomMapper::toClassroomResponse);
+    }
+
+    public Mono<StudentForGroupingResponse> checkStudentClassForGrouping(CheckStudentClassForGroupingRequest request) {
+        return classroomRepository.findById(request.getClassId())
+            .flatMap(classroom -> studentListService.getStudentList(new GetByClassRequest(classroom.getId(), request.getSubclassCode()))
+                .flatMap(studentList -> {
+                    log.info("1 " + studentList.toString());
+                    if (studentList.getStudentCodes().contains(request.getStudentCode())) {
+                        log.info("2 ");
+                        return profileClient.getStudentByCode(request.getStudentCode())
+                            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)))
+                            .map(student -> {
+                                StudentForGroupingResponse response = classroomMapper.toForGroupingResponse(student);
+                                response.setValid(true);
+                                response.setClassId(classroom.getId());
+                                return response;
+                            });
+                    } else {
+                        log.info("3 ");
+                        return studentListService.getStudentClasses(request.getStudentCode())
+                            .flatMap(classes -> profileClient.getStudentByCode(request.getStudentCode())
+                                .map(student -> {
+                                    log.info("4 ");
+                                    StudentForGroupingResponse response = classroomMapper.toForGroupingResponse(student);
+                                    Subclass idealClass = null;
+                                    String classId = "";
+
+                                    for (ClassroomResponse tempClass : classes) {
+                                        if (tempClass.getSubjectCode().equals(classroom.getSubjectCode())) {
+                                            for (Subclass tempSubclass : tempClass.getSubclasses()) {
+                                                if (tempSubclass.getTeacherCodes().contains(request.getTeacherCode())) {
+                                                    idealClass = tempSubclass;
+                                                    classId = tempClass.getId();
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (idealClass == null) {
+                                        response.setValid(false);
+                                        return response;
+                                    } else {
+                                        response.setValid(true);
+                                        response.setClassId(classId);
+                                        response.setSubclassCode(idealClass.getCode());
+                                        return response;
+                                    }
+                                })
+                        );
+                    }
+                })
+        );
     }
 }

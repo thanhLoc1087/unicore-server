@@ -1,26 +1,17 @@
-package com.unicore.classevent_service.entity;
+package com.unicore.classevent_service.dto.request;
 
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classevent_service.enums.TopicStatus;
-import com.unicore.classevent_service.enums.TopicType;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
-public abstract class NewTopic {
-    @Id
-    private String id;
+@AllArgsConstructor
+public class ProjectTopicRequest {
     private String name;
     private String description;
     private String note;
@@ -34,10 +25,9 @@ public abstract class NewTopic {
     @JsonProperty("teacher_names")
     private List<String> teacherNames;
 
-    @Builder.Default
-    private TopicStatus status = TopicStatus.APPROVED;
+    private String nameEn;
+    private String projectId;
 
-    private TopicType type; 
-
-    public abstract String genId();
+    private ProjectGroupRequest groupRequest;
+    
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.unicore.classroom_service.dto.response.ApiResponse;
+import com.unicore.classroom_service.dto.response.StudentResponse;
+import com.unicore.classroom_service.dto.response.SubjectResponse;
 import com.unicore.classroom_service.dto.response.TeacherResponse;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,5 +52,13 @@ public class ProfileClient {
             .map(responseEntity -> {
                 return responseEntity.getBody() != null ? responseEntity.getBody().getData() : new ArrayList<>();
             });
+    }
+
+    public Mono<StudentResponse> getStudentByCode(String code) {
+        return webClient.get()
+            .uri("/student/code/{code}", code)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ApiResponse<StudentResponse>>() {})
+            .map(responseEntity -> responseEntity.getBody().getData());
     }
 }

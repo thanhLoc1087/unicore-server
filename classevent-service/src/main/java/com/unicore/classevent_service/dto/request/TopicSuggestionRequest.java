@@ -21,12 +21,11 @@ public class TopicSuggestionRequest {
     private List<String> teacherCodes;
     @JsonProperty("teacher_names")
     private List<String> teacherNames;
-    private int limit;
 
     @Builder.Default
     private boolean official = false;
 
     // group indices or student codes
-    private List<String> selectors;
+    private String selectorId;
     
 }

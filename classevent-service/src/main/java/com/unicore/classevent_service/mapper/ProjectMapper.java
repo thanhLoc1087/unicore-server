@@ -9,7 +9,7 @@ import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
 import com.unicore.classevent_service.dto.request.TopicSuggestionRequest;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
 import com.unicore.classevent_service.entity.Project;
-import com.unicore.classevent_service.entity.Topic;
+import com.unicore.classevent_service.entity.ProjectTopic;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface ProjectMapper {
@@ -19,5 +19,5 @@ public interface ProjectMapper {
 
     public ProjectResponse toProjectResponse(Project project);
 
-    public Topic toTopic(TopicSuggestionRequest request);
+    public ProjectTopic toTopic(TopicSuggestionRequest request);
 }

@@ -21,6 +21,7 @@ public class Group {
     private Integer index;
     private String name;
 
+    private String leaderCode;
     private List<StudentInGroup> members;
 
     public boolean hasMember(String memberCode) {

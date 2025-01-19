@@ -162,7 +162,7 @@ public class StudentListService {
                     .flatMap(studentListRepository::save)
                     .map(studentListMapper::toStudentListResponse) :
                 Mono.error(() -> new AppException(ErrorCode.STUDENT_LIST_IMPORTED))
-            );
+            ).switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
     }
     
     // Thêm sv vào lớp

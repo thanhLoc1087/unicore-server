@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classevent_service.entity.Topic;
+import com.unicore.classevent_service.entity.ProjectTopic;
 import com.unicore.classevent_service.enums.EventType;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +25,15 @@ public class ProjectResponse extends BaseEventResponse {
     @JsonProperty("allow_topic_suggestion")
     private boolean allowTopicSuggestion;
 
-    private List<Topic> topics;
+    @JsonProperty("start_topic_register_time")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime startTopicRegisterTime;
+
+    @JsonProperty("end_topic_register_time")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime endTopicRegisterTime;
+
+    private List<ProjectTopic> topics;
 
     @Override
     public EventType getEventType() {

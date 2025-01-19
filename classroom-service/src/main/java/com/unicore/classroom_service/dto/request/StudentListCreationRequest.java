@@ -9,10 +9,12 @@ import com.unicore.classroom_service.entity.StudentInGroup;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class StudentListCreationRequest {
     @JsonProperty("class_id")
     private String classId;
