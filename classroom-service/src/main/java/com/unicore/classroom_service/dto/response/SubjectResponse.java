@@ -57,4 +57,24 @@ public class SubjectResponse {
             semester, 
             year);
     }
+
+    public static SubjectResponse fromSubjectClientResponse(SubjectClientResponse client) {
+        return new SubjectResponse(
+            client.getId(),
+            client.getName(),
+            client.getCode(),
+            client.getDescription(),
+            client.getMetadata().getMidtermFormat(),
+            client.getMetadata().getPracticalFormat(),
+            client.getMetadata().getFinalFormat(),
+            client.getMetadata().getCourseworkWeight(),
+            client.getMetadata().getMidtermWeight(),
+            client.getMetadata().getPracticalWeight(),
+            client.getMetadata().getFinalWeight(),
+            client.getMetadata().getMidtermTime(),
+            client.getMetadata().getFinalTime(),
+            client.getMetadata().getSemester(),
+            client.getMetadata().getYear()
+        );
+    }
 }

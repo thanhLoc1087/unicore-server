@@ -29,6 +29,11 @@ public class SubjectMetadata {
 
     @JsonProperty("final_weight")
     private int finalWeight;
+    
+    @JsonProperty("midterm_time")
+    private int midtermTime;
+    @JsonProperty("final_time")
+    private int finalTime;
 
     private int semester;
     private int year;
