@@ -66,9 +66,6 @@ public class GroupingService {
         grouping.setId(UUID.randomUUID().toString());
         return eventRepository.findById(eventId)
             .flatMap(event -> {
-                if (!event.getGroupingId().isEmpty()) {
-                    return Mono.error(new InvalidRequestException("This event already has grouping"));
-                }
                 event.setGroupingId(grouping.getId());
                 grouping.setClassId(event.getClassId());
                 grouping.setSubclassCode(event.getSubclassCode());

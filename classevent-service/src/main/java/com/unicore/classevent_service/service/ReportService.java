@@ -72,7 +72,7 @@ public class ReportService {
             .map(grouping -> {
                 Report report = reportMapper.toReport(request);
                 report.setSubclassCode(grouping.getSubclassCode());
-                if (!grouping.getId().isEmpty()) {
+                if (grouping.getId() != null && !grouping.getId().isEmpty()) {
                     report.setGroupingId(grouping.getId());
                 }
                 report.setCreatedBy("Loc");

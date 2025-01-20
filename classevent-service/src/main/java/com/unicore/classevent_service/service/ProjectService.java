@@ -21,7 +21,6 @@ import com.unicore.classevent_service.dto.request.TopicApprovalRequest;
 import com.unicore.classevent_service.dto.request.TopicRegisterScheduleRequest;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
 import com.unicore.classevent_service.entity.Group;
-import com.unicore.classevent_service.entity.GroupingSchedule;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.ProjectTopic;
 import com.unicore.classevent_service.enums.EventType;
@@ -55,21 +54,17 @@ public class ProjectService {
 
     public Mono<ProjectResponse> createProject(ProjectCreationRequest request) {
         return Mono.just(request.getSubclassCode())
-            .flatMap(subclassCode -> {
-                if (Boolean.TRUE.equals(request.getUseDefaultGroups())) {
-                    return groupingScheduleRepository
-                        .findByClassIdAndSubclassCodeAndIsDefaultTrue(request.getClassId(), subclassCode);
-                }
-                GroupingSchedule groupingSchedule = new GroupingSchedule();
-                groupingSchedule.setSubclassCode(subclassCode);
-                return Mono.just(groupingSchedule);
-            })
+            .flatMap(subclassCode -> 
+                groupingScheduleRepository
+                        .findByClassIdAndSubclassCodeAndIsDefaultTrue(request.getClassId(), subclassCode)
+            )
             .map(grouping -> {
                 Project project = projectMapper.toProject(request);
-                // project.setWeightType(WeightType.COURSEWORK);
-                if (!grouping.getId().isEmpty()) {
-                    project.setGroupingId(grouping.getId());
-                }
+                project.setGroupingId(grouping.getId());
+                return project;
+            })
+            .switchIfEmpty(Mono.just(projectMapper.toProject(request)))
+            .map(project -> {
                 project.setCreatedBy("Loc");
                 project.setCreatedDate(Date.from(Instant.now()));
                 return project;
@@ -132,19 +127,34 @@ public class ProjectService {
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
+    // Tao lich dag ky de tai
     public Mono<ProjectResponse> createRegisterTopicSchedule(String projectId, TopicRegisterScheduleRequest request) {
         return projectRepository.findById(projectId)
             .flatMap(event -> {
                 if (event instanceof Project project) {
-                    return groupingService.createEventGroupingSchedule(projectId, request)
-                        .map(grouping -> {
-                            project.setGroupingId(grouping.getId());
-                            project.setStartTopicRegisterTime(request.getStartRegisterDate());
-                            project.setEndTopicRegisterTime(request.getEndRegisterDate());
-                            return project;
-                        })
-                        .flatMap(projectRepository::save)
-                        .map(projectMapper::toProjectResponse);
+                    if (!request.isUseDefaultGroups()) {
+                        if ( request.getStartRegisterDate() == null ||
+                            request.getEndRegisterDate() == null) {
+                            return Mono.error(new InvalidRequestException("Missing startRegisterDate or endRegisterDate."));
+                        }
+                        return groupingService.createEventGroupingSchedule(projectId, request)
+                            .map(grouping -> {
+                                project.setGroupingId(grouping.getId());
+                                project.setStartTopicRegisterTime(request.getStartRegisterDate());
+                                project.setEndTopicRegisterTime(request.getEndRegisterDate());
+                                return project;
+                            })
+                            .flatMap(projectRepository::save)
+                            .map(projectMapper::toProjectResponse);
+                    } else {
+                        if (project.getGroupingId() == null || project.getGroupingId().isEmpty()) {
+                            return Mono.error(new InvalidRequestException("This class has no default group."));
+                        }
+                        project.setStartTopicRegisterTime(request.getStartRegisterDate());
+                        project.setEndTopicRegisterTime(request.getEndRegisterDate());
+                        return projectRepository.save(project)
+                            .map(projectMapper::toProjectResponse);
+                    }
                 } else {
                     return Mono.error(new DataNotFoundException());
                 }
@@ -156,13 +166,28 @@ public class ProjectService {
     public Flux<ProjectTopic> addTopics(String projectId, ProjectAddTopicRequest request) {
         return projectRepository.findById(projectId)    
             .flatMapMany(project -> Flux.fromIterable(request.getTopics())
-                .map(topic -> {
+                .flatMap(topic -> {
                     ProjectTopic projectTopic = topicMapper.toProjectTopic(topic);
                     projectTopic.genId();
                     projectTopic.setProjectId(project.getId());
                     projectTopic.setStatus(TopicStatus.APPROVED);
                     projectTopic.setInGroup(project.isInGroup());
-                    return projectTopic;
+
+                    if (topic.getGroupRequest() != null) {
+                        return groupingService.createGroup(new GroupRequest(
+                                project.getGroupingId(), 
+                                topic.getGroupRequest().getName(), 
+                                topic.getGroupRequest().getMembers())
+                            )
+                            .map(group -> {
+                                projectTopic.setSelectorId(group.getId());
+                                return projectTopic;
+                            });
+                    } else {
+                        projectTopic.setSelectorId(topic.getStudentId());
+                    }
+
+                    return Mono.just(projectTopic);
                 })
                 .flatMap(topicRepository::save)
             );
@@ -173,12 +198,15 @@ public class ProjectService {
         return projectRepository.findById(projectId)    
             .flatMap(event -> {
                 if (event instanceof Project project) {
+                    if (project.isAllowTopicSuggestion()) {
+                        return Mono.error(new InvalidRequestException("This project does not allow suggestion"));
+                    }
                     if (project.getStartTopicRegisterTime().isAfter(LocalDateTime.now())) {
-                            return Mono.error(new InvalidRequestException("It is not time for topic registration yet"));
-                        }
+                        return Mono.error(new InvalidRequestException("It is not time for topic registration yet"));
+                    }
                     if (project.getEndTopicRegisterTime().isBefore(LocalDateTime.now())) {
-                            return Mono.error(new InvalidRequestException("Topic registration is overdue"));
-                        }
+                        return Mono.error(new InvalidRequestException("Topic registration is overdue"));
+                    }
                 } else {
                     return Mono.error(new InvalidRequestException("Project not found"));
                 }
@@ -190,6 +218,20 @@ public class ProjectService {
                         TopicStatus.PENDING : TopicStatus.TEACHER_ASSIGNED
                 );
                 projectTopic.setInGroup(event.isInGroup());
+                
+                if (request.getGroupRequest() != null) {
+                    return groupingService.createGroup(new GroupRequest(
+                        project.getGroupingId(), 
+                        request.getGroupRequest().getName(), 
+                        request.getGroupRequest().getMembers())
+                    )
+                    .map(group -> {
+                        projectTopic.setSelectorId(group.getId());
+                        return projectTopic;
+                    });
+                } else {
+                    projectTopic.setSelectorId(request.getStudentId());
+                }
                 return Mono.just(projectTopic);
             })
             .flatMap(topicRepository::save)

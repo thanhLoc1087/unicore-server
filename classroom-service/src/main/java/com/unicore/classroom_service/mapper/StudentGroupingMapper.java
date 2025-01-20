@@ -96,7 +96,7 @@ public class StudentGroupingMapper {
         
         // Set remaining fields with conditionals as necessary
         request.getHasLeader().ifPresent(grouping::setHasLeader);
-        Optional.ofNullable(request.getId()).filter(id -> !id.isEmpty()).ifPresent(grouping::setId);
+        Optional.ofNullable(request.getId()).filter(id -> id != null && !id.isEmpty()).ifPresent(grouping::setId);
         Optional.of(request.getMaxSize()).filter(size -> size != 0).ifPresent(grouping::setMaxSize);
         Optional.of(request.getMinSize()).filter(size -> size != 0).ifPresent(grouping::setMinSize);
         Optional.ofNullable(request.getStartRegisterDate()).ifPresent(grouping::setStartRegisterDate);

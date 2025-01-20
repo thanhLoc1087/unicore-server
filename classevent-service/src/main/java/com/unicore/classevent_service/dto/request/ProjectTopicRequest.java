@@ -28,6 +28,9 @@ public class ProjectTopicRequest {
     private String nameEn;
     private String projectId;
 
+    @JsonProperty("student_id")
+    private String studentId;
+
     private ProjectGroupRequest groupRequest;
     
 }

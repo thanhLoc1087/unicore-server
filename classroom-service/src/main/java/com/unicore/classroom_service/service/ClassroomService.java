@@ -154,7 +154,7 @@ public class ClassroomService {
                     List<String> codes = classRequest.getTeacherCodes();
                     List<String> names = classRequest.getTeacherNames();
                     for (int i = 0; i < codes.size(); i++) {
-                        if (!teachers.containsKey(codes.get(i))) {
+                        if (codes.get(i) != null && !codes.get(i).isEmpty() && !teachers.containsKey(codes.get(i))) {
                             failedTeachers.add(new TeacherNotExistsError(
                                 classRequest.getCode(), 
                                 codes.get(i), 
@@ -416,7 +416,7 @@ public class ClassroomService {
                         mapTeacherList.get(group.getTeacherCode()).setStudentCodes(studentCodes);
                         mapTeacherSubclasses.get(group.getTeacherCode()).setCurrentSize(studentCodes.size());
                     } else {
-                        String subclassCode = group.getName().isEmpty() ? 
+                        String subclassCode = group.getName() == null || group.getName().isEmpty() ? 
                             classCode + ".HD" + (i + 1) :
                             classCode + "." + group.getName().replace(" ", "_");
                         Subclass subclass = Subclass.builder()

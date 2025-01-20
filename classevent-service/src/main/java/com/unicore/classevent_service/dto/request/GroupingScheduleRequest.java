@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -24,10 +25,12 @@ public class GroupingScheduleRequest {
     private LocalDateTime endRegisterDate;
 
     @JsonProperty("max_size")
-    private int maxSize;
-
+    @Builder.Default
+    private int maxSize = 5;
+    
     @JsonProperty("min_size")
-    private int minSize;
+    @Builder.Default
+    private int minSize = 1;
 
     @JsonProperty("has_leader")
     private boolean hasLeader;

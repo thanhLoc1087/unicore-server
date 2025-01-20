@@ -15,6 +15,8 @@ public enum MemberGender {
             if (genderStr.trim().equalsIgnoreCase("male") || 
                 genderStr.trim().equalsIgnoreCase("nam")) {
                 return MALE;
+            } else {
+                return FEMALE;
             }
         } else if (gender instanceof Boolean genderBool) {
             return Boolean.TRUE.equals(genderBool) ? MALE : FEMALE;

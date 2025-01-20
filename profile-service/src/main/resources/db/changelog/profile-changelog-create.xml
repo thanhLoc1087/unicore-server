@@ -220,5 +220,16 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="table-staff-add-column-manager" author="loc" runAlways="true">
+        <preConditions onFail="CONTINUE" onFailMessage="column manager already exists in table staff">
+            <not>
+                <columnExists tableName="staff" columnName="manager" />
+            </not>
+        </preConditions>
+        <addColumn tableName="staff">
+            <column name="manager" type="BOOLEAN" defaultValueNumeric="0">
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

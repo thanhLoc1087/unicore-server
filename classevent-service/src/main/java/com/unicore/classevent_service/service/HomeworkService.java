@@ -48,7 +48,7 @@ public class HomeworkService {
             .map(grouping -> {
                 Homework homework = homeworkMapper.toHomework(request);
                 homework.setSubclassCode(grouping.getSubclassCode());
-                if (!grouping.getId().isEmpty()) {
+                if (grouping.getId() != null && !grouping.getId().isEmpty()) {
                     homework.setGroupingId(grouping.getId());
                 }
                 homework.setCreatedBy("Loc");
