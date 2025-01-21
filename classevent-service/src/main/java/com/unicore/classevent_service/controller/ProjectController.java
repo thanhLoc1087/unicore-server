@@ -164,7 +164,7 @@ public class ProjectController {
             ));
     }
 
-    @PostMapping("/{projectId}/topics")
+    @GetMapping("/{projectId}/topics")
     public Mono<ApiResponse<List<ProjectTopic>>> getTopicsByProjectId(@PathVariable String projectId) {
         return projectService.getTopicsByProjectId(projectId)
             .collectList()

@@ -30,11 +30,4 @@ public class InternTopic extends NewTopic {
     private String studentCode;
     private String studentName;
     private String studentEmail;
-    @Override
-    public String genId() {
-        String id = classId;
-        id += "_" + studentCode;
-        setId(id);
-        return id;
-    }
 }

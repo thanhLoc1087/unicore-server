@@ -164,7 +164,8 @@ public class ProjectService {
 
     /// THÊM DANH SÁCH ĐỀ TÀI
     public Flux<ProjectTopic> addTopics(String projectId, ProjectAddTopicRequest request) {
-        return projectRepository.findById(projectId)    
+        return projectRepository.findById(projectId)
+            .switchIfEmpty(Mono.error(new InvalidRequestException("project not found")))
             .flatMapMany(project -> Flux.fromIterable(request.getTopics())
                 .flatMap(topic -> {
                     ProjectTopic projectTopic = topicMapper.toProjectTopic(topic);
@@ -302,7 +303,8 @@ public class ProjectService {
     }
 
     public Flux<ProjectTopic> getTopicsByProjectId(String projectId) {
-        return topicRepository.findAllByProjectId(projectId);
+        return topicRepository.findAllByProjectId(projectId)
+            .map(ProjectTopic.class::cast);
     }
 
     public Flux<ProjectResponse> getByTopicIds(List<String> topicIds) {
