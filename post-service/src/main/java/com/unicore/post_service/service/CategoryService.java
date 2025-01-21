@@ -1,5 +1,6 @@
 package com.unicore.post_service.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class CategoryService {
     }
 
     public List<CategoryResponse> getAllByIds(List<String> ids) {
+        if (ids == null) return new ArrayList<>();
         return repository.findAllById(ids)
             .stream()
             .map(mapper::toResponse)

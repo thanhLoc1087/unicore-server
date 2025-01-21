@@ -25,7 +25,8 @@ public class Post {
     private LocalDateTime createdDate;
     private String createdBy;
     private String creatorEmail;
-    private List<Editor> modifiedBy;
+    @Builder.Default
+    private List<Editor> modifiedBy = new ArrayList<>();
     private PostType type;
     @Builder.Default
     private List<String> categoryIds = new ArrayList<>();
