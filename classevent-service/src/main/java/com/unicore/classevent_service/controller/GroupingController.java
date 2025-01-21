@@ -40,6 +40,17 @@ public class GroupingController {
                 LocalDateTime.now()
             ));
     }
+
+    @GetMapping("/event/{eventId}")
+    public Mono<ApiResponse<GroupingResponse>> getByEventId(@PathVariable String eventId) {
+        return service.getByEventId(eventId)
+            .map(grouping -> new ApiResponse<>(
+                grouping, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
     
 
     @PostMapping("/class")

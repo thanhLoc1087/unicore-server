@@ -198,7 +198,7 @@ public class StudentListService {
     public Mono<StudentListResponse> addForeignStudents(AddForeignStudentsRequest request) {
         return studentListRepository.findByClassIdAndSubclassCode(request.getClassId(), request.getSubclassCode())
             .map(studentList -> {
-                studentList.getForeignStudents().addAll(request.getForeignStudents());
+                studentList.getForeignStudentCodes().addAll(request.getForeignStudentCodes());
                 return studentList;
             })
             .flatMap(studentListRepository::save)

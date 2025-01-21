@@ -21,20 +21,17 @@ import com.unicore.classroom_service.dto.request.GeneralTestCreationRequest;
 import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.GetClassBySemesterAndYearRequest;
 import com.unicore.classroom_service.dto.request.GetSubjectByYearAndSemesterRequest;
-import com.unicore.classroom_service.dto.request.StudentGroupingCreationRequest;
-import com.unicore.classroom_service.dto.request.StudentListCreationRequest;
 import com.unicore.classroom_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classroom_service.dto.request.UpdateClassImportStatusRequest;
 import com.unicore.classroom_service.dto.response.ClassroomFilterResponse;
 import com.unicore.classroom_service.dto.response.ClassroomResponse;
+import com.unicore.classroom_service.dto.response.Group;
 import com.unicore.classroom_service.dto.response.StudentForGroupingResponse;
 import com.unicore.classroom_service.dto.response.SubjectNotExistsError;
 import com.unicore.classroom_service.dto.response.SubjectResponse;
 import com.unicore.classroom_service.dto.response.TeacherNotExistsError;
 import com.unicore.classroom_service.dto.response.TeacherResponse;
 import com.unicore.classroom_service.entity.Classroom;
-import com.unicore.classroom_service.entity.Group;
-import com.unicore.classroom_service.entity.StudentInGroup;
 import com.unicore.classroom_service.entity.Subclass;
 import com.unicore.classroom_service.entity.SubjectMetadata;
 import com.unicore.classroom_service.enums.ClassType;
@@ -397,68 +394,6 @@ public class ClassroomService {
             .map(classes -> result);
     }
 
-    public Mono<ClassroomResponse> createSubclassFromGrouping(StudentGroupingCreationRequest request) {
-        if (!request.isCreateSubclass()) return Mono.empty();
-        return Mono.just(request)
-            .flatMap(groupRequest -> getClassroomById(groupRequest.getClassId()))
-            .map(classroom -> {
-                Subclass mainSubclass = classroom.getSubclasses().getFirst();
-                String classCode = classroom.getCode();
-                List<Group> groups = request.getGroups();
-                Map<String, Subclass> mapTeacherSubclasses = new HashMap<>();
-                Map<String, StudentListCreationRequest> mapTeacherList = new HashMap<>();
-                for (int i = 0; i < groups.size(); i++) {
-                    Group group = groups.get(i);
-                    if (mapTeacherSubclasses.containsKey(group.getTeacherCode())) {
-                        Set<String> studentCodes = Set.copyOf(mapTeacherList.get(group.getTeacherCode()).getStudentCodes());
-                        studentCodes.addAll(group.getMembers().stream()
-                            .map(StudentInGroup::getStudentCode).toList());
-                        mapTeacherList.get(group.getTeacherCode()).setStudentCodes(studentCodes);
-                        mapTeacherSubclasses.get(group.getTeacherCode()).setCurrentSize(studentCodes.size());
-                    } else {
-                        String subclassCode = group.getName() == null || group.getName().isEmpty() ? 
-                            classCode + ".HD" + (i + 1) :
-                            classCode + "." + group.getName().replace(" ", "_");
-                        Subclass subclass = Subclass.builder()
-                            .code(subclassCode)
-                            .mainTeacherCode(group.getTeacherCode())
-                            .startDate(mainSubclass.getStartDate())
-                            .endDate(mainSubclass.getEndDate())
-                            .maxSize(mainSubclass.getCurrentSize())
-                            .currentSize(group.getMembers().size())
-                            .type(ClassType.NHOM_HUONG_DAN)
-                            .note("Nhóm hướng dẫn " + subclassCode)
-                            .build();
-                        mapTeacherSubclasses.put(group.getTeacherCode(), subclass);
-                        mapTeacherList.put(
-                            group.getTeacherCode(), 
-                            new StudentListCreationRequest(
-                                classroom.getId(),
-                                subclassCode,
-                                null,
-                                Set.copyOf(
-                                    group.getMembers().stream()
-                                    .map(StudentInGroup::getStudentCode).toList()
-                                ),
-                                List.of()
-                            )
-                        );
-                    }
-                }
-                studentListService.createStudentListBulk(List.copyOf(mapTeacherList.values()));
-                
-                classroom.setSubclasses(List.copyOf(mapTeacherSubclasses.values()));
-                return classroom;
-            })
-            .map(classroomMapper::toClassroom)
-            .flatMap(classroomRepository::save)
-            .map(classroomMapper::toClassroomResponse)
-            .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
-
-
-            //// Xét trường hợp sv ở lớp khác, lưu sv vào foreign_students
-    }
-
     public Mono<ClassroomResponse> updateClassGroupingId(UpdateClassGroupingRequest request) {
         return classroomRepository.findById(request.getClassId())
             .map(response -> {
@@ -476,6 +411,7 @@ public class ClassroomService {
 
     public Mono<StudentForGroupingResponse> checkStudentClassForGrouping(CheckStudentClassForGroupingRequest request) {
         return classroomRepository.findById(request.getClassId())
+            .switchIfEmpty(Mono.error(new AppException(ErrorCode.CLASS_NOT_FOUND)))
             .flatMap(classroom -> studentListService.getStudentList(new GetByClassRequest(classroom.getId(), request.getSubclassCode()))
                 .flatMap(studentList -> {
                     log.info("1 " + studentList.toString());
@@ -487,6 +423,7 @@ public class ClassroomService {
                                 StudentForGroupingResponse response = classroomMapper.toForGroupingResponse(student);
                                 response.setValid(true);
                                 response.setClassId(classroom.getId());
+                                response.setSubclassCode(request.getSubclassCode());
                                 return response;
                             });
                     } else {
@@ -512,6 +449,7 @@ public class ClassroomService {
 
                                     if (idealClass == null) {
                                         response.setValid(false);
+                                        response.setReasonForInvalid("No suitable classes");
                                         return response;
                                     } else {
                                         response.setValid(true);
@@ -522,7 +460,22 @@ public class ClassroomService {
                                 })
                         );
                     }
+                }
+            )
+            .flatMap(response ->  classEventClient.getEventGrouping(request.getProjectId())
+                .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)))
+                .map(grouping -> {
+                    for (Group group : grouping.getGroups()) {
+                        if (group.hasMember(response.getCode())) {
+                            response.setValid(false);
+                            response.setReasonForInvalid("Student already belong to group " + group.getIndex());
+                            return response;
+                        }
+                    }
+                    return response;
                 })
+            )
+
         );
     }
 }

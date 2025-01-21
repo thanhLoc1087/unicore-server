@@ -14,6 +14,8 @@ public class CheckStudentClassForGroupingRequest {
     private String studentCode;
     @JsonProperty("teacher_code")
     private String teacherCode;
+    @JsonProperty("project_id")
+    private String projectId;
     @JsonProperty("class_id")
     private String classId;
     @JsonProperty("subclass_code")

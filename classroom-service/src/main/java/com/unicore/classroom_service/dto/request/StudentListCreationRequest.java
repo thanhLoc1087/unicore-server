@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classroom_service.entity.StudentInGroup;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,5 +29,5 @@ public class StudentListCreationRequest {
 
     @JsonProperty("foreign_students")
     /// studentCode : < classId, subclassCode >
-    private List<StudentInGroup> foreignStudents;
+    private List<String> foreignStudentCodes;
 }

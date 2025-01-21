@@ -56,7 +56,7 @@ public class ProfileClient {
 
     public Mono<StudentResponse> getStudentByCode(String code) {
         return webClient.get()
-            .uri("/student/code/{code}", code)
+            .uri("/students/code/{code}", code)
             .retrieve()
             .toEntity(new ParameterizedTypeReference<ApiResponse<StudentResponse>>() {})
             .map(responseEntity -> responseEntity.getBody().getData());

@@ -1,6 +1,7 @@
 package com.unicore.classroom_service.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,5 +42,5 @@ public class StudentList {
     
     @JsonProperty("foreign_students")
     @Builder.Default
-    private List<StudentInGroup> foreignStudents = new ArrayList<>();
+    private Set<String> foreignStudentCodes = new HashSet<>();
 }

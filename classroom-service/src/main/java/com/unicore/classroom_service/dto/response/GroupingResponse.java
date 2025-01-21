@@ -1,24 +1,24 @@
-package com.unicore.classroom_service.dto.request;
+package com.unicore.classroom_service.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.unicore.classroom_service.entity.Group;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class StudentGroupingCreationRequest {
-    @JsonProperty("class_id")
-    private String classId;
+public class GroupingResponse {
+    private String id;
     
-    @JsonProperty("subclass_code")
-    private String subclassCode;
-
     @JsonProperty("start_register_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startRegisterDate;
@@ -27,17 +27,12 @@ public class StudentGroupingCreationRequest {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endRegisterDate;
 
-    @JsonProperty("has_leader")
-    private boolean hasLeader;
-
     @JsonProperty("max_size")
     private int maxSize;
 
     @JsonProperty("min_size")
     private int minSize;
-    
-    @JsonProperty("create_subclass")
-    private boolean createSubclass;
 
-    private List<Group> groups;
+    @Builder.Default
+    private List<Group> groups = new ArrayList<>();
 }

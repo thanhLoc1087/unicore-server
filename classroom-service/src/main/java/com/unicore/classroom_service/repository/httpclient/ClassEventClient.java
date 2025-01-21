@@ -14,7 +14,9 @@ import com.unicore.classroom_service.dto.request.GetByClassRequest;
 import com.unicore.classroom_service.dto.request.InternStudentListImportRequest;
 import com.unicore.classroom_service.dto.response.ApiResponse;
 import com.unicore.classroom_service.dto.response.GeneralTestResponse;
+import com.unicore.classroom_service.dto.response.GroupingResponse;
 import com.unicore.classroom_service.dto.response.InternTopic;
+import com.unicore.classroom_service.dto.response.SubjectResponse;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -58,5 +60,14 @@ public class ClassEventClient {
             .bodyValue(request)
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<ApiResponse<List<InternTopic>>>() {});
+    }
+
+    
+    public Mono<GroupingResponse> getEventGrouping(String eventId) {
+        return webClient.get()
+            .uri("/grouping/event/{eventId}", eventId)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ApiResponse<GroupingResponse>>() {})
+            .map(responseEntity -> responseEntity.getBody().getData());
     }
 }

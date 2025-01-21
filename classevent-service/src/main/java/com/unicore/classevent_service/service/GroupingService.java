@@ -11,6 +11,7 @@ import com.unicore.classevent_service.dto.request.ClassGroupingScheduleRequest;
 import com.unicore.classevent_service.dto.request.GroupingScheduleRequest;
 import com.unicore.classevent_service.dto.request.UpdateClassGroupingRequest;
 import com.unicore.classevent_service.dto.response.GroupingResponse;
+import com.unicore.classevent_service.entity.BaseEvent;
 import com.unicore.classevent_service.entity.Group;
 import com.unicore.classevent_service.entity.GroupingSchedule;
 import com.unicore.classevent_service.exception.DataNotFoundException;
@@ -87,6 +88,20 @@ public class GroupingService {
 
     public Mono<GroupingResponse> getGroupingById(String id) {
         return scheduleRepository.findById(id)
+            .map(scheduleMapper::toResponse)
+            .flatMap(response -> groupRepository.findByGroupingId(response.getId())
+                    .collectList()
+                    .map(groups -> {
+                        response.setGroups(groups);
+                        return (response);
+                    })
+            ).switchIfEmpty(Mono.error(new DataNotFoundException()));
+    }
+
+    public Mono<GroupingResponse> getByEventId(String eventId) {
+        return eventRepository.findById(eventId)
+            .map(BaseEvent::getGroupingId)
+            .flatMap(scheduleRepository::findById)
             .map(scheduleMapper::toResponse)
             .flatMap(response -> groupRepository.findByGroupingId(response.getId())
                     .collectList()
