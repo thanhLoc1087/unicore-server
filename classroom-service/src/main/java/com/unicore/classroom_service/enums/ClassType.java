@@ -2,6 +2,7 @@ package com.unicore.classroom_service.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.unicore.classroom_service.utils.StringUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public enum ClassType {
     @JsonCreator
     public static ClassType fromCode(String code) {
         for (ClassType type : ClassType.values()) {
-            if (type.code.equals(code)) {
+            if (type.code.equalsIgnoreCase(StringUtils.removeVietnameseDiacritics(code))) {
                 return type;
             }
         }

@@ -1,8 +1,8 @@
-package com.unicore.classevent_service.enums;
+package com.unicore.profile_service.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.unicore.classevent_service.utils.StringUtils;
+import com.unicore.profile_service.utils.StringUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

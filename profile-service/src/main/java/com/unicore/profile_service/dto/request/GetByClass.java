@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetStudentListByClass {
+public class GetByClass {
     @JsonProperty("class_id")
     private String classId;
     

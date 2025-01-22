@@ -1,5 +1,6 @@
 package com.unicore.profile_service.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -9,13 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.unicore.profile_service.dto.request.TeacherUpdateRequest;
+import com.unicore.profile_service.dto.request.GetByClass;
 import com.unicore.profile_service.dto.request.TeacherBulkCreationRequest;
 import com.unicore.profile_service.dto.request.TeacherCreationRequest;
+import com.unicore.profile_service.dto.response.Subclass;
 import com.unicore.profile_service.dto.response.TeacherResponse;
 import com.unicore.profile_service.exception.AppException;
 import com.unicore.profile_service.exception.ErrorCode;
 import com.unicore.profile_service.mapper.TeacherMapper;
 import com.unicore.profile_service.repository.TeacherRepository;
+import com.unicore.profile_service.repository.httpclient.ClassroomClient;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +32,8 @@ import reactor.core.publisher.Mono;
 public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final TeacherMapper teacherMapper;
+
+    private final ClassroomClient classroomClient;
 
     public Mono<TeacherResponse> createTeacher(TeacherCreationRequest request) {
         return Mono.just(request)
@@ -62,6 +68,27 @@ public class TeacherService {
         return teacherRepository.findById(id)
             .map(teacherMapper::toTeacherResponse)
             .switchIfEmpty(Mono.error(new AppException(ErrorCode.NOT_FOUND)));
+    }
+
+    public Flux<TeacherResponse> getTeachersByClass(GetByClass request) {
+        return classroomClient.getClassById(request.getClassId()) 
+            .map(classroom -> {
+                Set<String> teacherCodes = new HashSet<>();
+                if (classroom.getType().isMainClass() && classroom.isOrgManaged()) {
+                    for (Subclass subclass : classroom.getSubclasses()) {
+                        if (!subclass.getType().isMainClass()) {
+                            teacherCodes.addAll(subclass.getTeacherCodes());
+                        }
+                    }
+                } else {
+                    for (Subclass subclass : classroom.getSubclasses()) {
+                        teacherCodes.addAll(subclass.getTeacherCodes());
+                    }
+                }
+                return List.copyOf(teacherCodes);
+            })
+            .flatMapMany(teacherRepository::findAllByCodeIn)
+            .map(teacherMapper::toTeacherResponse);
     }
 
     public Mono<TeacherResponse> getTeacherByCode(String code) {

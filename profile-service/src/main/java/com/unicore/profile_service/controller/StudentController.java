@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.unicore.profile_service.dto.request.GetStudentListByClass;
+import com.unicore.profile_service.dto.request.GetByClass;
 import com.unicore.profile_service.dto.request.MemberBulkDeletionRequest;
 import com.unicore.profile_service.dto.request.StudentBulkCreationRequest;
 import com.unicore.profile_service.dto.request.StudentCreationRequest;
@@ -68,7 +68,7 @@ public class StudentController {
     }
 
     @PostMapping("/class")
-    public Mono<ApiResponse<StudentInClassResponse>> getStudentsInClass(@RequestBody GetStudentListByClass request) {
+    public Mono<ApiResponse<StudentInClassResponse>> getStudentsInClass(@RequestBody GetByClass request) {
         return studentService.getStudentsInClass(request)
             .map(response -> ApiResponse.<StudentInClassResponse>builder()
                 .data(response)

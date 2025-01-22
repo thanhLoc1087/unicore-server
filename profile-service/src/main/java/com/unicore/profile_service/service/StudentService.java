@@ -11,7 +11,7 @@ import java.util.List;
 import com.unicore.profile_service.exception.AppException;
 import com.unicore.profile_service.exception.ErrorCode;
 import com.unicore.profile_service.dto.request.GetClassMemberRequest;
-import com.unicore.profile_service.dto.request.GetStudentListByClass;
+import com.unicore.profile_service.dto.request.GetByClass;
 import com.unicore.profile_service.dto.request.StudentBulkCreationRequest;
 import com.unicore.profile_service.dto.request.StudentCreationRequest;
 import com.unicore.profile_service.dto.request.StudentUpdateRequest;
@@ -81,7 +81,7 @@ public class StudentService {
             .map(studentMapper::toStudentResponse);
     }
 
-    public Mono<StudentInClassResponse> getStudentsInClass(GetStudentListByClass request) {
+    public Mono<StudentInClassResponse> getStudentsInClass(GetByClass request) {
         return classroomClient.getClassStudentList(request)
             .flatMap(response -> {
                 // Create a mutable list of student codes

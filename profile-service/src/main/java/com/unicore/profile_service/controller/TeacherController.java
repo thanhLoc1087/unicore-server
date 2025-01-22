@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unicore.profile_service.dto.request.GetByClass;
 import com.unicore.profile_service.dto.request.MemberBulkDeletionRequest;
 import com.unicore.profile_service.dto.request.TeacherUpdateRequest;
 import com.unicore.profile_service.dto.request.TeacherBulkCreationRequest;
@@ -93,6 +94,18 @@ public class TeacherController {
                 .build()
             );
     }
+
+    @PostMapping("/get-in-class")
+    public Mono<ApiResponse<List<TeacherResponse>>> getTeachersInClass(@RequestBody GetByClass request) {
+        return teacherService.getTeachersByClass(request)
+            .collectList()      
+            .map(response -> ApiResponse.<List<TeacherResponse>>builder()
+            .data(response)
+            .message(response.isEmpty() ? "Empty list" : "Success")
+            .build()
+        );
+    }
+    
 
     @PutMapping
     public Mono<ApiResponse<TeacherResponse>> updateTeacher(@RequestBody TeacherUpdateRequest request) {

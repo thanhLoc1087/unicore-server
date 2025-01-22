@@ -8,8 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.unicore.profile_service.dto.request.GetStudentListByClass;
+import com.unicore.profile_service.dto.request.GetByClass;
 import com.unicore.profile_service.dto.response.ApiResponse;
+import com.unicore.profile_service.dto.response.ClassroomResponse;
 import com.unicore.profile_service.dto.response.StudentListResponse;
 
 import reactor.core.publisher.Mono;
@@ -25,7 +26,7 @@ public class ClassroomClient {
             .build();
     }
 
-    public Mono<ApiResponse<StudentListResponse>> getClassStudentList(@RequestBody GetStudentListByClass request) {
+    public Mono<ApiResponse<StudentListResponse>> getClassStudentList(@RequestBody GetByClass request) {
         return webClient.post()
             .uri("/get/students") // Adjust the base URL as needed
             .contentType(MediaType.APPLICATION_JSON) // Specify the content type
@@ -33,5 +34,13 @@ public class ClassroomClient {
             .retrieve()
             .bodyToMono(new ParameterizedTypeReference<ApiResponse<StudentListResponse>>() {});
         }
+
+    public Mono<ClassroomResponse> getClassById(String classId) {
+        return webClient.get()
+            .uri("/{classId}", classId)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ApiResponse<ClassroomResponse>>() {})
+            .map(responseEntity -> responseEntity.getBody().getData());
+    }
         
 }
