@@ -26,6 +26,9 @@ public class Project extends BaseEvent {
     @JsonProperty("allow_topic_suggestion")
     private boolean allowTopicSuggestion;
 
+    @JsonProperty("use_default_groups")
+    private boolean useDefaultGroups;
+
     private boolean autocreated;
 
     private LocalDateTime startTopicRegisterTime;

@@ -1,9 +1,7 @@
 package com.unicore.classevent_service.service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -74,12 +72,12 @@ public class SubmissionService {
                                     StudentInSubmission.fromStudentInGroup(request.getSubmitter())
                                 ));
                             }
-                            submission.setGroup(event.isInGroup());
+                            submission.setInGroup(event.isInGroup());
                             submission.setCreatedDate(LocalDateTime.now());
                             return Mono.just(submission);
                         });
                 }
-                submission.setGroup(event.isInGroup());
+                submission.setInGroup(event.isInGroup());
                 submission.setCreatedDate(LocalDateTime.now());
                 submission.setSubmitters(List.of(
                     StudentInSubmission.fromStudentInGroup(request.getSubmitter())
@@ -114,8 +112,7 @@ public class SubmissionService {
 
     public Flux<SubmissionResponse> getSubmissionsByEventId(String eventId) {
         return repository.findAllByEventId(eventId)
-            .map(mapper::toSubmissionResponse)
-            .switchIfEmpty(Mono.error(new DataNotFoundException()));
+            .map(mapper::toSubmissionResponse);
     }
 
     public Mono<SubmissionResponse> getSubmissionById(String id) {
@@ -188,7 +185,6 @@ public class SubmissionService {
         String studentCode,
         StudentResponse student
     ) {
-        // log.info("student " + student.toString());
         return Flux.fromIterable(events)
             .flatMap(event ->
                     repository.findAllByEventIdAndSubmittersStudentCode(event.getId(), student.getCode())

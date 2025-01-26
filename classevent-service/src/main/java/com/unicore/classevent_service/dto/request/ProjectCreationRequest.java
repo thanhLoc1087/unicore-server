@@ -33,6 +33,9 @@ public class ProjectCreationRequest {
     @JsonProperty("in_group")
     private Boolean inGroup;
 
+    @JsonProperty("use_default_groups")
+    private Boolean useDefaultGroups;
+
     @JsonProperty("allow_grade_review")
     private boolean allowGradeReview;
     @JsonProperty("review_times")

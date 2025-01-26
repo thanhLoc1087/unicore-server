@@ -14,10 +14,10 @@ import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.HomeworkCreationRequest;
 import com.unicore.classevent_service.dto.request.HomeworkUpdateRequest;
 import com.unicore.classevent_service.dto.response.HomeworkResponse;
-import com.unicore.classevent_service.entity.GroupingSchedule;
 import com.unicore.classevent_service.entity.Homework;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
+import com.unicore.classevent_service.exception.InvalidRequestException;
 import com.unicore.classevent_service.mapper.HomeworkMapper;
 import com.unicore.classevent_service.repository.BaseEventRepository;
 import com.unicore.classevent_service.repository.GroupingScheduleRepository;
@@ -37,23 +37,19 @@ public class HomeworkService {
     public Flux<HomeworkResponse> createHomework(HomeworkCreationRequest request) {
         return Flux.fromIterable(request.getSubclassCodes())
             .flatMap(subclassCode -> {
-                if (Boolean.TRUE.equals(request.getUseDefaultGroups())) {
-                    return groupingScheduleRepository
-                        .findByClassIdAndSubclassCodeAndIsDefaultTrue(request.getClassId(), subclassCode);
-                }
-                GroupingSchedule groupingSchedule = new GroupingSchedule();
-                groupingSchedule.setSubclassCode(subclassCode);
-                return Mono.just(groupingSchedule);
-            })
-            .map(grouping -> {
                 Homework homework = homeworkMapper.toHomework(request);
-                homework.setSubclassCode(grouping.getSubclassCode());
-                if (grouping.getId() != null && !grouping.getId().isEmpty()) {
-                    homework.setGroupingId(grouping.getId());
-                }
+                homework.setSubclassCode(subclassCode);
                 homework.setCreatedBy("Loc");
                 homework.setCreatedDate(Date.from(Instant.now()));
-                return homework;
+                if (Boolean.TRUE.equals(request.getInGroup())) {
+                    return groupingScheduleRepository.findByClassIdAndSubclassCodeAndIsDefaultTrue(request.getClassId(), subclassCode)
+                        .switchIfEmpty(Mono.error(new InvalidRequestException("This class has not register its groups")))
+                        .map(grouping -> {
+                            homework.setGroupingId(grouping.getId());
+                            return homework;
+                        });
+                }
+                return Mono.just(homework);
             })
             .flatMap(this::saveHomework);
     }

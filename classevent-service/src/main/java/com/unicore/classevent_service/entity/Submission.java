@@ -2,7 +2,6 @@ package com.unicore.classevent_service.entity;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -29,7 +28,7 @@ public class Submission {
 
     private String eventId;
     private List<StudentInSubmission> submitters;
-    private boolean group;
+    private boolean inGroup;
     
     private Float grade;
     private String feedback;

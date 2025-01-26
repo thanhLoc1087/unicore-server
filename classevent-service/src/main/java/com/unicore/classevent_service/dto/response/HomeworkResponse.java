@@ -1,6 +1,7 @@
 package com.unicore.classevent_service.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,8 +24,8 @@ public class HomeworkResponse extends BaseEventResponse{
     @JsonProperty("publish_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime publishDate;
-    @JsonProperty("submission_option")
-    private SubmissionOption submissionOption;
+    @JsonProperty("submission_options")
+    private List<SubmissionOption> submissionOptions;
     
     @JsonProperty("remind_grading_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

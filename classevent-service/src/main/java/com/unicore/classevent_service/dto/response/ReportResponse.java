@@ -2,9 +2,11 @@ package com.unicore.classevent_service.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unicore.classevent_service.entity.Query;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.SubmissionOption;
 
@@ -26,8 +28,8 @@ public class ReportResponse extends BaseEventResponse{
     @JsonProperty("publish_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime publishDate;
-    @JsonProperty("submission_option")
-    private SubmissionOption submissionOption;
+    @JsonProperty("submission_options")
+    private List<SubmissionOption> submissionOptions;
     
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("report_date")
@@ -35,13 +37,15 @@ public class ReportResponse extends BaseEventResponse{
     
     @JsonProperty("remind_grading_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDate remindGradingDate;
+    private LocalDateTime remindGradingDate;
     @JsonProperty("close_submission_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDate closeSubmissionDate;
+    private LocalDateTime closeSubmissionDate;
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;
+
+    private Query query;
 
     @Override
     public EventType getEventType() {

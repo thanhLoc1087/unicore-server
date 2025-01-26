@@ -56,9 +56,9 @@ public class SubmissionController {
     public Mono<ApiResponse<List<SubmissionResponse>>> getByEventId(@PathVariable String eventId) {
         return submissionService.getSubmissionsByEventId(eventId)
             .collectList()
-            .map(report -> new ApiResponse<>(
-                report, 
-                ApiMessage.SUCCESS.getMessage(), 
+            .map(response -> new ApiResponse<>(
+                response, 
+                response.isEmpty() ? "Empty List" : ApiMessage.SUCCESS.getMessage(), 
                 HttpStatus.OK.value(),
                 LocalDateTime.now()
             ));

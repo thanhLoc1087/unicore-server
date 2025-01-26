@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
+import com.unicore.classevent_service.dto.request.GroupingScheduleRequest;
 import com.unicore.classevent_service.dto.request.ProjectAddTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectChooseTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
@@ -105,8 +106,18 @@ public class ProjectController {
                 LocalDateTime.now()
             ));
     }
-    
 
+    @PutMapping("/{id}/topics/schedule/edit")
+    public Mono<ApiResponse<ProjectResponse>> editSchedule(@PathVariable String id, @RequestBody GroupingScheduleRequest request) {
+        return projectService.editRegisterTopicSchedule(id, request)
+            .map(project -> new ApiResponse<>(
+                project, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
     @PutMapping("/{id}/topics/import")
     public Mono<ApiResponse<List<ProjectTopic>>> addTopics(@PathVariable String id, @RequestBody @Valid ProjectAddTopicRequest request) {
         return projectService.addTopics(id, request)

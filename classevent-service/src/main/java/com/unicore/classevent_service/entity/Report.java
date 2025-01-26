@@ -40,8 +40,8 @@ public class Report extends BaseEvent {
     // Nếu nó tạo trong BTL
     private String projectId; 
 
-    private LocalDate remindGradingDate;
-    private LocalDate closeSubmissionDate;
+    private LocalDateTime remindGradingDate;
+    private LocalDateTime closeSubmissionDate;
 
     private String attachmentUrl;
 

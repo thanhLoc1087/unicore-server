@@ -42,7 +42,7 @@ public class ReportCreationRequest {
     @JsonProperty("use_default_groups")
     private Boolean useDefaultGroups;
     
-    @JsonProperty("submission_option")
+    @JsonProperty("submission_options")
     private List<SubmissionOption> submissionOptions;
     
     private Float weight;
@@ -63,10 +63,10 @@ public class ReportCreationRequest {
     
     @JsonProperty("remind_grading_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDate remindGradingDate;
+    private LocalDateTime remindGradingDate;
     @JsonProperty("close_submission_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDate closeSubmissionDate;
+    private LocalDateTime closeSubmissionDate;
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;
