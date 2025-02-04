@@ -11,26 +11,16 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ThesisTopic extends NewTopic {
+public class ThesisTopic extends ProjectTopic {
     {
         setType(TopicType.KLTN);
     }
-    private String nameEn;
-
-    private String projectId;
-
     private String councilCode;
     private TopicGradingMember councilPrincipal;
     private TopicGradingMember councilSecretary;
     private TopicGradingMember councilMember;
     private boolean councilGraded;
 
-    private Group group;
-
-    private String turnDownReason;
-
     private TopicGradingMember evaluator;
     private boolean evaluatorGraded;
-
-    private Float supervisorGrade;
 }

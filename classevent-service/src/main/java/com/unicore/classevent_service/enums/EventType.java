@@ -4,6 +4,7 @@ public enum EventType {
     HOMEWORK,
     REPORT,
     PROJECT,
+    THESIS,
     TEST,
     ;
 }

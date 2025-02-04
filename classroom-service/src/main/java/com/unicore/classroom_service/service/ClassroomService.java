@@ -233,6 +233,7 @@ public class ClassroomService {
                             if (response.getSubject().getMidtermWeight() > 0) {
                                 requests.add(new GeneralTestCreationRequest(
                                     response.getId(),
+                                    response.getType(),
                                     subclass.getCode(),
                                     WeightType.MIDTERM,
                                     (float) response.getSubject().getMidtermWeight(), 
@@ -241,6 +242,7 @@ public class ClassroomService {
                             }
                             requests.add(new GeneralTestCreationRequest(
                                 response.getId(),
+                                response.getType(),
                                 subclass.getCode(),
                                 WeightType.FINAL_TERM,
                                 (float) response.getSubject().getFinalWeight(), 
@@ -249,6 +251,7 @@ public class ClassroomService {
                         } else {
                             requests.add(new GeneralTestCreationRequest(
                                 response.getId(),
+                                response.getType(),
                                 subclass.getCode(),
                                 WeightType.PRACTICAL,
                                 (float) response.getSubject().getPracticalWeight(), 
@@ -275,19 +278,23 @@ public class ClassroomService {
     private Classroom buildClassroom(String code, Set<Subclass> subclasses, ClassroomCreationRequest classRequest, String organizationId) {
         ClassType classType = ClassType.LOP_THUONG;
         if (!subclasses.isEmpty()) {
-            Subclass mainClass = subclasses.iterator().next();
-            switch (mainClass.getType()) {
-                case ClassType.DO_AN:
-                    classType = ClassType.DO_AN;
+            for (Subclass subclass : subclasses) {
+                if (subclass.getType().isMainClass()) {
+                    switch (subclass.getType()) {
+                        case ClassType.DO_AN:
+                            classType = ClassType.DO_AN;
+                            break;
+                        case ClassType.KHOA_LUAN:
+                            classType = ClassType.KHOA_LUAN;
+                            break;
+                        case ClassType.THUC_TAP:
+                            classType = ClassType.THUC_TAP;
+                            break;
+                        default:
+                            break;
+                    }
                     break;
-                case ClassType.KHOA_LUAN:
-                    classType = ClassType.KHOA_LUAN;
-                    break;
-                case ClassType.THUC_TAP:
-                    classType = ClassType.THUC_TAP;
-                    break;
-                default:
-                    break;
+                }
             }
         }
         return Classroom.builder()

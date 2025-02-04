@@ -22,6 +22,7 @@ import com.unicore.classevent_service.dto.response.UpdateClassImportStatusReques
 import com.unicore.classevent_service.entity.GeneralTest;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.Subclass;
+import com.unicore.classevent_service.enums.ClassType;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.ExamFormat;
 import com.unicore.classevent_service.enums.WeightType;
@@ -66,6 +67,9 @@ public class GeneralTestService {
                         .reviewTimes(3)
                         .allowTopicSuggestion(ExamFormat.DO_AN_TOT_NGHIEP.equals(item.getFormat()))
                         .build();
+                    if (item.getClassType() == ClassType.KHOA_LUAN) {
+                        project.setType(EventType.THESIS);
+                    }
                     return projectService.saveProject(project);
                 } else {
                     log.info("TEst create");
