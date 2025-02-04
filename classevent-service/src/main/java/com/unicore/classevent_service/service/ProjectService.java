@@ -4,8 +4,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -18,13 +22,19 @@ import com.unicore.classevent_service.dto.request.ProjectChooseTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
 import com.unicore.classevent_service.dto.request.ProjectTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
+import com.unicore.classevent_service.dto.request.ThesisEvaluatorRequest;
+import com.unicore.classevent_service.dto.request.ThesisImportEvaluatorsRequest;
 import com.unicore.classevent_service.dto.request.TopicApprovalRequest;
 import com.unicore.classevent_service.dto.request.TopicRegisterScheduleRequest;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
+import com.unicore.classevent_service.dto.response.TeacherResponse;
 import com.unicore.classevent_service.entity.Group;
+import com.unicore.classevent_service.entity.NewTopic;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.ProjectTopic;
 import com.unicore.classevent_service.entity.StudentInGroup;
+import com.unicore.classevent_service.entity.ThesisTopic;
+import com.unicore.classevent_service.entity.TopicGradingMember;
 import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.TopicStatus;
 import com.unicore.classevent_service.exception.DataNotFoundException;
@@ -34,6 +44,7 @@ import com.unicore.classevent_service.mapper.TopicMapper;
 import com.unicore.classevent_service.repository.BaseEventRepository;
 import com.unicore.classevent_service.repository.GroupingScheduleRepository;
 import com.unicore.classevent_service.repository.TopicRepository;
+import com.unicore.classevent_service.repository.httpclient.ProfileClient;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +63,7 @@ public class ProjectService {
 
     private final GroupingService groupingService;
 
+    private final ProfileClient profileClient;
     private final GroupingScheduleRepository groupingScheduleRepository;
 
     public Mono<ProjectResponse> createProject(ProjectCreationRequest request) {
@@ -377,5 +389,70 @@ public class ProjectService {
     public Flux<ProjectResponse> getByTopicIds(List<String> topicIds) {
         return projectRepository.findProjectsByTopicIds(topicIds)
             .map(project -> projectMapper.toProjectResponse((Project) project));
+    }
+
+    public Mono<ProjectResponse> importEvaluators(ThesisImportEvaluatorsRequest request) {
+        Map<String, String> topicIdEvaluatorCodes = new HashMap<>();
+        Set<String> teacherCodes = Set.copyOf(request.getEvaluators()
+                .stream()
+                .map(ThesisEvaluatorRequest::getEvaluatorCode)
+                .toList());
+        for (ThesisEvaluatorRequest evaluator : request.getEvaluators()) {
+            topicIdEvaluatorCodes.put(NewTopic.genId(evaluator.getTopicName()), evaluator.getEvaluatorCode());
+        }
+        return projectRepository.findById(request.getProjectId())
+            .flatMap(event -> {
+                if (event instanceof Project project) {
+                    return Mono.just(projectMapper.toProjectResponse(project));
+                }
+                return Mono.error(new InvalidRequestException("Project not found"));
+            })
+            .flatMap(event -> profileClient.getTeachersByCodes(teacherCodes)
+                .flatMap(teachers -> {
+                    // Extract codes from B into a Set for fast lookup
+                    Set<String> codesSetB = teachers.getData().stream()
+                        .map(TeacherResponse::getCode)
+                        .collect(Collectors.toSet());
+
+                    // Find codes in A that are NOT in B
+                    List<String> missingCodes = teacherCodes.stream()
+                        .filter(code -> !codesSetB.contains(code))
+                        .toList();
+
+                    if (!missingCodes.isEmpty()) 
+                        return Mono.error(new InvalidRequestException("These teacher codes do not exist: " + missingCodes.toString()));
+
+                    return Mono.just(teachers);
+                })
+                // lấy topic theo project id
+                .flatMap(teachers -> {
+                    Map<String, TeacherResponse> mapTeachers = teachers.getData().stream()
+                        .collect(Collectors.toMap(
+                            TeacherResponse::getCode,
+                            teacher -> teacher
+                        ));
+                    return Flux.fromIterable(request.getEvaluators())
+                        .flatMap(evaluator -> {
+                            return topicRepository.findById(NewTopic.genId(evaluator.getTopicName()))
+                                .flatMap(topic -> {
+                                    if (topic instanceof ThesisTopic thesisTopic) {
+                                        TeacherResponse topicEvaluator = mapTeachers.get(evaluator.getEvaluatorCode());
+                                        if (topicEvaluator == null) 
+                                            return Mono.error(new InvalidRequestException("Evaluator code " + evaluator.getEvaluatorCode() + " does not exist."));
+                                        
+                                        thesisTopic.setEvaluator(new TopicGradingMember(topicEvaluator));
+                                        return Mono.just(topic);
+                                    }
+                                    return Mono.error(new InvalidRequestException(evaluator.getTopicName() + " is not a Thesis topic."));
+                                })
+                                .flatMap(topicRepository::save);
+                        })
+                        .collectList();
+                })
+                .map(topics -> {
+                    event.setTopics(topics);
+                    return event;
+                })
+        );
     }
 }

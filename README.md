@@ -78,7 +78,7 @@ Unicore is a Classroom Management System, designed to help institutions manage k
 
 `sudo docker run -d --name classroom-service-unicore --network unicore-network -p 8083:8083 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-classroom-service:0.6.3`
 
-`sudo docker run -d --name classevent-service-unicore --network unicore-network -p 8084:8084 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-classevent-service:0.6.1`
+`sudo docker run -d --name classevent-service-unicore --network unicore-network -p 8084:8084 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-classevent-service:0.6.2`
 
 `sudo docker run -d --name post-service-unicore --network unicore-network -p 8086:8086 -e MONGODB_PASSWORD=0843300042 -e API_GATEWAY_URL=3.107.202.61:8080 thanhloc1087/unicore-post-service:0.5.1`
 

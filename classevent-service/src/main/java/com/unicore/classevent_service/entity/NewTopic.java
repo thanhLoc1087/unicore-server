@@ -55,4 +55,20 @@ public abstract class NewTopic {
         // Return the cleaned result
         return result;
     }
+
+    public static String genId(String name) {
+        // Convert to lowercase
+        String result = name.toLowerCase();
+        
+        // Normalize and remove diacritical marks (accents)
+        result = Normalizer.normalize(result, Normalizer.Form.NFD);
+        result = result.replaceAll("\\p{M}", "");
+        
+        // Replace spaces and special characters with underscores
+        result = result.replaceAll("[^a-z0-9\\s]", ""); // Keep only alphanumerics and spaces
+        result = result.replaceAll("\\s+", "_"); // Replace spaces with underscores
+        
+        // Return the cleaned result
+        return result;
+    }
 }

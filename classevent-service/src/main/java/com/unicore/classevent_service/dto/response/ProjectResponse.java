@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unicore.classevent_service.entity.NewTopic;
 import com.unicore.classevent_service.entity.ProjectTopic;
 import com.unicore.classevent_service.enums.EventType;
 
@@ -33,7 +34,7 @@ public class ProjectResponse extends BaseEventResponse {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endTopicRegisterTime;
 
-    private List<ProjectTopic> topics;
+    private List<NewTopic> topics;
 
     @Override
     public EventType getEventType() {

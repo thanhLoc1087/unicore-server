@@ -1,5 +1,8 @@
 package com.unicore.classevent_service.repository.httpclient;
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -9,9 +12,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
-import com.unicore.classevent_service.dto.response.ClassroomResponse;
 import com.unicore.classevent_service.dto.response.StudentInClassResponse;
 import com.unicore.classevent_service.dto.response.StudentResponse;
+import com.unicore.classevent_service.dto.response.TeacherResponse;
 
 import reactor.core.publisher.Mono;
 
@@ -44,4 +47,13 @@ public class ProfileClient {
             // .bodyToMono(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
             .map(responseEntity -> responseEntity.getBody().getData());
     }
+
+    public Mono<ApiResponse<List<TeacherResponse>>> getTeachersByCodes(Set<String> codes) {
+        return webClient.post()
+            .uri("/teachers/codes") // Adjust the base URL as needed
+            .contentType(MediaType.APPLICATION_JSON) // Specify the content type
+            .bodyValue(codes) // Serialize the request body to JSON
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<ApiResponse<List<TeacherResponse>>>() {});
+        }
 }

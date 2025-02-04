@@ -20,6 +20,8 @@ import com.unicore.classevent_service.dto.request.ProjectChooseTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
 import com.unicore.classevent_service.dto.request.ProjectTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
+import com.unicore.classevent_service.dto.request.ThesisEvaluatorRequest;
+import com.unicore.classevent_service.dto.request.ThesisImportEvaluatorsRequest;
 import com.unicore.classevent_service.dto.request.TopicApprovalRequest;
 import com.unicore.classevent_service.dto.request.TopicRegisterScheduleRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
@@ -186,5 +188,17 @@ public class ProjectController {
                 LocalDateTime.now()
             ));
     }
+
+    @PostMapping("/topics/import-evaluators")
+    public Mono<ApiResponse<ProjectResponse>> importTopicEvaluators(@RequestBody ThesisImportEvaluatorsRequest request) {
+        return projectService.importEvaluators(request)
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
     
 }
