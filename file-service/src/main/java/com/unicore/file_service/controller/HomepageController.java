@@ -210,6 +210,8 @@ public class HomepageController {
 
         tempFile.delete();
 
+        makePublic(uploadedFile.getId());
+
         return new MessageDTO(String.format("File uploaded to folder successfully with ID: %s", uploadedFile.getId()));
     }
 

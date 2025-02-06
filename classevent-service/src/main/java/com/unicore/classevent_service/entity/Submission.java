@@ -33,7 +33,6 @@ public class Submission {
     private Float grade;
     private String feedback;
     private LocalDateTime feedbackDate;
-    private String reviewerId;
 
     private String attachmentId;
     private String attachmentName;

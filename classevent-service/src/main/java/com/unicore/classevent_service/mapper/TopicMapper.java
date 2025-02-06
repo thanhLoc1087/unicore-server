@@ -8,6 +8,7 @@ import com.unicore.classevent_service.dto.request.InternStudentRequest;
 import com.unicore.classevent_service.dto.request.ProjectTopicRequest;
 import com.unicore.classevent_service.entity.InternTopic;
 import com.unicore.classevent_service.entity.ProjectTopic;
+import com.unicore.classevent_service.entity.ThesisTopic;
 
 @Mapper(componentModel = ComponentModel.SPRING)
 public interface TopicMapper {
@@ -15,4 +16,5 @@ public interface TopicMapper {
     InternTopic updateInternTopic(@MappingTarget InternTopic topic, InternStudentRequest request);
 
     ProjectTopic toProjectTopic(ProjectTopicRequest request);
+    ThesisTopic toThesisTopic(ProjectTopicRequest request);
 }

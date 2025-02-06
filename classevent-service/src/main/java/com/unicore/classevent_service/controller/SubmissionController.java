@@ -132,6 +132,18 @@ public class SubmissionController {
                 LocalDateTime.now()
             ));
     }
+        
+    @GetMapping("/review/submitter/{submitterId}")
+    public Mono<ApiResponse<List<SubmissionReviewResponse>>> getBySubmitterId(@PathVariable String submitterId) {
+        return submissionReviewService.getSubmissionReviewBySubmitter(submitterId)
+            .collectList()
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
 
     @GetMapping("/review/reviewer/{reviewerId}/{status}")
     public Mono<ApiResponse<List<SubmissionReviewResponse>>> getByReviewerIdAndStatus(
@@ -139,6 +151,21 @@ public class SubmissionController {
         @PathVariable ReviewStatus status
     ) {
         return submissionReviewService.getSubmissionReviewByReviewerAndStatus(reviewerId, status)
+            .collectList()
+            .map(report -> new ApiResponse<>(
+                report, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+
+    @GetMapping("/review/submitter/{submitterId}/{status}")
+    public Mono<ApiResponse<List<SubmissionReviewResponse>>> getBySubmitterIdAndStatus(
+        @PathVariable String submitterId, 
+        @PathVariable ReviewStatus status
+    ) {
+        return submissionReviewService.getSubmissionReviewBySubmitterAndStatus(submitterId, status)
             .collectList()
             .map(report -> new ApiResponse<>(
                 report, 

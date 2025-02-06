@@ -26,16 +26,9 @@ public class SubmissionReviewService {
 
     // Xin phúc khảo
     public Mono<SubmissionReviewResponse> createSubmissionReview(ReviewCreationRequest request) {
-        SubmissionReview review = SubmissionReview.builder()
-            .submissionId(request.getSubmissionId())
-            .submitterId(request.getSubmitterId())
-            .submitterName(request.getSubmitterName())
-            .reviewerId(request.getReviewerId())
-            .classId(request.getClassId())
-            .subclassCode(request.getSubclassCode())
-            .createdDate(Date.from(Instant.now()))
-            .createdBy("LOC SV")
-            .build();
+        SubmissionReview review = mapper.toSubmissionReview(request);
+        review.setCreatedDate(Date.from(Instant.now()));
+        review.setCreatedBy(request.getSubmitterId());
         return repository.save(review)
             .map(mapper::toResponse);
     }
@@ -76,8 +69,18 @@ public class SubmissionReviewService {
             .map(mapper::toResponse);
     }
 
+    public Flux<SubmissionReviewResponse> getSubmissionReviewBySubmitter(String submitterId) {
+        return repository.findAllBySubmitterId(submitterId)
+            .map(mapper::toResponse);
+    }
+
     public Flux<SubmissionReviewResponse> getSubmissionReviewByReviewerAndStatus(String reviewerId, ReviewStatus status) {
         return repository.findAllByReviewerIdAndStatus(reviewerId, status)
+            .map(mapper::toResponse);
+    }
+
+    public Flux<SubmissionReviewResponse> getSubmissionReviewBySubmitterAndStatus(String submitterId, ReviewStatus status) {
+        return repository.findAllBySubmitterIdAndStatus(submitterId, status)
             .map(mapper::toResponse);
     }
 }

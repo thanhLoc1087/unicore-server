@@ -1,5 +1,6 @@
 package com.unicore.post_service.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -29,6 +30,9 @@ public class PostResponse {
 
     @JsonProperty("created_date")
     private String createdDate;
+
+    @JsonProperty("published_date")
+    private LocalDateTime publishedDate;
     
     @JsonProperty("create_by")
     private String createdBy;

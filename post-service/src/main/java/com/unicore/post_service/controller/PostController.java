@@ -29,6 +29,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class PostController {
     PostService postService;
 
+    @GetMapping("/{id}")
+    public ApiResponse<PostResponse> getPostById(@PathVariable String id) {
+        return ApiResponse.<PostResponse>builder()
+            .data(postService.getById(id))
+            .build();
+    }
+
     @PostMapping("/class/create")
     public ApiResponse<PostResponse> createClassPost(@RequestBody PostRequest request) {
         return ApiResponse.<PostResponse>builder()
@@ -67,6 +74,17 @@ public class PostController {
             .data(postService.getPosts(orgId, page, size, PostType.ORG))
             .build();
     }
+    
+    @GetMapping("/org/unpublished")
+    public ApiResponse<PageResponse<PostResponse>> getOrgUnpublishedPosts(
+        @RequestParam(value="org_id", required=true) String orgId,
+        @RequestParam(value="page", defaultValue="1", required=false) int page,
+        @RequestParam(value="size", defaultValue="10", required=false) int size
+    ) {
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+            .data(postService.getUnpublishedPosts(orgId, page, size, PostType.ORG))
+            .build();
+    }
 
     @GetMapping("/class")
     public ApiResponse<PageResponse<PostResponse>> getClassPosts(
@@ -79,6 +97,17 @@ public class PostController {
             .build();
     }
 
+    @GetMapping("/class/unpublished")
+    public ApiResponse<PageResponse<PostResponse>> getClassUnpublishedPosts(
+        @RequestParam(value="class_id", required=true) String classId,
+        @RequestParam(value="page", defaultValue="1", required=false) int page,
+        @RequestParam(value="size", defaultValue="10", required=false) int size
+    ) {
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+            .data(postService.getUnpublishedPosts(classId, page, size, PostType.CLASS))
+            .build();
+    }
+
     @GetMapping("/project")
     public ApiResponse<PageResponse<PostResponse>> getProjectPosts(
         @RequestParam(value="event_id", required=true) String eventId,
@@ -87,6 +116,17 @@ public class PostController {
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
             .data(postService.getPosts(eventId, page, size, PostType.PROJECT))
+            .build();
+        }
+
+    @GetMapping("/project/unpublished")
+    public ApiResponse<PageResponse<PostResponse>> getProjectUnpublishedPosts(
+        @RequestParam(value="event_id", required=true) String eventId,
+        @RequestParam(value="page", defaultValue="1", required=false) int page,
+        @RequestParam(value="size", defaultValue="10", required=false) int size
+    ) {
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+            .data(postService.getUnpublishedPosts(eventId, page, size, PostType.PROJECT))
             .build();
         }
         

@@ -55,7 +55,11 @@ public class SubmissionService {
                 baseEventRepository.findById(creationRequest.getEventId())
             )
             .flatMap((BaseEvent event) -> {
-                submission.setSubmitTimeStatus(submission.calculateSubmissionTime(event.getEndDate()));
+                submission.setInGroup(event.isInGroup());
+                submission.setCreatedDate(LocalDateTime.now());
+                submission.setSubmitters(List.of(
+                    StudentInSubmission.fromStudentInGroup(request.getSubmitter())
+                ));
                 if (event.isInGroup()) {
                     return eventGroupingService.getGrouping(
                         new GetGroupingRequest(request.getEventId(), request.getClassId(), request.getSubclassCode()))
@@ -77,11 +81,7 @@ public class SubmissionService {
                             return Mono.just(submission);
                         });
                 }
-                submission.setInGroup(event.isInGroup());
-                submission.setCreatedDate(LocalDateTime.now());
-                submission.setSubmitters(List.of(
-                    StudentInSubmission.fromStudentInGroup(request.getSubmitter())
-                ));
+                submission.setSubmitTimeStatus(submission.calculateSubmissionTime(event.getEndDate()));
                 return Mono.just(submission);
             })
             .flatMap(repository::save)
@@ -102,7 +102,6 @@ public class SubmissionService {
                     }
                 }
                 submission.setFeedbackDate(LocalDateTime.now());
-                submission.setReviewerId("Loc");
                 return submission;
             })
             .flatMap(repository::save)

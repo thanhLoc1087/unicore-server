@@ -39,9 +39,6 @@ public class SubmissionResponse {
     
     private Float grade;
     private String feedback;
-
-    @JsonProperty("reviewer_id")
-    private String reviewerId;
     
     @JsonProperty("attachment_id")
     private String attachmentId;

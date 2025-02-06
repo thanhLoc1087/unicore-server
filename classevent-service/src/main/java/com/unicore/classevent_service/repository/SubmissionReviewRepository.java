@@ -10,6 +10,8 @@ import reactor.core.publisher.Flux;
 
 public interface SubmissionReviewRepository extends ReactiveCrudRepository<SubmissionReview, String> {
     Flux<SubmissionReview> findAllBySubmissionId(String submissionId);
+    Flux<SubmissionReview> findAllBySubmitterId(String submitterId);
+    Flux<SubmissionReview> findAllBySubmitterIdAndStatus(String submitterId, ReviewStatus status);
     Flux<SubmissionReview> findAllByEventId(String eventId);
     Flux<SubmissionReview> findAllByClassIdAndSubclassCode(String classId, String subclassCode);
     Flux<SubmissionReview> findAllByReviewerId(String reviewerId);

@@ -23,6 +23,7 @@ public class Post {
     private String name;
     private String description;
     private LocalDateTime createdDate;
+    private LocalDateTime publishedDate;
     private String createdBy;
     private String creatorEmail;
     @Builder.Default

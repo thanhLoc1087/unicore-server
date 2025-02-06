@@ -1,7 +1,9 @@
 package com.unicore.post_service.dto.request;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -23,6 +25,10 @@ public class PostRequest {
 
     @JsonProperty("created_by")
     private String createdBy;
+
+    @JsonProperty("published_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime publishedDate;
 
     @JsonProperty("creator_email")
     private String creatorEmail;

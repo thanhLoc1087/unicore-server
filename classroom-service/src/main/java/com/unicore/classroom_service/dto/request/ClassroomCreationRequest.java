@@ -1,6 +1,7 @@
 package com.unicore.classroom_service.dto.request;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -26,10 +27,10 @@ public class ClassroomCreationRequest {
     private boolean isOrgManaged;
 
     @JsonProperty("teacher_codes")
-    private List<String> teacherCodes;
+    private List<String> teacherCodes = new ArrayList<>();
 
     @JsonProperty("teacher_names")
-    private List<String> teacherNames;
+    private List<String> teacherNames = new ArrayList<>();
 
     private ClassType type;
 

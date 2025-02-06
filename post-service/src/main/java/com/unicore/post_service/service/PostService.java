@@ -64,6 +64,11 @@ public class PostService {
         return response;
     }
 
+    public PostResponse getById(String id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find post."));
+        return postMapper.toPostResponse(post);
+    }
+
     public PostResponse updatePost(String postId, PostRequest request) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         postMapper.updatePost(post, request);
@@ -85,7 +90,28 @@ public class PostService {
         Sort sort = Sort.by("createdDate").descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
-        var pageData = postRepository.findAllBySourceIdAndType(sourceId, type, pageable);
+        var pageData = postRepository.findAllBySourceIdAndTypeAndPublishedDateBefore(sourceId, type, LocalDateTime.now(), pageable);
+        
+        var postsList = pageData.getContent().stream().map(post -> {
+            var postResponse = postMapper.toPostResponse(post);
+            postResponse.setCreatedDate(dateTimeFormatter.format(post.getCreatedDate().toInstant(ZoneOffset.UTC)));
+            return postResponse;
+        }).toList();
+
+        return PageResponse.<PostResponse>builder()
+            .currentPage(page)
+            .pageSize(pageData.getSize())
+            .totalPages(pageData.getTotalPages())
+            .totalElements(pageData.getTotalElements())
+            .data(postsList)
+            .build();
+    }
+
+    public PageResponse<PostResponse> getUnpublishedPosts(String sourceId, int page, int size, PostType type) {
+        Sort sort = Sort.by("createdDate").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        var pageData = postRepository.findAllUnpublishedBySourceIdAndType(sourceId, type, LocalDateTime.now(), pageable);
         
         var postsList = pageData.getContent().stream().map(post -> {
             var postResponse = postMapper.toPostResponse(post);

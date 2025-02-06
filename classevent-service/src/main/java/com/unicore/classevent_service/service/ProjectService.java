@@ -209,7 +209,10 @@ public class ProjectService {
                 if (project instanceof Project realProject && !realProject.isUseDefaultGroups()) {
                     return Flux.fromIterable(request.getTopics())
                         .flatMap(topic -> {
-                            ProjectTopic projectTopic = topicMapper.toProjectTopic(topic);
+                            ProjectTopic projectTopic = 
+                                project.getType() == EventType.THESIS ? 
+                                    topicMapper.toThesisTopic(topic) :
+                                    topicMapper.toProjectTopic(topic);
                             projectTopic.genId();
                             projectTopic.setProjectId(project.getId());
                             projectTopic.setStatus(TopicStatus.APPROVED);
@@ -238,7 +241,10 @@ public class ProjectService {
                     .flatMapMany(schedule -> {
                         return Flux.fromIterable(request.getTopics())
                             .flatMap(topic -> {
-                                ProjectTopic projectTopic = topicMapper.toProjectTopic(topic);
+                                ProjectTopic projectTopic = 
+                                    project.getType() == EventType.THESIS ? 
+                                        topicMapper.toThesisTopic(topic) :
+                                        topicMapper.toProjectTopic(topic);
                                 projectTopic.genId();
                                 projectTopic.setProjectId(project.getId());
                                 projectTopic.setStatus(TopicStatus.APPROVED);
@@ -290,7 +296,9 @@ public class ProjectService {
                 } else {
                     return Mono.error(new InvalidRequestException("Project not found"));
                 }
-                ProjectTopic projectTopic = topicMapper.toProjectTopic(request);
+                ProjectTopic projectTopic = project.getType() == EventType.THESIS ? 
+                        topicMapper.toThesisTopic(request) :
+                        topicMapper.toProjectTopic(request);
                 projectTopic.genId();
                 projectTopic.setProjectId(event.getId());
                 projectTopic.setStatus(
