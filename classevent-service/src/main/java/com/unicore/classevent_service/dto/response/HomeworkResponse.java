@@ -37,6 +37,9 @@ public class HomeworkResponse extends BaseEventResponse{
     @JsonProperty("attachment_url")
     private String attachmentUrl;
 
+    @JsonProperty("comment_count")
+    private int commentCount;
+
     @Override
     public EventType getEventType() {
         return EventType.HOMEWORK;

@@ -39,3 +39,4 @@ application:
     service:
         classroom: http://${API_GATEWAY_URL}/api/v1/classroom
         profile: http://${API_GATEWAY_URL}/api/v1/profile
+        post: http://${API_GATEWAY_URL}/api/v1/post

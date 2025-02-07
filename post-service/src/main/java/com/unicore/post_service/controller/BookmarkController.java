@@ -1,5 +1,6 @@
 package com.unicore.post_service.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +30,7 @@ public class BookmarkController {
     public ApiResponse<Bookmark> create(@RequestBody BookmarkRequest request) {
         return ApiResponse.<Bookmark>builder()
             .data(service.createBookmark(request))
+            .time(LocalDateTime.now())
             .build();
     }
 
@@ -37,6 +39,7 @@ public class BookmarkController {
         service.deleteBookmark(id);
         return ApiResponse.<String>builder()
             .data("Success")
+            .time(LocalDateTime.now())
             .build();
     }
     
@@ -45,6 +48,7 @@ public class BookmarkController {
         service.deleteBookmarkByEvent(request);
         return ApiResponse.<String>builder()
             .data("Success")
+            .time(LocalDateTime.now())
             .build();
     }
     
@@ -52,6 +56,7 @@ public class BookmarkController {
     public ApiResponse<List<PostResponse>> getUserBookmarks(@PathVariable String userEmail) {
         return ApiResponse.<List<PostResponse>>builder()
             .data(service.getAllUserBookmarks(userEmail))
+            .time(LocalDateTime.now())
             .build();
     }
 }

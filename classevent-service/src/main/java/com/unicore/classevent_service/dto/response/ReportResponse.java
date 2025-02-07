@@ -45,6 +45,9 @@ public class ReportResponse extends BaseEventResponse{
     @JsonProperty("attachment_url")
     private String attachmentUrl;
 
+    @JsonProperty("comment_count")
+    private int commentCount;
+
     private Query query;
 
     @Override

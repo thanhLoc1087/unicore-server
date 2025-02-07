@@ -1,5 +1,8 @@
 package com.unicore.post_service.dto.response;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -18,4 +21,7 @@ public class ApiResponse<T> {
 
     private String message;
     private T data;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime time;
 }

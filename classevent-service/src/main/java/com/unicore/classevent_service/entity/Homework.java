@@ -31,4 +31,6 @@ public class Homework extends BaseEvent {
     private LocalDateTime closeSubmissionDate;
 
     private String attachmentUrl;
+
+    private int commentCount;
 }

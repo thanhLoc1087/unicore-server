@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.unicore.classevent_service.dto.request.BulkUpdateTestRequest;
 import com.unicore.classevent_service.dto.request.CentralizedTestRequest;
+import com.unicore.classevent_service.dto.request.CommentRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.GetClassBySemesterAndYearRequest;
@@ -23,6 +24,7 @@ import com.unicore.classevent_service.dto.request.ReportCreationRequest;
 import com.unicore.classevent_service.dto.request.ReportUpdateRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.ClassroomResponse;
+import com.unicore.classevent_service.dto.response.CommentResponse;
 import com.unicore.classevent_service.dto.response.ReportResponse;
 import com.unicore.classevent_service.dto.response.UpdateClassImportStatusRequest;
 import com.unicore.classevent_service.entity.BaseEvent;
@@ -35,10 +37,12 @@ import com.unicore.classevent_service.enums.EventType;
 import com.unicore.classevent_service.enums.SubmissionOption;
 import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
+import com.unicore.classevent_service.exception.InvalidRequestException;
 import com.unicore.classevent_service.mapper.ReportMapper;
 import com.unicore.classevent_service.repository.BaseEventRepository;
 import com.unicore.classevent_service.repository.GroupingScheduleRepository;
 import com.unicore.classevent_service.repository.httpclient.ClassroomClient;
+import com.unicore.classevent_service.repository.httpclient.PostClient;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +55,9 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ReportService {
     private final BaseEventRepository reportRepository;
+    private final PostClient postClient;
+
+
     private final ReportMapper reportMapper;
 
     private final BaseEventRepository projectRepository;
@@ -269,5 +276,36 @@ public class ReportService {
             .flatMap(reportRepository::save)
             .map(reportMapper::toReportResponse)
             .doOnError(e-> log.error("GeneralTest - updateBulk: Error.", e));
+    }
+
+    
+    public Mono<CommentResponse> createComment(String reportId, CommentRequest request) {
+        return reportRepository.findById(reportId)
+            .switchIfEmpty(Mono.error(() -> new InvalidRequestException("Cannot find report")))
+            .flatMap(event -> {
+                if (event instanceof Report report) {
+                    return Mono.just(report);
+                }
+                return Mono.error(new InvalidRequestException("Cannot find report"));
+            })
+            .flatMap(report -> postClient.createEventComment(request)
+                .flatMap(commentResponse -> {
+                    report.setCommentCount(report.getCommentCount() + 1);
+                    reportRepository.save(report).subscribe();
+                    return Mono.just(commentResponse.getData());
+            }));
+    }
+
+    public Mono<String> deleteComment(String eventId, String commentId) {
+        return reportRepository.findById(eventId)
+            .switchIfEmpty(Mono.error(() -> new InvalidRequestException("Cannot find report")))
+            .flatMap(event -> {
+                if (event instanceof Report report) {
+                    return Mono.just(report);
+                }
+                return Mono.error(new InvalidRequestException("Cannot find report"));
+            })
+            .flatMap(report ->  postClient.deleteEventComment(eventId, commentId))
+            .map(result -> Boolean.TRUE.equals(result.getData()) ? "Success" : "Comment or event do not exists");
     }
 }

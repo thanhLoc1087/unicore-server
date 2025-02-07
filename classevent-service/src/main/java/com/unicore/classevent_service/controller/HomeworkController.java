@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.unicore.classevent_service.dto.request.CommentRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.HomeworkCreationRequest;
 import com.unicore.classevent_service.dto.request.HomeworkUpdateRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
+import com.unicore.classevent_service.dto.response.CommentResponse;
 import com.unicore.classevent_service.dto.response.HomeworkResponse;
 import com.unicore.classevent_service.enums.ApiMessage;
 import com.unicore.classevent_service.service.HomeworkService;
@@ -101,5 +104,27 @@ public class HomeworkController {
                 LocalDateTime.now()
             ));
     }
+
+    @PostMapping("/{homeworkId}/comment")
+    public Mono<ApiResponse<CommentResponse>> createComment(@PathVariable String homeworkId, @RequestBody CommentRequest request) {
+        return homeworkService.createComment(homeworkId, request)
+            .map(comment -> new ApiResponse<>(
+                comment, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
     
+    @DeleteMapping("/{homeworkId}/comment/{commentId}")
+    public Mono<ApiResponse<String>> deleteComment(@PathVariable String homeworkId, @PathVariable String commentId) {
+        return homeworkService.deleteComment(homeworkId, commentId)
+            .map(comment -> new ApiResponse<>(
+                comment, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+
+    }
 }

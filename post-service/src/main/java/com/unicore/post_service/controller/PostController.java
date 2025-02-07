@@ -1,5 +1,7 @@
 package com.unicore.post_service.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +35,7 @@ public class PostController {
     public ApiResponse<PostResponse> getPostById(@PathVariable String id) {
         return ApiResponse.<PostResponse>builder()
             .data(postService.getById(id))
+            .time(LocalDateTime.now())
             .build();
     }
 
@@ -40,6 +43,7 @@ public class PostController {
     public ApiResponse<PostResponse> createClassPost(@RequestBody PostRequest request) {
         return ApiResponse.<PostResponse>builder()
             .data(postService.createPost(request, PostType.CLASS))
+            .time(LocalDateTime.now())
             .build();
     }
 
@@ -47,6 +51,7 @@ public class PostController {
     public ApiResponse<PostResponse> createOrgPost(@RequestBody PostRequest request) {
         return ApiResponse.<PostResponse>builder()
             .data(postService.createPost(request, PostType.ORG))
+            .time(LocalDateTime.now())
             .build();
     }
 
@@ -54,6 +59,7 @@ public class PostController {
     public ApiResponse<PostResponse> createProjectPost(@RequestBody PostRequest request) {
         return ApiResponse.<PostResponse>builder()
             .data(postService.createPost(request, PostType.PROJECT))
+            .time(LocalDateTime.now())
             .build();
     }
 
@@ -61,6 +67,7 @@ public class PostController {
     public ApiResponse<PostResponse> updatePost(@PathVariable String id, @RequestBody PostRequest request) {
         return ApiResponse.<PostResponse>builder()
             .data(postService.updatePost(id, request))
+            .time(LocalDateTime.now())
             .build();
     }
     
@@ -72,6 +79,7 @@ public class PostController {
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
             .data(postService.getPosts(orgId, page, size, PostType.ORG))
+            .time(LocalDateTime.now())
             .build();
     }
     
@@ -83,6 +91,7 @@ public class PostController {
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
             .data(postService.getUnpublishedPosts(orgId, page, size, PostType.ORG))
+            .time(LocalDateTime.now())
             .build();
     }
 
@@ -94,6 +103,7 @@ public class PostController {
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
             .data(postService.getPosts(classId, page, size, PostType.CLASS))
+            .time(LocalDateTime.now())
             .build();
     }
 
@@ -105,6 +115,7 @@ public class PostController {
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
             .data(postService.getUnpublishedPosts(classId, page, size, PostType.CLASS))
+            .time(LocalDateTime.now())
             .build();
     }
 
@@ -116,6 +127,7 @@ public class PostController {
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
             .data(postService.getPosts(eventId, page, size, PostType.PROJECT))
+            .time(LocalDateTime.now())
             .build();
         }
 
@@ -127,6 +139,7 @@ public class PostController {
     ) {
         return ApiResponse.<PageResponse<PostResponse>>builder()
             .data(postService.getUnpublishedPosts(eventId, page, size, PostType.PROJECT))
+            .time(LocalDateTime.now())
             .build();
         }
         
@@ -135,6 +148,7 @@ public class PostController {
         postService.deletePost(id);
         return ApiResponse.<String>builder()
             .data("Success")
+            .time(LocalDateTime.now())
             .build();
     }
 }

@@ -45,16 +45,10 @@ public class PostService {
     public PostResponse createPost(PostRequest request, PostType type) {
         // var authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        Post post = Post.builder()
-            .sourceId(request.getSourceId())
-            .name(request.getName())
-            .createdDate(LocalDateTime.now())
-            .createdBy(request.getCreatedBy())
-            .creatorEmail(request.getCreatorEmail())
-            .type(type)
-            // .userId(authentication.getName())
-            .description(request.getDescription())
-            .build();
+        Post post = postMapper.toPost(request);
+        post.setCreatedDate(LocalDateTime.now());
+        post.setType(type);
+            // .userId(authentication.getName());
 
         post = postRepository.save(post);
 

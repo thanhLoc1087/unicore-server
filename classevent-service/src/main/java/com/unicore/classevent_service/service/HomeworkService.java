@@ -9,10 +9,13 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.unicore.classevent_service.dto.request.CommentRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.HomeworkCreationRequest;
 import com.unicore.classevent_service.dto.request.HomeworkUpdateRequest;
+import com.unicore.classevent_service.dto.response.ApiResponse;
+import com.unicore.classevent_service.dto.response.CommentResponse;
 import com.unicore.classevent_service.dto.response.HomeworkResponse;
 import com.unicore.classevent_service.entity.Homework;
 import com.unicore.classevent_service.enums.EventType;
@@ -21,6 +24,7 @@ import com.unicore.classevent_service.exception.InvalidRequestException;
 import com.unicore.classevent_service.mapper.HomeworkMapper;
 import com.unicore.classevent_service.repository.BaseEventRepository;
 import com.unicore.classevent_service.repository.GroupingScheduleRepository;
+import com.unicore.classevent_service.repository.httpclient.PostClient;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +35,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class HomeworkService {
     private final BaseEventRepository repository;
+    private final PostClient postClient;
+
     private final HomeworkMapper homeworkMapper;
     private final GroupingScheduleRepository groupingScheduleRepository;
 
@@ -110,5 +116,37 @@ public class HomeworkService {
             .flatMap(repository::save)
             .map(homeworkMapper::toHomeworkResponse)
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
+    }
+
+    public Mono<CommentResponse> createComment(String homeworkId, CommentRequest request) {
+        return repository.findById(homeworkId)
+            .switchIfEmpty(Mono.error(() -> new InvalidRequestException("Cannot find homework")))
+            .flatMap(event -> {
+                if (event instanceof Homework homework) {
+                    return Mono.just(homework);
+                }
+                return Mono.error(new InvalidRequestException("Cannot find homework"));
+            })
+            .flatMap(homework -> {
+                return postClient.createEventComment(request)
+                    .flatMap(commentResponse -> {
+                        homework.setCommentCount(homework.getCommentCount() + 1);
+                        repository.save(homework).subscribe();
+                        return Mono.just(commentResponse.getData());
+                    });
+            });
+    }
+
+    public Mono<String> deleteComment(String eventId, String commentId) {
+        return repository.findById(eventId)
+            .switchIfEmpty(Mono.error(() -> new InvalidRequestException("Cannot find homework")))
+            .flatMap(event -> {
+                if (event instanceof Homework homework) {
+                    return Mono.just(homework);
+                }
+                return Mono.error(new InvalidRequestException("Cannot find homework"));
+            })
+            .flatMap(homework ->  postClient.deleteEventComment(eventId, commentId))
+            .map(result -> Boolean.TRUE.equals(result.getData()) ? "Success" : "Comment or event do not exists");
     }
 }

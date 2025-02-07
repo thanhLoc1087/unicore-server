@@ -27,7 +27,7 @@ public class PostRequest {
     private String createdBy;
 
     @JsonProperty("published_date")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime publishedDate;
 
     @JsonProperty("creator_email")

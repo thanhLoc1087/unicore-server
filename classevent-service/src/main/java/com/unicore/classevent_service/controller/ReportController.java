@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,12 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.unicore.classevent_service.dto.request.CentralizedTestRequest;
+import com.unicore.classevent_service.dto.request.CommentRequest;
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetByDateRequest;
 import com.unicore.classevent_service.dto.request.QueryChooseOptionRequest;
 import com.unicore.classevent_service.dto.request.ReportCreationRequest;
 import com.unicore.classevent_service.dto.request.ReportUpdateRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
+import com.unicore.classevent_service.dto.response.CommentResponse;
 import com.unicore.classevent_service.dto.response.ReportResponse;
 import com.unicore.classevent_service.enums.ApiMessage;
 import com.unicore.classevent_service.service.ReportService;
@@ -135,5 +138,29 @@ public class ReportController {
                 HttpStatus.OK.value(),
                 LocalDateTime.now()
             ));
+    }
+
+    
+    @PostMapping("/{reportId}/comment")
+    public Mono<ApiResponse<CommentResponse>> createComment(@PathVariable String reportId, @RequestBody CommentRequest request) {
+        return reportService.createComment(reportId, request)
+            .map(comment -> new ApiResponse<>(
+                comment, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+    
+    @DeleteMapping("/{reportId}/comment/{commentId}")
+    public Mono<ApiResponse<String>> deleteComment(@PathVariable String reportId, @PathVariable String commentId) {
+        return reportService.deleteComment(reportId, commentId)
+            .map(comment -> new ApiResponse<>(
+                comment, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+
     }
 }

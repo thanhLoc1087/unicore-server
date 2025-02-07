@@ -47,4 +47,7 @@ public class PostResponse {
 
     @JsonIgnoreProperties("duplicated")
     private List<CategoryResponse> categories;
+
+    @JsonProperty("comment_count")
+    private int commentCount;
 }

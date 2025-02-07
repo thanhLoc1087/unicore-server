@@ -85,3 +85,4 @@ application:
     service:
         classroom: http://localhost:8888/api/v1/classroom
         profile: http://localhost:8888/api/v1/profile
+        post: http://localhost:8888/api/v1/post

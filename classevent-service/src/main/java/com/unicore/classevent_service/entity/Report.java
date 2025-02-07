@@ -44,6 +44,8 @@ public class Report extends BaseEvent {
     private LocalDateTime closeSubmissionDate;
 
     private String attachmentUrl;
+    
+    private int commentCount;
 
     @Builder.Default
     private Map<String, Float> grades = new HashMap<>();

@@ -31,4 +31,7 @@ public class Post {
     private PostType type;
     @Builder.Default
     private List<String> categoryIds = new ArrayList<>();
+
+    @Builder.Default
+    private int commentCount = 0;
 }

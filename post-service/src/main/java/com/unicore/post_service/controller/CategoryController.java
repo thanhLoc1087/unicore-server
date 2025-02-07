@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +31,7 @@ public class CategoryController {
     public ApiResponse<CategoryResponse> createCategory(@RequestBody CategoryRequest request) {
         return ApiResponse.<CategoryResponse>builder()
             .data(service.create(request))
+            .time(LocalDateTime.now())
             .build();
     }
         
@@ -37,6 +39,7 @@ public class CategoryController {
     public ApiResponse<CategoryResponse> getById(@PathVariable String id) {
         return ApiResponse.<CategoryResponse>builder()
             .data(service.getById(id))
+            .time(LocalDateTime.now())
             .build();
     }
         
@@ -44,6 +47,7 @@ public class CategoryController {
     public ApiResponse<List<CategoryResponse>> getAll() {
         return ApiResponse.<List<CategoryResponse>>builder()
             .data(service.getAllCategories())
+            .time(LocalDateTime.now())
             .build();
     }
     
@@ -51,6 +55,7 @@ public class CategoryController {
     public ApiResponse<CategoryResponse> update(@PathVariable String id, @RequestBody CategoryRequest request) {
         return ApiResponse.<CategoryResponse>builder()
             .data(service.update(id, request))
+            .time(LocalDateTime.now())
             .build();
     }
 
@@ -59,6 +64,7 @@ public class CategoryController {
         service.deleteById(id);
         return ApiResponse.<String>builder()
             .data("Success")
+            .time(LocalDateTime.now())
             .build();
     }
 }
