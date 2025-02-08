@@ -20,6 +20,7 @@ import com.unicore.classevent_service.dto.request.GroupingScheduleRequest;
 import com.unicore.classevent_service.dto.request.ProjectAddTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectChooseTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
+import com.unicore.classevent_service.dto.request.ProjectImportTopicSchedule;
 import com.unicore.classevent_service.dto.request.ProjectTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
 import com.unicore.classevent_service.dto.request.ThesisEvaluatorRequest;
@@ -145,6 +146,23 @@ public class ProjectService {
             .switchIfEmpty(Mono.error(new DataNotFoundException()));
     }
 
+    public Mono<ProjectResponse> addImportTopicSchedule(String id, ProjectImportTopicSchedule request) {
+        if (request.getEndTopicImportTime().isBefore(request.getStartTopicImportTime())) {
+            return Mono.error(new InvalidRequestException("Start time must be before end time"));
+        }
+        return projectRepository.findById(id)    
+            .switchIfEmpty(Mono.error(new InvalidRequestException("project not found")))
+            .flatMap(event -> {
+                if (event instanceof Project project) {
+                    project.setStartTopicImportTime(request.getStartTopicImportTime());
+                    project.setEndTopicImportTime(request.getEndTopicImportTime());
+                    return projectRepository.save(project)
+                        .map(projectMapper::toProjectResponse);
+                }
+                return Mono.error(new InvalidRequestException("project not found"));
+            });
+    }
+
     // Tao lich dag ky de tai
     public Mono<ProjectResponse> createRegisterTopicSchedule(String projectId, TopicRegisterScheduleRequest request) {
         return projectRepository.findById(projectId)
@@ -205,6 +223,16 @@ public class ProjectService {
     public Flux<ProjectTopic> addTopics(String projectId, ProjectAddTopicRequest request) {
         return projectRepository.findById(projectId)
             .switchIfEmpty(Mono.error(new InvalidRequestException("project not found")))
+            .flatMap(event -> {
+                if (event instanceof Project project) {
+                    if (project.getEndTopicImportTime().isBefore(LocalDateTime.now()) 
+                    || project.getStartTopicImportTime().isAfter(LocalDateTime.now())) {
+                        return Mono.error(new InvalidRequestException("Passed import time"));
+                    }
+                    return Mono.just(project);
+                }
+                return Mono.error(new InvalidRequestException("project not found"));
+            })
             .flatMapMany(project -> {
                 if (project instanceof Project realProject && !realProject.isUseDefaultGroups()) {
                     return Flux.fromIterable(request.getTopics())

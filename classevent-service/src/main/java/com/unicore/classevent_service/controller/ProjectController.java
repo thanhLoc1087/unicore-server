@@ -18,9 +18,9 @@ import com.unicore.classevent_service.dto.request.GroupingScheduleRequest;
 import com.unicore.classevent_service.dto.request.ProjectAddTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectChooseTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
+import com.unicore.classevent_service.dto.request.ProjectImportTopicSchedule;
 import com.unicore.classevent_service.dto.request.ProjectTopicRequest;
 import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
-import com.unicore.classevent_service.dto.request.ThesisEvaluatorRequest;
 import com.unicore.classevent_service.dto.request.ThesisImportEvaluatorsRequest;
 import com.unicore.classevent_service.dto.request.TopicApprovalRequest;
 import com.unicore.classevent_service.dto.request.TopicRegisterScheduleRequest;
@@ -101,6 +101,17 @@ public class ProjectController {
     @PostMapping("/{id}/topics/schedule")
     public Mono<ApiResponse<ProjectResponse>> createRegisterTopicSchedule(@PathVariable String id, @RequestBody TopicRegisterScheduleRequest request) {
         return projectService.createRegisterTopicSchedule(id, request)
+            .map(project -> new ApiResponse<>(
+                project, 
+                ApiMessage.SUCCESS.getMessage(), 
+                HttpStatus.OK.value(),
+                LocalDateTime.now()
+            ));
+    }
+
+    @PostMapping("/{id}/topics/import-schedule")
+    public Mono<ApiResponse<ProjectResponse>> createImportTopicSchedule(@PathVariable String id, @RequestBody ProjectImportTopicSchedule request) {
+        return projectService.addImportTopicSchedule(id, request)
             .map(project -> new ApiResponse<>(
                 project, 
                 ApiMessage.SUCCESS.getMessage(), 

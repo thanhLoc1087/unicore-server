@@ -57,5 +57,8 @@ public abstract class BaseEventResponse {
     @JsonProperty("review_times")
     private int reviewTimes;
 
+    @JsonProperty("grouping_id")
+    private String groupingId;
+
     public abstract EventType getEventType();
 }

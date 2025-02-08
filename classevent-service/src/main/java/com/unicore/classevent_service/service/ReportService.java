@@ -68,9 +68,22 @@ public class ReportService {
     public Flux<ReportResponse> createReport(ReportCreationRequest request) {
         return Flux.fromIterable(request.getSubclassCodes())
             .flatMap(subclassCode -> {
-                if (Boolean.TRUE.equals(request.getUseDefaultGroups())) {
-                    return groupingScheduleRepository
-                        .findByClassIdAndSubclassCodeAndIsDefaultTrue(request.getClassId(), subclassCode);
+                if (Boolean.TRUE.equals(request.getInGroup())) {
+                    if (request.getClassId() != null) {
+                        return groupingScheduleRepository
+                            .findByClassIdAndSubclassCodeAndIsDefaultTrue(request.getClassId(), subclassCode)
+                            .switchIfEmpty(Mono.error(() -> new InvalidRequestException("This class have no groups")));
+                    }
+                    if (request.getProjectId() != null) {
+                        return projectRepository.findById(request.getProjectId())
+                            .switchIfEmpty(Mono.error(() -> new InvalidRequestException("Project with id " + request.getProjectId() + " does not exist.")))
+                            .flatMap(project -> {
+                                if (project.getGroupingId() == null)
+                                    return Mono.error(() -> new InvalidRequestException("This project have no groups"));
+                                return groupingScheduleRepository.findById(project.getGroupingId())
+                                    .switchIfEmpty(Mono.error(() -> new InvalidRequestException("This project have no groups")));
+                            });
+                    }
                 }
                 GroupingSchedule groupingSchedule = new GroupingSchedule();
                 groupingSchedule.setSubclassCode(subclassCode);

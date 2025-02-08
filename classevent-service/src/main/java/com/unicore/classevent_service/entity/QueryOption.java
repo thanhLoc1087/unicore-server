@@ -1,5 +1,6 @@
 package com.unicore.classevent_service.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -15,5 +16,5 @@ public class QueryOption {
     private int limit;
 
     // group indices or student codes
-    private List<String> selectors;
+    private List<String> selectors = new ArrayList<>();
 }

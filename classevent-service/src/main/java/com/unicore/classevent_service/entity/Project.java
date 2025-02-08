@@ -33,4 +33,7 @@ public class Project extends BaseEvent {
 
     private LocalDateTime startTopicRegisterTime;
     private LocalDateTime endTopicRegisterTime;
+
+    private LocalDateTime startTopicImportTime;
+    private LocalDateTime endTopicImportTime;
 }
