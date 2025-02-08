@@ -1,6 +1,5 @@
 package com.unicore.post_service.service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DateTimeFormatter {
-    Map<Long, Function<Instant, String>> strategyMap = new LinkedHashMap<>();
+    Map<Long, Function<LocalDateTime, String>> strategyMap = new LinkedHashMap<>();
 
     public DateTimeFormatter() {
         strategyMap.put(60L, this::formatInSeconds);
@@ -21,33 +20,32 @@ public class DateTimeFormatter {
         strategyMap.put(Long.MAX_VALUE, this::formatInDate);
     }
     
-    public String format(Instant instant) {
-        long elapseSeconds = ChronoUnit.SECONDS.between(instant, Instant.now());
+    public String format(LocalDateTime dateTime) {
+        long elapseSeconds = ChronoUnit.SECONDS.between(dateTime, LocalDateTime.now());
         var strategy = strategyMap.entrySet()
-        .stream()
-        .filter(longFunctionEntry -> elapseSeconds < longFunctionEntry.getKey())
-        .findFirst().get();
-        return strategy.getValue().apply(instant);
+            .stream()
+            .filter(longFunctionEntry -> elapseSeconds < longFunctionEntry.getKey())
+            .findFirst().get();
+        return strategy.getValue().apply(dateTime);
     }
     
-    private String formatInSeconds(Instant instant) {
-        long elapseSeconds = ChronoUnit.SECONDS.between(instant, Instant.now());
+    private String formatInSeconds(LocalDateTime dateTime) {
+        long elapseSeconds = ChronoUnit.SECONDS.between(dateTime, LocalDateTime.now());
         return elapseSeconds + " seconds ago.";
     }
 
-    private String formatInMinutes(Instant instant) {
-        long elapseMinutes = ChronoUnit.MINUTES.between(instant, Instant.now());
+    private String formatInMinutes(LocalDateTime dateTime) {
+        long elapseMinutes = ChronoUnit.MINUTES.between(dateTime, LocalDateTime.now());
         return elapseMinutes + " minutes ago.";
     }
 
-    private String formatInHours(Instant instant) {
-        long elapseHours = ChronoUnit.HOURS.between(instant, Instant.now());
+    private String formatInHours(LocalDateTime dateTime) {
+        long elapseHours = ChronoUnit.HOURS.between(dateTime, LocalDateTime.now());
         return elapseHours + " hours ago.";
     }
 
-    private String formatInDate(Instant instant) {
-        LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+    private String formatInDate(LocalDateTime dateTime) {
         java.time.format.DateTimeFormatter dateTimeFormatter = java.time.format.DateTimeFormatter.ISO_DATE;
-        return localDateTime.format(dateTimeFormatter);
+        return dateTime.format(dateTimeFormatter);
     }
 }

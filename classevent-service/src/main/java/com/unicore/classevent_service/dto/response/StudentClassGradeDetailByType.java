@@ -29,12 +29,10 @@ public class StudentClassGradeDetailByType {
         if (eventSubmission.getEvent() instanceof Report report) {
             grade = report.getGrades().getOrDefault(eventSubmission.getStudentCode(), 0f);
         } else if (eventSubmission.getEvent().isInGroup()) {
-            List<StudentInSubmission> members = eventSubmission.getSubmission().getSubmitters();
-            for (StudentInSubmission member : members) {
-                if (member.getStudentCode().equals(eventSubmission.getStudentCode())) {
-                    grade = member.getGrade();
-                }
-            }
+            grade = eventSubmission
+                .getSubmission()
+                .getMemberGrades()
+                .getOrDefault(eventSubmission.getStudentCode(), 0f);
         }
         return new StudentClassGradeDetailByType(
             eventSubmission.getEvent().getName(),

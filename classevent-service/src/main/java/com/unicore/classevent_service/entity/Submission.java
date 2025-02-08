@@ -2,10 +2,15 @@ package com.unicore.classevent_service.entity;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.unicore.classevent_service.dto.response.FileResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,16 +32,21 @@ public class Submission {
     private String modifiedBy;
 
     private String eventId;
-    private List<StudentInSubmission> submitters;
+
+    private String submitter;
     private boolean inGroup;
     
     private Float grade;
     private String feedback;
     private LocalDateTime feedbackDate;
 
-    private String attachmentId;
-    private String attachmentName;
-    private String attachmentUrl;
+    @Builder.Default
+    private Map<String, Float> memberGrades = new HashMap<>();
+
+    private String submissionLink;
+
+    @Builder.Default
+    private List<FileResponse> files = new ArrayList<>();
 
     private String submitTimeStatus;
 

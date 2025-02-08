@@ -42,6 +42,12 @@ spring:
               - Path=/${app.api-prefix}/post/**
               filters:
               - StripPrefix=2
+            - id: file_service
+              uri: http://${FILE_SERVICE_URL}:8087
+              predicates:
+              - Path=/${app.api-prefix}/file/**
+              filters:
+              - StripPrefix=2
 
 # eureka:
 #     instance:

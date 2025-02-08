@@ -32,7 +32,6 @@ public class BaseEvent {
     private String createdBy;
     @JsonProperty("modified_by")
     private String modifiedBy;
-
     
     private LocalDateTime startDate;
     private LocalDateTime endDate;

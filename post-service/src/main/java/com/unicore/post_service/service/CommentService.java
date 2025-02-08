@@ -60,7 +60,7 @@ public class CommentService {
         
         var commentsList = pageData.getContent().stream().map(comment -> {
             var commentResponse = commentMapper.toResponse(comment);
-            commentResponse.setCreatedDate(dateTimeFormatter.format(comment.getCreatedDate().toInstant(ZoneOffset.UTC)));
+            commentResponse.setCreatedDate(dateTimeFormatter.format(comment.getCreatedDate()));
             return commentResponse;
         }).toList();
 

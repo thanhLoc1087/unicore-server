@@ -41,6 +41,8 @@ public class ReportResponse extends BaseEventResponse{
     @JsonProperty("close_submission_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime closeSubmissionDate;
+
+    private boolean autocreated;
     
     @JsonProperty("attachment_url")
     private String attachmentUrl;

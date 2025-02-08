@@ -4,13 +4,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetClassGradeRequest;
@@ -30,6 +35,7 @@ import com.unicore.classevent_service.service.SubmissionReviewService;
 import com.unicore.classevent_service.service.SubmissionService;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -65,12 +71,20 @@ public class SubmissionController {
     }
     
     // Tạo bài nộp
-    @PostMapping
-    public Mono<ApiResponse<SubmissionResponse>> createSubmission(@RequestBody SubmissionCreationRequest request) {
-        return submissionService.createSubmission(request)
-            .map(report -> new ApiResponse<>(
-                report, 
-                ApiMessage.SUCCESS.getMessage(), 
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<ApiResponse<SubmissionResponse>> createSubmission(
+            @RequestPart("file") Flux<FilePart> fileParts,
+            @RequestPart("event_id") String eventId,
+            @RequestPart("student_code") String studentCode,
+            @RequestPart("student_mail") String studentMail,
+            @RequestPart(name = "submission_link", required = false) String submissionLink
+    ) {
+        SubmissionCreationRequest request =
+            new SubmissionCreationRequest(eventId, studentCode, studentMail, submissionLink);
+        return submissionService.createSubmission(fileParts, request)
+            .map(response -> new ApiResponse<>(
+                response,
+                ApiMessage.SUCCESS.getMessage(),
                 HttpStatus.OK.value(),
                 LocalDateTime.now()
             ));

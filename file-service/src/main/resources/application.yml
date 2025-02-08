@@ -6,9 +6,15 @@ spring:
             max-file-size: 50MB
             max-request-size: 50MB
 
+server:
+    port: 8087
+    servlet:
+        contextPath: /file
+
 google:
     secret.key.path: classpath:keys/client_secret_gd.json
     # oauth.callback.uri: http://192.168.1.106.nip.io/auth
     # oauth.callback.uri: http://192.168.1.153.nip.io:8080/auth
-    oauth.callback.uri: http://10.0.0.150.nip.io:8080/auth
+    # oauth.callback.uri: http://10.0.0.150.nip.io:8080/auth
+    oauth.callback.uri: http://192.168.12.81.nip.io:8888/api/v1/file/auth
     credentials.folder.path: file:D:\\Download

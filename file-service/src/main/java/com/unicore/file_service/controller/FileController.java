@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,7 +34,6 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import com.unicore.file_service.dto.ApiResponse;
 import com.unicore.file_service.dto.AuthResponse;
@@ -120,15 +120,21 @@ public class FileController {
 
     private String googleSigninUrl(String email) {
         GoogleAuthorizationCodeRequestUrl url = flow.newAuthorizationUrl();
+        
         return url.setRedirectUri(CALLBACK_URI)
             .setAccessType("offline")
+            .setApprovalPrompt("force")
+            .setState(Base64.getEncoder().encodeToString(email.getBytes()))
             .build();
     }
     
-    @GetMapping("/auth/{userEmail}")
-    public ApiResponse<String> saveAuthorizationCode(@PathVariable String userEmail,  HttpServletRequest request) throws IOException {
+    @GetMapping("/auth")
+    public ApiResponse<String> saveAuthorizationCode(HttpServletRequest request) throws IOException {
         String code = request.getParameter("code");
+        String state = request.getParameter("state"); // Encoded email
+        String userEmail = new String(Base64.getDecoder().decode(state)); // Decode email
         log.info("User code: " + code);
+        log.info("User email: " + userEmail);
         if (code != null && !code.isEmpty()) {
             try {
                 saveToken(code, userEmail); // Exchange code for tokens and store them
@@ -157,54 +163,43 @@ public class FileController {
         flow.createAndStoreCredential(response, userEmail);
     }
     
-    @PostMapping("/create")
-    public @ResponseBody MessageDTO createFile(@RequestParam("file") MultipartFile file) throws IOException {
-        Credential cred = flow.loadCredential(getAuthenticatedUsername());
+    @PostMapping("/save")
+    public List<FileItemDTO> createFiles(
+        @RequestParam("files") MultipartFile[] files,
+        @RequestParam("userEmail") String userEmail
+    ) throws IOException {
+        Credential cred = flow.loadCredential(userEmail);
 
         Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, cred)
             .setApplicationName("Unicore")
             .build();
 
-        File driveFile = new File();
-        driveFile.setName(file.getOriginalFilename());
+        List<FileItemDTO> responses = new ArrayList<>();
 
-        java.io.File tempFile = java.io.File.createTempFile("upload-", file.getOriginalFilename());
-        file.transferTo(tempFile);
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) continue; // Skip empty files
 
-        FileContent fileContent = new FileContent(file.getContentType(), tempFile);
-        File uploadedFile = drive.files().create(driveFile, fileContent).setFields("id").execute();
+            File driveFile = new File();
+            driveFile.setName(file.getOriginalFilename());
 
-        tempFile.delete();
+            java.io.File tempFile = java.io.File.createTempFile("upload-", file.getOriginalFilename());
+            file.transferTo(tempFile);
 
-        return new MessageDTO(String.format("File uploaded successfully with ID: %s", uploadedFile.getId()));
-    }
-    
-    @GetMapping(value={"/listfiles"}, produces={"application/json"})
-    public @ResponseBody List<FileItemDTO> listFiles() throws IOException {
-        Credential cred = flow.loadCredential(getAuthenticatedUsername());
+            FileContent fileContent = new FileContent(file.getContentType(), tempFile);
+            File uploadedFile = drive.files().create(driveFile, fileContent).setFields("id, name, webContentLink, webViewLink, thumbnailLink").execute();
 
-        Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, cred)
-            .setApplicationName("Unicore")
-            .build();
+            tempFile.delete(); // Clean up temp file
 
-        List<FileItemDTO> responseList = new ArrayList<>();
-        FileList fileList = drive.files().list().setFields("files(id,name,thumbnailLink)").execute();
+            makePublic(uploadedFile.getId());
 
-        for (File file : fileList.getFiles()) {
-            FileItemDTO item = FileItemDTO.builder()
-                .id(file.getId())
-                .name(file.getName())
-                .thumbnailLink(file.getThumbnailLink())
-                .build();
-            
-            responseList.add(item);
+            responses.add(new FileItemDTO(uploadedFile));
         }
 
-        return responseList;
+        return responses;
     }
     
     @DeleteMapping("/deletefile/{fileId}")
-    public @ResponseBody MessageDTO deleteFile(@PathVariable String fileId) throws IOException {
+    public MessageDTO deleteFile(@PathVariable String fileId) throws IOException {
         Credential cred = flow.loadCredential(getAuthenticatedUsername());
 
         Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, cred)
@@ -234,7 +229,7 @@ public class FileController {
     
     
     @PostMapping("/uploadinfolder")
-    public @ResponseBody MessageDTO uploadInFolder(@RequestParam("file") MultipartFile file,
+    private FileItemDTO uploadInFolder(@RequestParam("file") MultipartFile file,
                                                 @RequestParam("folderId") String folderId) throws IOException {
         Credential cred = flow.loadCredential(getAuthenticatedUsername());
 
@@ -256,11 +251,10 @@ public class FileController {
 
         makePublic(uploadedFile.getId());
 
-        return new MessageDTO(String.format("File uploaded to folder successfully with ID: %s", uploadedFile.getId()));
+        return new FileItemDTO(uploadedFile);
     }
 
-    @PostMapping(value={"/makepublic/{fileid}"}, produces={"application/json"})
-    public MessageDTO makePublic(@PathVariable String fileid) throws IOException {
+    private void makePublic(String fileid) throws IOException {
         Credential cred = flow.loadCredential(getAuthenticatedUsername());
 
         Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, cred)
@@ -272,9 +266,7 @@ public class FileController {
         permission.setRole("reader");
 
         drive.permissions().create(fileid, permission).execute();
-
-        return new MessageDTO("Public file successfully.");
     }
     
-    
+
 }

@@ -1,7 +1,9 @@
 package com.unicore.classevent_service.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -46,6 +48,12 @@ public class SubmissionResponse {
     private String attachmentName;
     @JsonProperty("attachment_url")
     private String attachmentUrl;
+
+    @JsonProperty("member_grades")
+    private Map<String, Float> memberGrades;
+
+    @Builder.Default
+    private List<FileResponse> files = new ArrayList<>();
 
     @JsonProperty("submit_time_status")
     private String submitTimeStatus;

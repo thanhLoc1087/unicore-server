@@ -1,9 +1,8 @@
-package com.unicore.file_service.dto;
+package com.unicore.classevent_service.dto.response;
 
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.api.services.drive.model.File;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileItemDTO {
+public class FileResponse {
     private String id;
     private String name;
     @JsonProperty("thumbnail_link")
@@ -23,12 +22,5 @@ public class FileItemDTO {
     private String webviewLink;
     @JsonProperty("download_link")
     private String downloadLink;
-
-    public FileItemDTO(File file) {
-        this.id = file.getId();
-        this.name = file.getName();
-        this.downloadLink = file.getWebContentLink();
-        this.webviewLink = file.getWebViewLink();
-        this.thumbnailLink = file.getThumbnailLink();
-    }
 }
+

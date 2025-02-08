@@ -42,7 +42,7 @@ public class CategoryController {
             .time(LocalDateTime.now())
             .build();
     }
-        
+    
     @GetMapping
     public ApiResponse<List<CategoryResponse>> getAll() {
         return ApiResponse.<List<CategoryResponse>>builder()

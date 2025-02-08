@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +42,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 
 @Controller
+@RequestMapping("/home")
 public class HomepageController {
     private static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
@@ -128,26 +130,35 @@ public class HomepageController {
     }
     
     @PostMapping("/create")
-    public @ResponseBody MessageDTO createFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public @ResponseBody List<MessageDTO> createFiles(@RequestParam("files") MultipartFile[] files) throws IOException {
         Credential cred = flow.loadCredential(getAuthenticatedUsername());
 
         Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, cred)
             .setApplicationName("Unicore")
             .build();
 
-        File driveFile = new File();
-        driveFile.setName(file.getOriginalFilename());
+        List<MessageDTO> responses = new ArrayList<>();
 
-        java.io.File tempFile = java.io.File.createTempFile("upload-", file.getOriginalFilename());
-        file.transferTo(tempFile);
+        for (MultipartFile file : files) {
+            if (file.isEmpty()) continue; // Skip empty files
 
-        FileContent fileContent = new FileContent(file.getContentType(), tempFile);
-        File uploadedFile = drive.files().create(driveFile, fileContent).setFields("id").execute();
+            File driveFile = new File();
+            driveFile.setName(file.getOriginalFilename());
 
-        tempFile.delete();
+            java.io.File tempFile = java.io.File.createTempFile("upload-", file.getOriginalFilename());
+            file.transferTo(tempFile);
 
-        return new MessageDTO(String.format("File uploaded successfully with ID: %s", uploadedFile.getId()));
-    }
+            FileContent fileContent = new FileContent(file.getContentType(), tempFile);
+            File uploadedFile = drive.files().create(driveFile, fileContent).setFields("id").execute();
+
+            tempFile.delete(); // Clean up temp file
+
+            responses.add(new MessageDTO(String.format("File uploaded successfully with ID: %s", uploadedFile.getId())));
+        }
+
+        return responses;
+}
+
     
     @GetMapping(value={"/listfiles"}, produces={"application/json"})
     public @ResponseBody List<FileItemDTO> listFiles() throws IOException {

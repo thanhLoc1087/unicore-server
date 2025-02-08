@@ -2,7 +2,6 @@ package com.unicore.post_service.service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -88,7 +87,7 @@ public class PostService {
         
         var postsList = pageData.getContent().stream().map(post -> {
             var postResponse = postMapper.toPostResponse(post);
-            postResponse.setCreatedDate(dateTimeFormatter.format(post.getCreatedDate().toInstant(ZoneOffset.UTC)));
+            postResponse.setCreatedDate(dateTimeFormatter.format(post.getPublishedDate()));
             return postResponse;
         }).toList();
 
@@ -109,7 +108,7 @@ public class PostService {
         
         var postsList = pageData.getContent().stream().map(post -> {
             var postResponse = postMapper.toPostResponse(post);
-            postResponse.setCreatedDate(dateTimeFormatter.format(post.getCreatedDate().toInstant(ZoneOffset.UTC)));
+            postResponse.setCreatedDate(dateTimeFormatter.format(post.getPublishedDate()));
             return postResponse;
         }).toList();
 

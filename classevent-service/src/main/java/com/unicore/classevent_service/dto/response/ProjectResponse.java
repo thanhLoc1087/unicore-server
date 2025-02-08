@@ -42,6 +42,8 @@ public class ProjectResponse extends BaseEventResponse {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endTopicImportTime;
 
+    private boolean autocreated;
+
     private List<NewTopic> topics;
 
     @Override

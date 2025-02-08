@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetClassGradeRequest;
@@ -20,13 +22,16 @@ import com.unicore.classevent_service.dto.response.StudentResponse;
 import com.unicore.classevent_service.dto.response.SubmissionResponse;
 import com.unicore.classevent_service.entity.BaseEvent;
 import com.unicore.classevent_service.entity.Group;
-import com.unicore.classevent_service.entity.StudentInSubmission;
+import com.unicore.classevent_service.entity.Homework;
 import com.unicore.classevent_service.entity.Submission;
+import com.unicore.classevent_service.enums.SubmissionOption;
 import com.unicore.classevent_service.enums.WeightType;
 import com.unicore.classevent_service.exception.DataNotFoundException;
+import com.unicore.classevent_service.exception.InvalidRequestException;
 import com.unicore.classevent_service.mapper.SubmissionMapper;
 import com.unicore.classevent_service.repository.BaseEventRepository;
 import com.unicore.classevent_service.repository.SubmissionRepository;
+import com.unicore.classevent_service.repository.httpclient.FileClient;
 import com.unicore.classevent_service.repository.httpclient.ProfileClient;
 
 import lombok.RequiredArgsConstructor;
@@ -47,46 +52,87 @@ public class SubmissionService {
 
     private final EventGroupingService eventGroupingService;
 
+    private final FileClient fileClient;
+
     // Nộp bài
-    public Mono<SubmissionResponse> createSubmission(SubmissionCreationRequest request) {
+    // Create submission (reactively processing file parts)
+    public Mono<SubmissionResponse> createSubmission(Flux<FilePart> fileParts, SubmissionCreationRequest request) {
         Submission submission = mapper.toSubmission(request);
+
         return Mono.just(request)
-            .flatMap(creationRequest -> 
-                baseEventRepository.findById(creationRequest.getEventId())
-            )
-            .flatMap((BaseEvent event) -> {
+            .flatMap(req -> baseEventRepository.findById(req.getEventId()))
+            .flatMap(event -> {
+                log.info("Made it here 1");
                 submission.setInGroup(event.isInGroup());
                 submission.setCreatedDate(LocalDateTime.now());
-                submission.setSubmitters(List.of(
-                    StudentInSubmission.fromStudentInGroup(request.getSubmitter())
-                ));
+                submission.setSubmitTimeStatus(submission.calculateSubmissionTime(event.getEndDate()));
+                submission.setSubmitter(request.getStudentCode());
+
                 if (event.isInGroup()) {
-                    return eventGroupingService.getGrouping(
-                        new GetGroupingRequest(request.getEventId(), request.getClassId(), request.getSubclassCode()))
+                    log.info("Made it here 2");
+                    return eventGroupingService
+                        .getGrouping(new GetGroupingRequest(
+                            request.getEventId(),
+                            event.getClassId(),
+                            event.getSubclassCode()))
                         .flatMap(eventGrouping -> {
+                            boolean valid = false;
                             for (Group group : eventGrouping.getGroups()) {
-                                if (group.hasMember(request.getSubmitter().getStudentCode())) {
-                                    submission.setSubmitters(
-                                        group.getMembers().stream().map(StudentInSubmission::fromStudentInGroup).toList()
-                                    );
+                                if (group.hasMember(request.getStudentCode())) {
+                                    submission.setSubmitter(group.getId());
+                                    valid = true;
+                                    break;
                                 }
                             }
-                            if (submission.getSubmitters().isEmpty()) {
-                                submission.setSubmitters(List.of(
-                                    StudentInSubmission.fromStudentInGroup(request.getSubmitter())
-                                ));
+                            if (!valid) {
+                                return Mono.error(new InvalidRequestException("Student is not in any group."));
                             }
-                            submission.setInGroup(event.isInGroup());
-                            submission.setCreatedDate(LocalDateTime.now());
-                            return Mono.just(submission);
+                            // For Homework events, check for file parts
+                            return Mono.just(submission)
+                                .flatMap(sub -> {
+                                    if (event instanceof Homework homework) {
+                                        // Collect the incoming FilePart stream into a list
+                                        return fileParts.collectList().flatMap(fileList -> {
+                                            if (homework.getSubmissionOptions().contains(SubmissionOption.FILE)
+                                                && !fileList.isEmpty()) {
+                                                return fileClient.uploadFiles(fileList, request.getStudentMail())
+                                                    .map(fileResponses -> {
+                                                        submission.setFiles(fileResponses);
+                                                        return submission;
+                                                    });
+                                            }
+                                            return Mono.just(submission);
+                                        });
+                                    }
+                                    return Mono.error(new InvalidRequestException("Homework does not exist."));
+                                });
                         });
                 }
-                submission.setSubmitTimeStatus(submission.calculateSubmissionTime(event.getEndDate()));
-                return Mono.just(submission);
+                // For Homework events, check for file parts
+                return Mono.just(submission)
+                    .flatMap(sub -> {
+                        if (event instanceof Homework homework) {
+                            // Collect the incoming FilePart stream into a list
+                            return fileParts.collectList().flatMap(fileList -> {
+                                log.info("Made it here, file list size: " + fileList.size());
+                                if (homework.getSubmissionOptions().contains(SubmissionOption.FILE)
+                                    && !fileList.isEmpty()) {
+                                    return fileClient.uploadFiles(fileList, request.getStudentMail())
+                                        .map(fileResponses -> {
+                                            submission.setFiles(fileResponses);
+                                            return submission;
+                                        });
+                                }
+                                return Mono.just(submission);
+                            });
+                        }
+                        return Mono.error(new InvalidRequestException("Homework does not exist."));
+                    });
             })
             .flatMap(repository::save)
             .map(mapper::toSubmissionResponse);
     }
+
 
     // Chấm điểm
     public Mono<SubmissionResponse> addFeedback(String id, SubmissionFeedbackRequest request) {
@@ -95,11 +141,7 @@ public class SubmissionService {
                 submission.setFeedback(request.getFeedback());
                 submission.setGrade(request.getGrade());
                 if (!request.getMemberGrades().isEmpty()) {
-                    for (StudentInSubmission member : submission.getSubmitters()) {
-                        member.setGrade(
-                            request.getMemberGrades().getOrDefault(member.getStudentCode(), request.getGrade())
-                        );
-                    }
+                    submission.getMemberGrades().putAll(request.getMemberGrades());
                 }
                 submission.setFeedbackDate(LocalDateTime.now());
                 return submission;
@@ -186,7 +228,7 @@ public class SubmissionService {
     ) {
         return Flux.fromIterable(events)
             .flatMap(event ->
-                    repository.findAllByEventIdAndSubmittersStudentCode(event.getId(), student.getCode())
+                    repository.findAllByEventIdAndSubmitter(event.getId(), student.getCode())
                         .map(submission -> new EventSubmissionResponse(studentCode, event, submission))
                         .switchIfEmpty(Mono.just(new EventSubmissionResponse(studentCode, event, null)))
                 )
