@@ -2,19 +2,21 @@ package com.unicore.file_service.controller;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -33,15 +35,18 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
+import com.unicore.file_service.dto.ApiResponse;
+import com.unicore.file_service.dto.AuthResponse;
 import com.unicore.file_service.dto.FileItemDTO;
 import com.unicore.file_service.dto.MessageDTO;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
-
-@Controller
-public class HomepageController {
+@RestController
+@Slf4j
+public class FileController {
     private static HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
@@ -55,6 +60,8 @@ public class HomepageController {
 
     @Value("${google.credentials.folder.path}")
     private Resource credentialsFolder;
+
+    private final String folderName = "Unicore";
 
     private String getAuthenticatedUsername() {
         // return SecurityContextHolder.getContext().getAuthentication().getName();
@@ -70,11 +77,12 @@ public class HomepageController {
             .setDataStoreFactory(new FileDataStoreFactory(credentialsFolder.getFile())).build();
     }
 
-    @GetMapping
-    public String homepage() throws IOException {
+    @GetMapping("/check-auth/{userEmail}")
+    public ApiResponse<AuthResponse> checkAuth(@PathVariable String userEmail)  
+    throws IOException {
         boolean isUserAuthenticated = false;
 
-        Credential credential = flow.loadCredential(getAuthenticatedUsername());
+        Credential credential = flow.loadCredential(userEmail);
         if (credential != null) {
             boolean tokenValid = credential.refreshToken();
             if (tokenValid) {
@@ -82,12 +90,22 @@ public class HomepageController {
             }
         }
 
-        return isUserAuthenticated ? "dashboard.html" : "index.html";
+        return ApiResponse.<AuthResponse>builder()
+            .data(new AuthResponse(
+                isUserAuthenticated, 
+                isUserAuthenticated ? null :
+                    googleSigninUrl(userEmail)
+            ))
+            .message(isUserAuthenticated ? "User is authed" : "User is not authed")
+            .status(HttpStatus.OK.value())
+            .time(LocalDateTime.now())
+            .build();
+
     }
     
 
     @PostMapping("/clearTokens")
-    public @ResponseBody String clearTokens() throws IOException {
+    public String clearTokens() throws IOException {
         java.io.File credentialsDir = credentialsFolder.getFile(); // Get the credentials folder
 
         if (credentialsDir.exists() && credentialsDir.isDirectory()) {
@@ -100,31 +118,43 @@ public class HomepageController {
         return "No tokens found to clear.";
     }
 
-    @GetMapping("/googlesignin")
-    public @ResponseBody String googleSignin(String email) throws IOException {
+    private String googleSigninUrl(String email) {
         GoogleAuthorizationCodeRequestUrl url = flow.newAuthorizationUrl();
         return url.setRedirectUri(CALLBACK_URI)
             .setAccessType("offline")
             .build();
     }
     
-    @GetMapping("/auth")
-    public @ResponseBody MessageDTO saveAuthorizationCode(HttpServletRequest request) throws IOException {
+    @GetMapping("/auth/{userEmail}")
+    public ApiResponse<String> saveAuthorizationCode(@PathVariable String userEmail,  HttpServletRequest request) throws IOException {
         String code = request.getParameter("code");
+        log.info("User code: " + code);
         if (code != null && !code.isEmpty()) {
             try {
-                saveToken(code); // Exchange code for tokens and store them
-                return new MessageDTO("Authorization successful. Token saved.");
+                saveToken(code, userEmail); // Exchange code for tokens and store them
+                return ApiResponse.<String>builder()
+                    .data("Authorization successful. Token saved.")
+                    .status(HttpStatus.OK.value())
+                    .time(LocalDateTime.now())
+                    .build();
             } catch (Exception e) {
-                return new MessageDTO("Authorization failed. " + e.getMessage());
+                return ApiResponse.<String>builder()
+                    .data("Authorization failed. " + e.getMessage())
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .time(LocalDateTime.now())
+                    .build();
             }
         }
-        return new MessageDTO("Authorization failed. Missing or invalid code.");
+        return ApiResponse.<String>builder()
+            .data("Authorization failed. Missing or invalid code.")
+            .status(HttpStatus.BAD_REQUEST.value())
+            .time(LocalDateTime.now())
+            .build();
     }
 
-    private void saveToken(String code) throws IOException {
+    private void saveToken(String code, String userEmail) throws IOException {
         GoogleTokenResponse response = flow.newTokenRequest(code).setRedirectUri(CALLBACK_URI).execute();
-        flow.createAndStoreCredential(response, getAuthenticatedUsername());
+        flow.createAndStoreCredential(response, userEmail);
     }
     
     @PostMapping("/create")
@@ -186,9 +216,8 @@ public class HomepageController {
         return new MessageDTO("File " + fileId + " has been deleted.");
     }
 
-    @GetMapping("/createfolder/{folderName}")
-    public @ResponseBody MessageDTO createFolder(@PathVariable String folderName) throws IOException {
-        Credential cred = flow.loadCredential(getAuthenticatedUsername());
+    private String createFolder(String userEmail) throws IOException {
+        Credential cred = flow.loadCredential(userEmail);
 
         Drive drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, cred)
             .setApplicationName("Unicore")
@@ -198,9 +227,9 @@ public class HomepageController {
         file.setName(folderName);
         file.setMimeType("application/vnd.google-apps.folder");
 
-        drive.files().create(file).execute();
+        File createdFolder = drive.files().create(file).execute();
 
-        return new MessageDTO("Folder has been created successfully.");
+        return createdFolder.getId();
     }
     
     
@@ -246,5 +275,6 @@ public class HomepageController {
 
         return new MessageDTO("Public file successfully.");
     }
+    
     
 }
