@@ -26,6 +26,7 @@ import com.unicore.classevent_service.dto.request.TopicApprovalRequest;
 import com.unicore.classevent_service.dto.request.TopicRegisterScheduleRequest;
 import com.unicore.classevent_service.dto.response.ApiResponse;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
+import com.unicore.classevent_service.dto.response.ProjectTopicResponse;
 import com.unicore.classevent_service.entity.ProjectTopic;
 import com.unicore.classevent_service.enums.ApiMessage;
 import com.unicore.classevent_service.service.ProjectService;
@@ -189,7 +190,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/topics")
-    public Mono<ApiResponse<List<ProjectTopic>>> getTopicsByProjectId(@PathVariable String projectId) {
+    public Mono<ApiResponse<List<ProjectTopicResponse>>> getTopicsByProjectId(@PathVariable String projectId) {
         return projectService.getTopicsByProjectId(projectId)
             .collectList()
             .map(report -> new ApiResponse<>(

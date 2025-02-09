@@ -1,6 +1,7 @@
 package com.unicore.classevent_service.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.unicore.classevent_service.dto.response.StudentResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,5 +23,11 @@ public class StudentInGroup {
     private String phone;
     @JsonProperty("group_name")
     private String groupName;
+
+    public StudentInGroup(StudentResponse student) {
+        this.studentCode = student.getCode();
+        this.name = student.getName();
+        this.phone = student.getPhone();
+    }
 }
 

@@ -39,6 +39,15 @@ public class ProfileClient {
         }
 
     
+    public Mono<StudentResponse> getStudentById(String id) {
+        return webClient.get()
+            .uri("/students/{id}", id)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<ApiResponse<StudentResponse>>() {})
+            // .bodyToMono(new ParameterizedTypeReference<ApiResponse<SubjectResponse>>() {})
+            .map(responseEntity -> responseEntity.getBody().getData());
+    }
+    
     public Mono<StudentResponse> getStudentByCode(String code) {
         return webClient.get()
             .uri("/students/code/{code}", code)

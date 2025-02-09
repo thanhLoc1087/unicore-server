@@ -73,7 +73,7 @@ public class SubmissionController {
     // Tạo bài nộp
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Mono<ApiResponse<SubmissionResponse>> createSubmission(
-            @RequestPart("file") Flux<FilePart> fileParts,
+            @RequestPart(name = "file", required = false) Flux<FilePart> fileParts,
             @RequestPart("event_id") String eventId,
             @RequestPart("student_code") String studentCode,
             @RequestPart("student_mail") String studentMail,

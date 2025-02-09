@@ -176,21 +176,21 @@ public class FileController {
 
         List<FileItemDTO> responses = new ArrayList<>();
 
-        for (MultipartFile file : files) {
-            if (file.isEmpty()) continue; // Skip empty files
+        for (MultipartFile sentFile : files) {
+            if (sentFile.isEmpty()) continue; // Skip empty files
 
             File driveFile = new File();
-            driveFile.setName(file.getOriginalFilename());
+            driveFile.setName(sentFile.getOriginalFilename());
 
-            java.io.File tempFile = java.io.File.createTempFile("upload-", file.getOriginalFilename());
-            file.transferTo(tempFile);
+            java.io.File tempFile = java.io.File.createTempFile("upload-", sentFile.getOriginalFilename());
+            sentFile.transferTo(tempFile);
 
-            FileContent fileContent = new FileContent(file.getContentType(), tempFile);
+            FileContent fileContent = new FileContent(sentFile.getContentType(), tempFile);
             File uploadedFile = drive.files().create(driveFile, fileContent).setFields("id, name, webContentLink, webViewLink, thumbnailLink").execute();
 
             tempFile.delete(); // Clean up temp file
 
-            makePublic(uploadedFile.getId());
+            // makePublic(uploadedFile.getId());
 
             responses.add(new FileItemDTO(uploadedFile));
         }
@@ -249,7 +249,7 @@ public class FileController {
 
         tempFile.delete();
 
-        makePublic(uploadedFile.getId());
+        // makePublic(uploadedFile.getId());
 
         return new FileItemDTO(uploadedFile);
     }

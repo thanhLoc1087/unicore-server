@@ -13,6 +13,7 @@ public class StudentResponse {
     @JsonProperty("organization_id")
     private String organizationId;
     private String code;
+    private String phone;
     private String name;
     private String email;
     @JsonFormat(pattern = "dd/MM/yyyy")

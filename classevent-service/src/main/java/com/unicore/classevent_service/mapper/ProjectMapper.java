@@ -8,6 +8,7 @@ import com.unicore.classevent_service.dto.request.ProjectCreationRequest;
 import com.unicore.classevent_service.dto.request.ProjectUpdateRequest;
 import com.unicore.classevent_service.dto.request.TopicSuggestionRequest;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
+import com.unicore.classevent_service.dto.response.ProjectTopicResponse;
 import com.unicore.classevent_service.entity.Project;
 import com.unicore.classevent_service.entity.ProjectTopic;
 import com.unicore.classevent_service.entity.ThesisTopic;
@@ -22,4 +23,6 @@ public interface ProjectMapper {
 
     public ProjectTopic toProjectTopic(TopicSuggestionRequest request);
     public ThesisTopic toThesisTopic(TopicSuggestionRequest request);
+
+    public ProjectTopicResponse toResponse(ProjectTopic topic);
 }

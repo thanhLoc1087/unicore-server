@@ -27,7 +27,9 @@ import com.unicore.classevent_service.dto.request.ThesisEvaluatorRequest;
 import com.unicore.classevent_service.dto.request.ThesisImportEvaluatorsRequest;
 import com.unicore.classevent_service.dto.request.TopicApprovalRequest;
 import com.unicore.classevent_service.dto.request.TopicRegisterScheduleRequest;
+import com.unicore.classevent_service.dto.response.GroupingResponse;
 import com.unicore.classevent_service.dto.response.ProjectResponse;
+import com.unicore.classevent_service.dto.response.ProjectTopicResponse;
 import com.unicore.classevent_service.dto.response.TeacherResponse;
 import com.unicore.classevent_service.entity.Group;
 import com.unicore.classevent_service.entity.NewTopic;
@@ -417,10 +419,49 @@ public class ProjectService {
             );
     }
 
-    public Flux<ProjectTopic> getTopicsByProjectId(String projectId) {
-        return topicRepository.findAllByProjectId(projectId)
-            .map(ProjectTopic.class::cast);
+    public Flux<ProjectTopicResponse> getTopicsByProjectId(String projectId) {
+        return projectRepository.findById(projectId)
+            .flatMap(event -> {
+                if (event instanceof Project project) return Mono.just(project);
+                return Mono.error(() -> new InvalidRequestException("Project not found."));
+            })
+            .flatMapMany(project -> {
+                if (project.isInGroup()) 
+                    return getTopicsByProjectIdInGroup(projectId);
+
+                return topicRepository.findAllByProjectId(projectId)
+                    .map(ProjectTopic.class::cast)
+                    .map(projectMapper::toResponse)
+                    .flatMap(projectTopic -> {
+                        return profileClient.getStudentById(projectTopic.getSelectorId())
+                            .switchIfEmpty(Mono.error(() -> new InvalidRequestException("Student does not exist.")))
+                            .map(student -> {
+                                projectTopic.setStudents(List.of(new StudentInGroup(student)));
+                                return projectTopic;
+                            });
+                    });
+            });
     }
+
+    private Flux<ProjectTopicResponse> getTopicsByProjectIdInGroup(String projectId) {
+        return groupingService.getByEventId(projectId)
+            .flatMapMany(grouping -> getTopicsByProjectIdInGroupHandle(grouping, projectId));
+    }
+    private Flux<ProjectTopicResponse> getTopicsByProjectIdInGroupHandle(GroupingResponse grouping, String projectId) {
+        return topicRepository.findAllByProjectId(projectId)
+            .map(ProjectTopic.class::cast)
+            .map(projectMapper::toResponse)
+            .flatMap(projectTopic -> {
+                for (Group group : grouping.getGroups()) {
+                    if (group.getId() == projectTopic.getSelectorId()) {
+                        projectTopic.setStudents(group.getMembers());
+                        return Mono.just(projectTopic);
+                    }
+                }
+                return Mono.error(() -> new InvalidRequestException("Group id " + projectTopic.getSelectorId() + " does not exist."));
+            });
+    }
+
 
     public Flux<ProjectResponse> getByTopicIds(List<String> topicIds) {
         return projectRepository.findProjectsByTopicIds(topicIds)
