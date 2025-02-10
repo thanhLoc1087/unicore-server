@@ -8,5 +8,5 @@ import reactor.core.publisher.Flux;
 
 public interface SubmissionRepository extends ReactiveCrudRepository<Submission, String>{
     public Flux<Submission> findAllByEventId(String eventId);
-    public Flux<Submission> findAllByEventIdAndSubmitter(String eventId, String submitter);
+    public Flux<Submission> findAllByEventIdAndSubmittersStudentCode(String eventId, String submitterCode);
 }

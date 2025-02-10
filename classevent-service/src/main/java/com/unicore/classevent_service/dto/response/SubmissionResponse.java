@@ -41,16 +41,14 @@ public class SubmissionResponse {
     
     private Float grade;
     private String feedback;
-    
-    @JsonProperty("attachment_id")
-    private String attachmentId;
-    @JsonProperty("attachment_name")
-    private String attachmentName;
-    @JsonProperty("attachment_url")
-    private String attachmentUrl;
+    @JsonProperty("feedback_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime feedbackDate;
 
     @JsonProperty("member_grades")
     private Map<String, Float> memberGrades;
+
+    private String submissionLink;
 
     @Builder.Default
     private List<FileResponse> files = new ArrayList<>();

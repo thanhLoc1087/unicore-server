@@ -33,7 +33,7 @@ public class Submission {
 
     private String eventId;
 
-    private String submitter;
+    private List<StudentInGroup> submitters;
     private boolean inGroup;
     
     private Float grade;

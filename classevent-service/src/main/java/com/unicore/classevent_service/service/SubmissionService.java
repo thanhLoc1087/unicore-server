@@ -23,6 +23,8 @@ import com.unicore.classevent_service.dto.response.SubmissionResponse;
 import com.unicore.classevent_service.entity.BaseEvent;
 import com.unicore.classevent_service.entity.Group;
 import com.unicore.classevent_service.entity.Homework;
+import com.unicore.classevent_service.entity.Report;
+import com.unicore.classevent_service.entity.StudentInGroup;
 import com.unicore.classevent_service.entity.Submission;
 import com.unicore.classevent_service.enums.SubmissionOption;
 import com.unicore.classevent_service.enums.WeightType;
@@ -59,14 +61,34 @@ public class SubmissionService {
     public Mono<SubmissionResponse> createSubmission(Flux<FilePart> fileParts, SubmissionCreationRequest request) {
         Submission submission = mapper.toSubmission(request);
 
-        return Mono.just(request)
+        return repository.findAllByEventIdAndSubmittersStudentCode(request.getEventId(), request.getStudentCode())
+            .collectList()
+            .map(submissions -> {
+                for (Submission sub : submissions) repository.delete(sub);
+                return submission;
+            })
             .flatMap(req -> baseEventRepository.findById(req.getEventId()))
+            .switchIfEmpty(Mono.error(() -> new InvalidRequestException("Event does not exist.")))
+            .flatMap(event -> {
+                if (event instanceof Homework homework) {
+                    if (!homework.getSubmissionOptions().contains(SubmissionOption.FILE)) {
+                        return Mono.error(() -> new InvalidRequestException("This event submission options don't include FILE"));
+                    }
+                    return Mono.just(event);
+                }
+                if (event instanceof Report report) {
+                    if (!report.getSubmissionOptions().contains(SubmissionOption.FILE)) {
+                        return Mono.error(() -> new InvalidRequestException("This event submission options don't include FILE"));
+                    }
+                    return Mono.just(event);
+                }
+                return Mono.error(() -> new InvalidRequestException("Event does not need submission"));
+            })
             .flatMap(event -> {
                 log.info("Made it here 1");
                 submission.setInGroup(event.isInGroup());
                 submission.setCreatedDate(LocalDateTime.now());
                 submission.setSubmitTimeStatus(submission.calculateSubmissionTime(event.getEndDate()));
-                submission.setSubmitter(request.getStudentCode());
 
                 if (event.isInGroup()) {
                     log.info("Made it here 2");
@@ -79,7 +101,7 @@ public class SubmissionService {
                             boolean valid = false;
                             for (Group group : eventGrouping.getGroups()) {
                                 if (group.hasMember(request.getStudentCode())) {
-                                    submission.setSubmitter(group.getId());
+                                    submission.setSubmitters(group.getMembers());
                                     valid = true;
                                     break;
                                 }
@@ -90,43 +112,40 @@ public class SubmissionService {
                             // For Homework events, check for file parts
                             return Mono.just(submission)
                                 .flatMap(sub -> {
-                                    if (event instanceof Homework homework) {
-                                        // Collect the incoming FilePart stream into a list
-                                        return fileParts.collectList().flatMap(fileList -> {
-                                            if (homework.getSubmissionOptions().contains(SubmissionOption.FILE)
-                                                && !fileList.isEmpty()) {
-                                                return fileClient.uploadFiles(fileList, request.getStudentMail())
-                                                    .map(fileResponses -> {
-                                                        submission.setFiles(fileResponses);
-                                                        return submission;
-                                                    });
-                                            }
-                                            return Mono.just(submission);
-                                        });
-                                    }
-                                    return Mono.error(new InvalidRequestException("Homework does not exist."));
+                                    // Collect the incoming FilePart stream into a list
+                                    return fileParts.collectList().flatMap(fileList -> {
+                                        if (fileList.isEmpty()) {
+                                            return fileClient.uploadFiles(fileList, request.getStudentMail())
+                                                .map(fileResponses -> {
+                                                    submission.setFiles(fileResponses);
+                                                    return submission;
+                                                });
+                                        }
+                                        return Mono.just(submission);
+                                    });
                                 });
                         });
                 }
                 // For Homework events, check for file parts
-                return Mono.just(submission)
+                return profileClient.getStudentByCode(request.getStudentCode())
+                    .switchIfEmpty(Mono.error(() -> new InvalidRequestException("Student not found")))
+                    .map(student -> {
+                        submission.setSubmitters(List.of(new StudentInGroup(student)));
+                        return submission;
+                    })
                     .flatMap(sub -> {
-                        if (event instanceof Homework homework) {
-                            // Collect the incoming FilePart stream into a list
-                            return fileParts.collectList().flatMap(fileList -> {
-                                log.info("Made it here, file list size: " + fileList.size());
-                                if (homework.getSubmissionOptions().contains(SubmissionOption.FILE)
-                                    && !fileList.isEmpty()) {
-                                    return fileClient.uploadFiles(fileList, request.getStudentMail())
-                                        .map(fileResponses -> {
-                                            submission.setFiles(fileResponses);
-                                            return submission;
-                                        });
-                                }
-                                return Mono.just(submission);
-                            });
-                        }
-                        return Mono.error(new InvalidRequestException("Homework does not exist."));
+                        // Collect the incoming FilePart stream into a list
+                        return fileParts.collectList().flatMap(fileList -> {
+                            log.info("Made it here, file list size: " + fileList.size());
+                            if (!fileList.isEmpty()) {
+                                return fileClient.uploadFiles(fileList, request.getStudentMail())
+                                    .map(fileResponses -> {
+                                        submission.setFiles(fileResponses);
+                                        return submission;
+                                    });
+                            }
+                            return Mono.just(submission);
+                        });
                     });
             })
             .flatMap(repository::save)
@@ -228,7 +247,7 @@ public class SubmissionService {
     ) {
         return Flux.fromIterable(events)
             .flatMap(event ->
-                    repository.findAllByEventIdAndSubmitter(event.getId(), student.getCode())
+                    repository.findAllByEventIdAndSubmittersStudentCode(event.getId(), student.getCode())
                         .map(submission -> new EventSubmissionResponse(studentCode, event, submission))
                         .switchIfEmpty(Mono.just(new EventSubmissionResponse(studentCode, event, null)))
                 )
