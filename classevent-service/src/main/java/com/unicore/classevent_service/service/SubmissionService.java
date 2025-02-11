@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.unicore.classevent_service.dto.request.GetByClassRequest;
 import com.unicore.classevent_service.dto.request.GetClassGradeRequest;
@@ -64,7 +63,7 @@ public class SubmissionService {
         return repository.findAllByEventIdAndSubmittersStudentCode(request.getEventId(), request.getStudentCode())
             .collectList()
             .map(submissions -> {
-                for (Submission sub : submissions) repository.delete(sub);
+                for (Submission sub : submissions) repository.delete(sub).subscribe();
                 return submission;
             })
             .flatMap(req -> baseEventRepository.findById(req.getEventId()))
